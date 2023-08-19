@@ -22,14 +22,42 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
 import SignUpForm from "../SignUpForm";
+import useServices from "../../hooks/useServices";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { STORES } from "../../shared/configs/constants";
+import ManagedStore from "../../stores/ManagedStore";
+import { useInjectStore } from "../../stores/StoreProvider";
 
 function LoginForm(props) {
   const { open, onClose } = props;
 
-  const navigate = useNavigate();
-  const handleClickLogin = () => {
-    navigate("/homecustomer");
-  };
+  const [email, setEmail] = useState("");
+  // const [password, setPassword] = useState("");
+  // // const managedStore = useInjectStore({
+  // //   key: STORES.MANAGER,
+  // //   store: ManagedStore,
+  // // });
+  // const navigate = useNavigate();
+  // const users = axiosInstance.get("/members");
+  // const handleClickLogin = () => {
+  //   try {
+  //     return axiosInstance.post("/login", {
+  //       email,
+  //       password,
+  //     }).then(
+  //       if (condition) {
+          
+  //       }
+  //     )
+  //   } catch (err) {
+  //     let error = "";
+  //     if (err.response) {
+  //       error += err.response;
+  //     }
+  //     console.log(error);
+  //     return error;
+  //   }
+  // };
   const handleClickForgot = () => {
     navigate("/reset");
   };
@@ -77,12 +105,14 @@ function LoginForm(props) {
                 >
                   <OutlinedInput
                     id="email"
+                    value={email}
                     placeholder="Email Address"
                     startAdornment={
                       <InputAdornment position="start">
                         <Email />
                       </InputAdornment>
                     }
+                    onChange={(event) => setEmail(event.target.value)}
                   />
                 </FormControl>
                 <FormControl
@@ -92,6 +122,8 @@ function LoginForm(props) {
                 >
                   <OutlinedInput
                     id="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
                     placeholder="Password"
                     type={showPassword ? "text" : "password"}
                     startAdornment={
