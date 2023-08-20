@@ -27,37 +27,46 @@ import axiosInstance from "../../shared/configs/axiosConfig";
 import { STORES } from "../../shared/configs/constants";
 import ManagedStore from "../../stores/ManagedStore";
 import { useInjectStore } from "../../stores/StoreProvider";
+import { startsWith } from "lodash";
 
 function LoginForm(props) {
   const { open, onClose } = props;
 
   const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-  // // const managedStore = useInjectStore({
-  // //   key: STORES.MANAGER,
-  // //   store: ManagedStore,
-  // // });
-  // const navigate = useNavigate();
-  // const users = axiosInstance.get("/members");
-  // const handleClickLogin = () => {
-  //   try {
-  //     return axiosInstance.post("/login", {
-  //       email,
-  //       password,
-  //     }).then(
-  //       if (condition) {
-          
-  //       }
-  //     )
-  //   } catch (err) {
-  //     let error = "";
-  //     if (err.response) {
-  //       error += err.response;
-  //     }
-  //     console.log(error);
-  //     return error;
-  //   }
-  // };
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const handleClickLogin = async (event) => {
+    event.preventDefault();
+    try {
+      if (email && password) {
+        const response = await axiosInstance.post("/login", null, {
+          params: {
+            email,
+            password,
+          },
+        });
+        console.log(response.data);
+        console.log(response.data.message);
+        if (response.status === 200 && response.data.message.startsWith("OK")) {
+          const roles = response.data.message.split(",")[1];
+          console.log("Login successful with roles:", roles);
+
+          if (roles.includes("customer")) {
+            navigate("/homecustomer");
+          } else if (roles.includes("owner")) {
+            navigate("/homeowner");
+          }
+        } else {
+          console.log("Login failed");
+        }
+      } else {
+        console.log("Email and password are required.");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
+  };
+
   const handleClickForgot = () => {
     navigate("/reset");
   };

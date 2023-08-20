@@ -31,6 +31,10 @@ import { useState } from "react";
 import ControlledRadioButtons from "../ControlledRadioButtons";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import { useInjectStore } from "../../stores/StoreProvider";
+import { STORES } from "../../shared/configs/constants";
+import SignupStore from "../../stores/SignupStore";
+import axiosInstance from "../../shared/configs/axiosConfig";
 
 const SignUpForm = (props) => {
   const { open, onClose } = props;
@@ -50,11 +54,51 @@ const SignUpForm = (props) => {
   };
 
   const navigate = useNavigate();
-  const handleClickSignup = () => {
-    navigate("/homeowner");
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("");
+
+  const handleClickSignup = async (event) => {
+    event.preventDefault();
+    try {
+      if (fullName && email && phone && password && role) {
+        const response = await axiosInstance.post("/signup", null, {
+          params: {
+            fullName,
+            email,
+            phone,
+            password,
+            role,
+          },
+        });
+
+        console.log(response.data.message);
+
+        if (response.status === 200 && response.data.message === "OK") {
+          if (role === "customer") {
+            navigate("/homecustomer");
+          } else {
+            navigate("/homeowner");
+          }
+        } else {
+          console.log("Signup failed");
+        }
+      } else {
+        console.log("Some fields are empty");
+      }
+    } catch (error) {
+      console.error("Error during sign up:", error);
+    }
   };
 
-  
+  // const store = useInjectStore({
+  //   key: STORES.MANAGER,
+  //   store: SignupStore,
+  // });
 
   return (
     <div>
@@ -86,6 +130,8 @@ const SignUpForm = (props) => {
                         <Person />
                       </InputAdornment>
                     }
+                    value={fullName}
+                    onChange={(event) => setFullName(event.target.value)}
                   />
                 </FormControl>
                 <FormControl
@@ -101,6 +147,8 @@ const SignUpForm = (props) => {
                         <Email />
                       </InputAdornment>
                     }
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
                   />
                 </FormControl>
                 <FormControl
@@ -116,6 +164,8 @@ const SignUpForm = (props) => {
                         <Phone />
                       </InputAdornment>
                     }
+                    value={phone}
+                    onChange={(event) => setPhone(event.target.value)}
                   />
                 </FormControl>
                 <FormControl
@@ -144,6 +194,8 @@ const SignUpForm = (props) => {
                         </IconButton>
                       </InputAdornment>
                     }
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
                   />
                 </FormControl>
                 <FormControl
@@ -152,7 +204,7 @@ const SignUpForm = (props) => {
                   required
                 >
                   <OutlinedInput
-                    id="password"
+                    id="confirm-password"
                     placeholder="Confirm password"
                     type={showConfirmPassword ? "text" : "password"}
                     startAdornment={
@@ -176,9 +228,11 @@ const SignUpForm = (props) => {
                         </IconButton>
                       </InputAdornment>
                     }
+                    // value={confirmPassword}
+                    // onChange={(event) => setConfirmPassword(event.target.value)}
                   />
                 </FormControl>
-                <ControlledRadioButtons />
+                <ControlledRadioButtons role={role} setRole={setRole} />
                 <Button
                   type="submit"
                   fullWidth

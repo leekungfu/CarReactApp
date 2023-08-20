@@ -8,23 +8,24 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import PropTypes from "prop-types";
 
-export default function ControlledRadioButtons() {
-  const [value, setValue] = useState("");
+export default function ControlledRadioButtons(props) {
+  const { role, setRole } = props;
 
   const handleChange = (event) => {
-    setValue(event.target.value);
+    setRole(event.target.value);
   };
 
   return (
     <FormControl sx={{ mt: 1 }}>
-      <RadioGroup value={value} onChange={handleChange}>
+      <RadioGroup value={role} onChange={handleChange}>
         <FormControlLabel
-          control={<Radio name="role" value="customer" color="primary" />}
+          control={<Radio value="customer" color="primary" />}
           label="I want to rent a car"
         />
         <FormControlLabel
-          control={<Radio name="role" value="owner" color="primary" />}
+          control={<Radio value="owner" color="primary" />}
           label="I am a car owner"
         />
         <FormControlLabel
@@ -41,4 +42,9 @@ export default function ControlledRadioButtons() {
       </RadioGroup>
     </FormControl>
   );
+};
+
+ControlledRadioButtons.propTypes = {
+  role: PropTypes.string.isRequired,
+  setRole: PropTypes.func.isRequired,
 }

@@ -2,6 +2,7 @@ import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router";
+import axiosInstance from "../../shared/configs/axiosConfig";
 
 const style = {
   position: "absolute",
@@ -24,8 +25,12 @@ const LogOutt = (props) => {
 
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate("/");
+  const handleClick = async (event) => {
+    event.preventDefault();
+
+    const response = axiosInstance.post("/logout");
+   
+    window.location.href = "/";
   };
 
   return (
