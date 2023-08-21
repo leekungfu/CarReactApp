@@ -31,9 +31,6 @@ import { useState } from "react";
 import ControlledRadioButtons from "../ControlledRadioButtons";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import { useInjectStore } from "../../stores/StoreProvider";
-import { STORES } from "../../shared/configs/constants";
-import SignupStore from "../../stores/SignupStore";
 import axiosInstance from "../../shared/configs/axiosConfig";
 
 const SignUpForm = (props) => {

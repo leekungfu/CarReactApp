@@ -1,6 +1,6 @@
 import "./App.css";
 import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
-import { Layout } from "./components/Layout";
+
 import HomeGuest from "./containers/Home/HomeGuest";
 import HomeCustomer from "./containers/Home/HomeCustomer";
 
@@ -24,6 +24,12 @@ import MyWallet from "./containers/Account/Wallet";
 import MyFeedBack from "./containers/Account/FeedBack";
 import ResetPass from "./containers/Account/Reset/ResetPass";
 import ConfirmReset from "./containers/Account/Reset/ConfirmReset";
+import Layout from "./components/Layout";
+import { useEffect } from "react";
+import axiosInstance from "./shared/configs/axiosConfig";
+import { useDispatch, useSelector } from "react-redux";
+import { setData } from "./components/stores/slice";
+
 
 const ProviderPack = createPack(
   (props) => <ThemeProvider theme={DefaultTheme} {...props} />,
@@ -38,6 +44,17 @@ const ProviderPack = createPack(
 );
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const initiate = async () => {
+      const response = await axiosInstance.get("/memberInfo");
+      const data = await response.data;
+      dispatch(setData(data));
+    };
+    initiate();
+  }, [dispatch]);
+
   return (
     <ProviderPack>
       <CssBaseline />
@@ -46,9 +63,9 @@ function App() {
           <Routes>
             <Route index={true} element={<HomeGuest />} />
             <Route path="/homecustomer" element={<HomeCustomer />} />
-            <Route path="/homeowner" element={<HomeOwner/>} />
-            <Route path="/addcar" element={<AddCar/>} />
-            <Route path="/profile" element={<ProfileTabs/>} />
+            <Route path="/homeowner" element={<HomeOwner />} />
+            <Route path="/addcar" element={<AddCar />} />
+            <Route path="/profile" element={<ProfileTabs />} />
             <Route path="/booking" element={<MyBookings />} />
             <Route path="/wallet" element={<MyWallet />} />
             <Route path="/cars" element={<MyCars />} />

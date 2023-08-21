@@ -27,6 +27,7 @@ export const curentDateFormat = "yyyy-MM-DD";
 export const inputDateFormat = "DD/MM/yyyy";
 
 export const STORES = Object.freeze({
+    GENERAL: "GENERAL",
     USER_MANAGER: "USER_MANAGER",
     AGENCY_MANAGER: "AGENCY_MANAGER",
     DEVICE_MANAGER: "DEVICE_MANAGER",

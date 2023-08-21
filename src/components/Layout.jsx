@@ -3,39 +3,35 @@ import { Box } from "@mui/material";
 import Footer from "./Footer";
 import NavBar from "./NavMenuHomeGuest";
 import NavMenuUser from "./NavMenuUser";
+import { useSelector } from "react-redux";
 
-export class Layout extends Component {
-  static displayName = Layout.name;
-
-  render() {
-    const { userType } = this.props;
-
-    return (
-      <>
+function Layout({ children }) {
+  const memberInfor = useSelector((state) => state.backendData);
+  return (
+    <>
+      <Box
+        className="app-layout"
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
+        }}
+      >
+        {memberInfor.map((item) => item.role === "customer" || item.role === "owner" ? (<NavMenuUser />) : (<NavBar />))}
         <Box
-          className="app-layout"
+          className="app-content"
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            minHeight: "100vh",
+            position: "relative",
+            width: "100%",
+            flex: 1,
           }}
         >
-          <Box
-            className="app-content"
-            sx={{
-              position: "relative",
-              width: "100%",
-              flex: 1,
-            }}
-          >
-            {this.props.children}
-          </Box>
-          {userType === "homeguest" && <NavBar />}
-          {userType === "homecustomer" && <NavMenuUser />}
-          {userType === "homeowner" && <NavMenuUser />}
-          <Footer/>
+          {children}
         </Box>
-      </>
-    );
-  }
+        <Footer />
+      </Box>
+    </>
+  );
 }
+
+export default Layout;

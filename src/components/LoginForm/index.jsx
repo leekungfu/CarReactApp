@@ -22,12 +22,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
 import SignUpForm from "../SignUpForm";
-import useServices from "../../hooks/useServices";
 import axiosInstance from "../../shared/configs/axiosConfig";
-import { STORES } from "../../shared/configs/constants";
-import ManagedStore from "../../stores/ManagedStore";
-import { useInjectStore } from "../../stores/StoreProvider";
-import { startsWith } from "lodash";
 
 function LoginForm(props) {
   const { open, onClose } = props;
@@ -45,15 +40,12 @@ function LoginForm(props) {
             password,
           },
         });
-        console.log(response.data);
-        console.log(response.data.message);
-        if (response.status === 200 && response.data.message.startsWith("OK")) {
-          const roles = response.data.message.split(",")[1];
-          console.log("Login successful with roles:", roles);
 
-          if (roles.includes("customer")) {
+        if (response.status === 200) {
+          const role = response.data;
+          if (role === "customer") {
             navigate("/homecustomer");
-          } else if (roles.includes("owner")) {
+          } else if (role === "owner") {
             navigate("/homeowner");
           }
         } else {
