@@ -27,7 +27,6 @@ const MyFeedBack = () => {
 
   return (
     <div>
-      <NavMenuUser />
       <Container maxWidth="lg" sx={{ pt: 5 }}>
         <Container maxWidth="lg" sx={{ mt: 5 }}>
           <Breadcrumbs

@@ -17,7 +17,7 @@ function Layout({ children }) {
           minHeight: "100vh",
         }}
       >
-        {memberInfor.map((item) => item.role === "customer" || item.role === "owner" ? (<NavMenuUser />) : (<NavBar />))}
+        {memberInfor.role === "customer" || memberInfor.role === "owner" ? <NavMenuUser /> : <NavBar />}
         <Box
           className="app-content"
           sx={{

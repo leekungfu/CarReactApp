@@ -32,6 +32,8 @@ import ControlledRadioButtons from "../ControlledRadioButtons";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../shared/configs/axiosConfig";
+import { useDispatch } from "react-redux";
+import { setData } from "../stores/slice";
 
 const SignUpForm = (props) => {
   const { open, onClose } = props;
@@ -58,6 +60,7 @@ const SignUpForm = (props) => {
   const [fullName, setFullName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("");
+  const dispatch = useDispatch();
 
   const handleClickSignup = async (event) => {
     event.preventDefault();
@@ -73,9 +76,11 @@ const SignUpForm = (props) => {
           },
         });
 
-        console.log(response.data.message);
+        const data = await response.data;
+        console.log(response.data);
+        dispatch(setData(data));
 
-        if (response.status === 200 && response.data.message === "OK") {
+        if (response.status === 200) {
           if (role === "customer") {
             navigate("/homecustomer");
           } else {

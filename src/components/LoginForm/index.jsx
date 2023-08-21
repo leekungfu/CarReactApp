@@ -23,6 +23,8 @@ import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
 import SignUpForm from "../SignUpForm";
 import axiosInstance from "../../shared/configs/axiosConfig";
+import { useDispatch } from "react-redux";
+import { setData } from "../stores/slice";
 
 function LoginForm(props) {
   const { open, onClose } = props;
@@ -41,11 +43,13 @@ function LoginForm(props) {
           },
         });
 
+        console.log(response.data);
+        dispatch(setData(response.data));
+
         if (response.status === 200) {
-          const role = response.data;
-          if (role === "customer") {
+          if (response.data.role === "customer") {
             navigate("/homecustomer");
-          } else if (role === "owner") {
+          } else if (response.data.role === "owner") {
             navigate("/homeowner");
           }
         } else {
@@ -58,6 +62,8 @@ function LoginForm(props) {
       console.error("Error during login:", error);
     }
   };
+
+  const dispatch = useDispatch();
 
   const handleClickForgot = () => {
     navigate("/reset");

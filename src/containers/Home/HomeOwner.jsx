@@ -45,7 +45,6 @@ const HomeOwner = () => {
 
   return (
     <div>
-      <NavMenuUser />
       <Container maxWidth="lg">
         <Card elevation={0}>
           <CardContent>

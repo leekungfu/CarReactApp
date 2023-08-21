@@ -18,7 +18,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import NavMenuCustomer from "../../components/NavMenuUser";
 import {
   ArrowForward,
   ArrowForwardIosOutlined,
@@ -27,17 +26,9 @@ import {
   Search,
 } from "@mui/icons-material";
 import styled from "styled-components";
-import { useRef, useState } from "react";
-import dayjs from "dayjs";
-import TextField from "@mui/material/TextField";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../shared/configs/constants";
+import { useEffect, useRef, useState } from "react";
 import { DateRangePicker } from "rsuite";
 import { useTheme } from "@mui/material/styles";
-import NavMenuUser from "../../components/NavMenuUser";
-import ViewDetails from "../../components/Dialogs/ViewDetails";
 import subVn from "sub-vn";
 import { Link } from "react-router-dom";
 
@@ -162,7 +153,6 @@ const HomeCustomer = (props) => {
 
   return (
     <Box>
-      <NavMenuUser />
       <Container maxWidth="lg">
         <Card elevation={0}>
           <CardContent>

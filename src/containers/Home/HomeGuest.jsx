@@ -29,9 +29,7 @@ import {
   Avatar,
   Divider,
 } from "@mui/material";
-import Footer from "../../components/Footer";
 import styled from "styled-components";
-import NavBar from "../../components/NavMenuHomeGuest";
 import { useRef } from "react";
 import ScrollTopArrow from "../../components/ScrollTop";
 import { Link } from "react-router-dom";
@@ -56,7 +54,6 @@ const HomeGuest = () => {
 
   return (
     <Box>
-      <NavBar />
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Container

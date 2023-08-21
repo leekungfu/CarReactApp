@@ -16,15 +16,12 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useState } from "react";
-import AddCar from "../../../components/Dialogs/AddCar";
-import { Add, Commute, Home, NavigateNext, SaveAs } from "@mui/icons-material";
-import NavMenuUser from "../../../components/NavMenuUser";
-import ViewDetails from "../../../components/Dialogs/ViewDetails";
 import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
 import { Link } from "react-router-dom";
 import AutoPlaySwipePreview from "../../../components/Stepper/AutoPlaySwipePreview";
 import ReturnCar from "../../../components/Modals/ReturnCar";
+import { Home, NavigateNext, SaveAs } from "@mui/icons-material";
 
 const data = [
   {
@@ -145,7 +142,6 @@ const MyBookings = (props) => {
 
   return (
     <div>
-      <NavMenuUser />
       <Container maxWidth="lg" sx={{ pt: 5 }}>
         <Container maxWidth="lg" sx={{ mt: 5 }}>
           <Breadcrumbs

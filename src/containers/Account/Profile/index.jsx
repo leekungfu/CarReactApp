@@ -33,9 +33,8 @@ import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import DrivingLicense from "../../../components/UploadFile/DrivingLicense";
 import Provinces from "../../../components/Select/Provinces";
-import BreadcrumbMenu from "../../../components/BreadcrumbsMenu";
-import NavMenuCustomer from "../../../components/NavMenuUser";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function a11yProps(index) {
   return {
@@ -66,43 +65,44 @@ const ProfileTabs = () => {
     event.preventDefault();
   };
 
+  const userInfo = useSelector((state) => state.backendData);
+
   return (
     <Fragment>
-      <NavMenuCustomer />
       <Container maxWidth="lg" sx={{ mt: 5, mb: 5 }}>
-          <Breadcrumbs
-            separator={<NavigateNext fontSize="small" />}
-            aria-label="breadcrumb"
-          >
-            <Stack direction="row" alignItems="center">
-              <Home sx={{ mr: 0.5 }} fontSize="inherit" />
-              <Typography
-                component={Link}
-                to="/homeowner"
-                variant="subtitle1"
-                fontWeight="bold"
-                sx={{
-                  color: "#7f7f7f !important",
-                  "&:hover": {
-                    color: "#fca311 !important",
-                  },
-                }}
-              >
-                Home
-              </Typography>
-            </Stack>
-            <Stack direction="row" alignItems="center">
-              <Commute sx={{ mr: 0.5 }} fontSize="inherit" />
-              <Typography
-                variant="subtitle1"
-                fontWeight="bold"
-                sx={{ display: "flex", alignItems: "center" }}
-              >
-                My Cars
-              </Typography>
-            </Stack>
-          </Breadcrumbs>
-        </Container>
+        <Breadcrumbs
+          separator={<NavigateNext fontSize="small" />}
+          aria-label="breadcrumb"
+        >
+          <Stack direction="row" alignItems="center">
+            <Home sx={{ mr: 0.5 }} fontSize="inherit" />
+            <Typography
+              component={Link}
+              to="/homeowner"
+              variant="subtitle1"
+              fontWeight="bold"
+              sx={{
+                color: "#7f7f7f !important",
+                "&:hover": {
+                  color: "#fca311 !important",
+                },
+              }}
+            >
+              Home
+            </Typography>
+          </Stack>
+          <Stack direction="row" alignItems="center">
+            <Commute sx={{ mr: 0.5 }} fontSize="inherit" />
+            <Typography
+              variant="subtitle1"
+              fontWeight="bold"
+              sx={{ display: "flex", alignItems: "center" }}
+            >
+              My Cars
+            </Typography>
+          </Stack>
+        </Breadcrumbs>
+      </Container>
       <Container maxWidth="lg">
         <Card elevation={5} sx={{ mb: 10 }}>
           <CardContent>
@@ -130,13 +130,17 @@ const ProfileTabs = () => {
                       <InputLabel required>Full Name</InputLabel>
                       <OutlinedInput
                         fullWidth
-                        placeholder="Example: John Wick"
+                        value={userInfo.fullName}
                         required
                       />
                     </Box>
                     <Box>
                       <InputLabel required>Phone Number</InputLabel>
-                      <OutlinedInput fullWidth placeholder="(+84)" required />
+                      <OutlinedInput
+                        fullWidth
+                        value={userInfo.phone}
+                        required
+                      />
                     </Box>
                     <Box>
                       <InputLabel required>National ID</InputLabel>
@@ -164,6 +168,7 @@ const ProfileTabs = () => {
                         fullWidth
                         placeholder="name@gmail.com"
                         disabled
+                        value={userInfo.email}
                       />
                     </Box>
                     <Box>

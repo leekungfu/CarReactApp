@@ -44,16 +44,6 @@ const ProviderPack = createPack(
 );
 
 function App() {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const initiate = async () => {
-      const response = await axiosInstance.get("/memberInfo");
-      const data = await response.data;
-      dispatch(setData(data));
-    };
-    initiate();
-  }, [dispatch]);
 
   return (
     <ProviderPack>
