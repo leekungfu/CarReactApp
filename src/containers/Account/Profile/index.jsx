@@ -35,6 +35,8 @@ import DrivingLicense from "../../../components/UploadFile/DrivingLicense";
 import Provinces from "../../../components/Select/Provinces";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import axiosInstance from "../../../shared/configs/axiosConfig";
+import { DATE_PICKER_DISPLAY_FORMAT, DATE_PICKER_URI_FORMAT } from "../../../shared/configs/constants";
 
 function a11yProps(index) {
   return {
@@ -44,9 +46,15 @@ function a11yProps(index) {
 }
 
 const ProfileTabs = () => {
-  const [tab, setTab] = useState(0);
+  const userInfo = useSelector((state) => state.backendData);
 
-  const [date, setDate] = useState(dayjs("2000-01-01"));
+  const [tab, setTab] = useState(0);
+  const [fullName, setFullName] = useState(userInfo.fullName);
+  const [phone, setPhone] = useState(userInfo.phone);
+  const [nationalID, setNationalId] = useState("");
+  const [birthDay, setBirthDay] = useState(dayjs);
+  const [street, setStreet] = useState("");
+  const [drivingLicense, setDrivingLicense] = useState("");
 
   const handleChange = (event, newValue) => {
     setTab(newValue);
@@ -59,13 +67,63 @@ const ProfileTabs = () => {
   };
 
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword((show) => !show);
+
   const handleMouseDownConfirmPassword = (event) => {
     event.preventDefault();
   };
 
-  const userInfo = useSelector((state) => state.backendData);
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  let city;
+  let district;
+  let ward;
+  if (selectedOptions.length > 0) {
+    city = selectedOptions[0].province;
+    district = selectedOptions[0].district;
+    ward = selectedOptions[0].ward;
+  }
+
+  const handleSelectedOptionsChange = (options) => {
+    setSelectedOptions(options);
+  };
+
+  const handleDrivingLicenseChange = (newValue) => {
+    setDrivingLicense(newValue);
+  };
+
+  const handleClickSaveChange = async (event) => {
+    event.preventDefault();
+    try {
+      const formData = new FormData();
+      const dobFormated = dayjs(birthDay).format(DATE_PICKER_URI_FORMAT);
+      formData.append("email", userInfo.email);
+      formData.append("fullName", fullName);
+      formData.append("birthDay", dobFormated);
+      formData.append("phone", phone);
+      formData.append("nationalID", nationalID);
+      formData.append("city", city);
+      formData.append("district", district);
+      formData.append("ward", ward);
+      formData.append("street", street);
+      formData.append("drivingLicense", drivingLicense);
+
+      const response = await axiosInstance.post("/personalInfo", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 200) {
+        console.log("Save successful");
+      } else {
+        console.log("failed");
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
 
   return (
     <Fragment>
@@ -130,16 +188,18 @@ const ProfileTabs = () => {
                       <InputLabel required>Full Name</InputLabel>
                       <OutlinedInput
                         fullWidth
-                        value={userInfo.fullName}
+                        value={fullName}
                         required
+                        onChange={(event) => setFullName(event.target.value)}
                       />
                     </Box>
                     <Box>
                       <InputLabel required>Phone Number</InputLabel>
                       <OutlinedInput
                         fullWidth
-                        value={userInfo.phone}
+                        value={phone}
                         required
+                        onChange={(event) => setPhone(event.target.value)}
                       />
                     </Box>
                     <Box>
@@ -148,6 +208,8 @@ const ProfileTabs = () => {
                         fullWidth
                         placeholder="Example: 122318181"
                         required
+                        value={nationalID}
+                        onChange={(event) => setNationalId(event.target.value)}
                       />
                     </Box>
                   </Stack>
@@ -156,11 +218,7 @@ const ProfileTabs = () => {
                   <Stack spacing={2}>
                     <Box>
                       <InputLabel required>Date of birth</InputLabel>
-                      <DatePicker
-                        sx={{ width: "100%" }}
-                        value={date}
-                        onChange={(date) => setDate(date)}
-                      />
+                      <DatePicker format={DATE_PICKER_DISPLAY_FORMAT} sx={{ width: "100%" }} value={birthDay} onChange={(newDate) => setBirthDay(newDate)} />
                     </Box>
                     <Box>
                       <InputLabel required>Email</InputLabel>
@@ -173,7 +231,12 @@ const ProfileTabs = () => {
                     </Box>
                     <Box>
                       <InputLabel required>Street</InputLabel>
-                      <OutlinedInput fullWidth placeholder="Street" />
+                      <OutlinedInput
+                        fullWidth
+                        placeholder="Street"
+                        value={street}
+                        onChange={(event) => setStreet(event.target.value)}
+                      />
                     </Box>
                   </Stack>
                 </Grid>
@@ -181,11 +244,15 @@ const ProfileTabs = () => {
               <Stack spacing={2} sx={{ mt: 2 }}>
                 <Box>
                   <InputLabel required>Address</InputLabel>
-                  <Provinces />
+                  <Provinces
+                    onSelectedOptionsChange={handleSelectedOptionsChange}
+                  />
                 </Box>
                 <Box>
                   <InputLabel required>Driving License</InputLabel>
-                  <DrivingLicense />
+                  <DrivingLicense
+                  handleDrivingLicenseChange={handleDrivingLicenseChange}
+                  />
                 </Box>
                 <Button
                   variant="outlined"
@@ -200,6 +267,7 @@ const ProfileTabs = () => {
                       borderColor: "#fca311",
                     },
                   }}
+                  onClick={handleClickSaveChange}
                 >
                   Save Change
                 </Button>

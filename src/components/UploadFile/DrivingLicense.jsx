@@ -2,12 +2,15 @@ import { CloudUpload } from "@mui/icons-material";
 import { Button, Input, InputLabel, Paper } from "@mui/material";
 import React, { useState } from "react";
 
-const DrivingLicense = () => {
+const DrivingLicense = (props) => {
+  const { drivingLicenseProp, handleDrivingLicenseChange } =  props;
+
   const [selectedImage, setSelectedImage] = useState(null);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     setSelectedImage(file);
+    handleDrivingLicenseChange(file);
   };
 
   return (

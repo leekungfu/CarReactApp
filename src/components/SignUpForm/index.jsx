@@ -58,7 +58,6 @@ const SignUpForm = (props) => {
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [fullName, setFullName] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("");
   const dispatch = useDispatch();
 
@@ -96,11 +95,6 @@ const SignUpForm = (props) => {
       console.error("Error during sign up:", error);
     }
   };
-
-  // const store = useInjectStore({
-  //   key: STORES.MANAGER,
-  //   store: SignupStore,
-  // });
 
   return (
     <div>
@@ -230,8 +224,6 @@ const SignUpForm = (props) => {
                         </IconButton>
                       </InputAdornment>
                     }
-                    // value={confirmPassword}
-                    // onChange={(event) => setConfirmPassword(event.target.value)}
                   />
                 </FormControl>
                 <ControlledRadioButtons role={role} setRole={setRole} />

@@ -25,10 +25,6 @@ import MyFeedBack from "./containers/Account/FeedBack";
 import ResetPass from "./containers/Account/Reset/ResetPass";
 import ConfirmReset from "./containers/Account/Reset/ConfirmReset";
 import Layout from "./components/Layout";
-import { useEffect } from "react";
-import axiosInstance from "./shared/configs/axiosConfig";
-import { useDispatch, useSelector } from "react-redux";
-import { setData } from "./components/stores/slice";
 
 
 const ProviderPack = createPack(
@@ -44,7 +40,6 @@ const ProviderPack = createPack(
 );
 
 function App() {
-
   return (
     <ProviderPack>
       <CssBaseline />

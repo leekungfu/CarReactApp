@@ -75,13 +75,13 @@ export const ERROR_CODES = {
     METHOD_NOT_ALLOWED: 405,
 };
 
-export const DATE_PICKER_DISPLAY_FORMAT = "DD/MM/YYYY";
+export const DATE_PICKER_DISPLAY_FORMAT = "DD-MM-YYYY";
 export const RSUITE_DATE_PICKER_DISPLAY_FORMAT = "dd/MM/yyyy";
 export const DATE_TIME_PICKER_DISPLAY_FORMAT = "DD/MM/YYYY HH:mm:ss";
 export const RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT = "dd/MM/yyyy HH:mm:ss";
 export const HISTORY_ITEM_DATE_TIME_DISPLAY_FORMAT = "DD/MM HH:mm:ss";
 export const DATAGRID_DATE_FORMAT = "DD/MM/YYYY";
-export const DATE_PICKER_URI_FORMAT = "yyyy-MM-DD";
+export const DATE_PICKER_URI_FORMAT = "YYYY-MM-DD";
 export const SERVER_RESPOND_DATE_TIME_FORMAT = "yyyy-MM-DDTHH:mm:ss";
 export const SERVER_RESPOND_DATE_TIME_FORMAT2 = "HH:mm:ss DD-MM-YYYY";
 export const SERVER_POSTING_DATE_TIME_FORMAT = "yyyy-MM-DD HH:mm:ss";
