@@ -26,6 +26,8 @@ import {
   InputAdornment,
   IconButton,
   Breadcrumbs,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import React, { Fragment, useState } from "react";
 import CustomTabPanels from "../../../components/CustomTabPanels/CustomTabPanels";
@@ -36,7 +38,10 @@ import Provinces from "../../../components/Select/Provinces";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../../shared/configs/axiosConfig";
-import { DATE_PICKER_DISPLAY_FORMAT, DATE_PICKER_URI_FORMAT } from "../../../shared/configs/constants";
+import {
+  DATE_PICKER_DISPLAY_FORMAT,
+  DATE_PICKER_URI_FORMAT,
+} from "../../../shared/configs/constants";
 
 function a11yProps(index) {
   return {
@@ -55,6 +60,7 @@ const ProfileTabs = () => {
   const [birthDay, setBirthDay] = useState(dayjs);
   const [street, setStreet] = useState("");
   const [drivingLicense, setDrivingLicense] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleChange = (event, newValue) => {
     setTab(newValue);
@@ -75,6 +81,18 @@ const ProfileTabs = () => {
     event.preventDefault();
   };
 
+  const [state, setState] = useState({
+    open: false,
+    vertical: "top",
+    horizontal: "center",
+  });
+
+  const { vertical, horizontal, open } = state;
+
+  const handleClose = () => {
+    setState({ ...state, open: false });
+  };
+
   const [selectedOptions, setSelectedOptions] = useState([]);
   let city;
   let district;
@@ -93,21 +111,34 @@ const ProfileTabs = () => {
     setDrivingLicense(newValue);
   };
 
-  const handleClickSaveChange = async (event) => {
+  const handleClickSaveChange = async (event, newState) => {
     event.preventDefault();
     try {
       const formData = new FormData();
       const dobFormated = dayjs(birthDay).format(DATE_PICKER_URI_FORMAT);
-      formData.append("email", userInfo.email);
-      formData.append("fullName", fullName);
-      formData.append("birthDay", dobFormated);
-      formData.append("phone", phone);
-      formData.append("nationalID", nationalID);
-      formData.append("city", city);
-      formData.append("district", district);
-      formData.append("ward", ward);
-      formData.append("street", street);
-      formData.append("drivingLicense", drivingLicense);
+
+      if (
+        fullName &&
+        birthDay &&
+        phone &&
+        nationalID &&
+        city &&
+        district &&
+        ward &&
+        street &&
+        drivingLicense
+      ) {
+        formData.append("email", userInfo.email);
+        formData.append("fullName", fullName);
+        formData.append("birthDay", dobFormated);
+        formData.append("phone", phone);
+        formData.append("nationalID", nationalID);
+        formData.append("city", city);
+        formData.append("district", district);
+        formData.append("ward", ward);
+        formData.append("street", street);
+        formData.append("drivingLicense", drivingLicense);
+      }
 
       const response = await axiosInstance.post("/personalInfo", formData, {
         headers: {
@@ -117,12 +148,36 @@ const ProfileTabs = () => {
 
       if (response.status === 200) {
         console.log("Save successful");
+        setState({ ...newState, open: true });
       } else {
-        console.log("failed");
+        <Box>
+          <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
+            <Alert onClose={handleClose} severity="error">
+              Update failed! Check your information again.
+            </Alert>
+          </Snackbar>
+        </Box>;
       }
     } catch (error) {
       console.log("Error:", error);
     }
+  };
+
+  const handleClickSave = async (event) => {
+    event.preventDefault();
+
+    try {
+      if (password) {
+        const response = await axiosInstance.post("/updatePassword", null, {
+          params: {
+            password,
+          },
+        });
+
+        if (response.status === 200) {
+        }
+      }
+    } catch (error) {}
   };
 
   return (
@@ -218,7 +273,12 @@ const ProfileTabs = () => {
                   <Stack spacing={2}>
                     <Box>
                       <InputLabel required>Date of birth</InputLabel>
-                      <DatePicker format={DATE_PICKER_DISPLAY_FORMAT} sx={{ width: "100%" }} value={birthDay} onChange={(newDate) => setBirthDay(newDate)} />
+                      <DatePicker
+                        format={DATE_PICKER_DISPLAY_FORMAT}
+                        sx={{ width: "100%" }}
+                        value={birthDay}
+                        onChange={(newDate) => setBirthDay(newDate)}
+                      />
                     </Box>
                     <Box>
                       <InputLabel required>Email</InputLabel>
@@ -251,7 +311,7 @@ const ProfileTabs = () => {
                 <Box>
                   <InputLabel required>Driving License</InputLabel>
                   <DrivingLicense
-                  handleDrivingLicenseChange={handleDrivingLicenseChange}
+                    handleDrivingLicenseChange={handleDrivingLicenseChange}
                   />
                 </Box>
                 <Button
@@ -272,6 +332,17 @@ const ProfileTabs = () => {
                   Save Change
                 </Button>
               </Stack>
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <Snackbar
+                  open={open}
+                  autoHideDuration={3000}
+                  onClose={handleClose}
+                >
+                  <Alert onClose={handleClose} severity="success">
+                    Update profile successful!
+                  </Alert>
+                </Snackbar>
+              </Box>
             </CustomTabPanels>
             <CustomTabPanels value={tab} index={1}>
               <Stack sx={{ mt: 2 }} spacing={3}>
@@ -305,6 +376,8 @@ const ProfileTabs = () => {
                           </IconButton>
                         </InputAdornment>
                       }
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
                     />
                   </FormControl>
                 </Box>
@@ -357,6 +430,7 @@ const ProfileTabs = () => {
                       borderColor: "#fca311",
                     },
                   }}
+                  onClick={handleClickSave}
                 >
                   Save
                 </Button>
