@@ -42,6 +42,8 @@ import {
   DATE_PICKER_DISPLAY_FORMAT,
   DATE_PICKER_URI_FORMAT,
 } from "../../../shared/configs/constants";
+import { useSnackbar } from "../../../components/Hooks/useSnackBar";
+import { create } from "lodash";
 
 function a11yProps(index) {
   return {
@@ -52,6 +54,7 @@ function a11yProps(index) {
 
 const ProfileTabs = () => {
   const userInfo = useSelector((state) => state.backendData);
+  const { createSnack } = useSnackbar();
 
   const [tab, setTab] = useState(0);
   const [fullName, setFullName] = useState(userInfo.fullName);
@@ -61,6 +64,7 @@ const ProfileTabs = () => {
   const [street, setStreet] = useState("");
   const [drivingLicense, setDrivingLicense] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleChange = (event, newValue) => {
     setTab(newValue);
@@ -81,18 +85,6 @@ const ProfileTabs = () => {
     event.preventDefault();
   };
 
-  const [state, setState] = useState({
-    open: false,
-    vertical: "top",
-    horizontal: "center",
-  });
-
-  const { vertical, horizontal, open } = state;
-
-  const handleClose = () => {
-    setState({ ...state, open: false });
-  };
-
   const [selectedOptions, setSelectedOptions] = useState([]);
   let city;
   let district;
@@ -111,7 +103,7 @@ const ProfileTabs = () => {
     setDrivingLicense(newValue);
   };
 
-  const handleClickSaveChange = async (event, newState) => {
+  const handleClickSaveChange = async (event) => {
     event.preventDefault();
     try {
       const formData = new FormData();
@@ -138,46 +130,50 @@ const ProfileTabs = () => {
         formData.append("ward", ward);
         formData.append("street", street);
         formData.append("drivingLicense", drivingLicense);
-      }
 
-      const response = await axiosInstance.post("/personalInfo", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+        const response = await axiosInstance.post("/personalInfo", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
 
-      if (response.status === 200) {
-        console.log("Save successful");
-        setState({ ...newState, open: true });
+        if (response.status === 200 && response.data.isSuccess === true) {
+          createSnack(response.data.message, { severity: "success" });
+        } else {
+          createSnack(response.data.message, { severity: "error" });
+        }
       } else {
-        <Box>
-          <Snackbar open={open} autoHideDuration={3000} onClose={handleClose}>
-            <Alert onClose={handleClose} severity="error">
-              Update failed! Check your information again.
-            </Alert>
-          </Snackbar>
-        </Box>;
+        createSnack("Fill out all the fields!", { severity: "error" });
       }
     } catch (error) {
-      console.log("Error:", error);
+      createSnack(error, { severity: "error" });
     }
   };
 
   const handleClickSave = async (event) => {
     event.preventDefault();
-
     try {
-      if (password) {
+      if (password && password === confirmPassword) {
+        const email = userInfo.email;
         const response = await axiosInstance.post("/updatePassword", null, {
           params: {
+            email,
             password,
           },
         });
-
-        if (response.status === 200) {
+        if (response.status === 200 && response.data.isSuccess === true) {
+          createSnack(response.data.message, { severity: "success" });
+          setPassword("");
+          setConfirmPassword("");
+        } else {
+          createSnack(response.data.message, { severity: "error" });
         }
+      } else {
+        createSnack("The confirm password is not match to password!", { severity: "warning"})
       }
-    } catch (error) {}
+    } catch (error) {
+      createSnack(error, { severity: "error" });
+    }
   };
 
   return (
@@ -332,17 +328,6 @@ const ProfileTabs = () => {
                   Save Change
                 </Button>
               </Stack>
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <Snackbar
-                  open={open}
-                  autoHideDuration={3000}
-                  onClose={handleClose}
-                >
-                  <Alert onClose={handleClose} severity="success">
-                    Update profile successful!
-                  </Alert>
-                </Snackbar>
-              </Box>
             </CustomTabPanels>
             <CustomTabPanels value={tab} index={1}>
               <Stack sx={{ mt: 2 }} spacing={3}>
@@ -391,7 +376,11 @@ const ProfileTabs = () => {
                     required
                   >
                     <OutlinedInput
-                      id="password"
+                      id="confirm-password"
+                      value={confirmPassword}
+                      onChange={(event) =>
+                        setConfirmPassword(event.target.value)
+                      }
                       placeholder="Confirm password"
                       type={showConfirmPassword ? "text" : "password"}
                       startAdornment={

@@ -34,37 +34,67 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useDispatch } from "react-redux";
 import { setData } from "../stores/slice";
+import validator from "validator";
 
 const SignUpForm = (props) => {
   const { open, onClose } = props;
   const handleClose = () => onClose();
-
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword((show) => !show);
   const handleMouseDownConfirmPassword = (event) => {
     event.preventDefault();
   };
-
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState("");
+  const [validationMsg, setValidationMsg] = useState("");
   const dispatch = useDispatch();
+
+  const validate = () => {
+    const msg = {};
+    const regexEmail = new RegExp(
+      "/^[a-zA-Z0-9-.]+@([a-zA-Z0-9-]+.)+[a-zA-Z0-9-]{2,4}$/"
+    );
+    if (validator.isEmpty(email)) {
+      msg.email = "Email is required.";
+      if (email !== regexEmail) {
+        msg.email = "Invalid email. Try again please!";
+      }
+    }
+    if (validator.isEmpty(password)) {
+      msg.password = "Password is required.";
+    }
+
+    if (validator.isEmpty(phone)) {
+      msg.phone = "Phone is required.";
+    }
+    if (validator.isEmpty(fullName)) {
+      msg.fullName = "Fullname is required.";
+    }
+    if (validator.isEmpty(confirmPassword)) {
+      msg.confirmPassword = "Confirm password is required.";
+    }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
 
   const handleClickSignup = async (event) => {
     event.preventDefault();
+    const checkInputValue = validate();
     try {
-      if (fullName && email && phone && password && role) {
+      if (checkInputValue) {
         const response = await axiosInstance.post("/signup", null, {
           params: {
             fullName,
@@ -74,7 +104,6 @@ const SignUpForm = (props) => {
             role,
           },
         });
-
         const data = await response.data;
         console.log(response.data);
         dispatch(setData(data));
@@ -130,6 +159,11 @@ const SignUpForm = (props) => {
                     onChange={(event) => setFullName(event.target.value)}
                   />
                 </FormControl>
+                {!fullName && (
+                  <Typography variant="subtitle2" color="red">
+                    {validationMsg.fullName}
+                  </Typography>
+                )}
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
                   variant="outlined"
@@ -137,6 +171,7 @@ const SignUpForm = (props) => {
                 >
                   <OutlinedInput
                     id="email"
+                    
                     placeholder="Email Address"
                     startAdornment={
                       <InputAdornment position="start">
@@ -147,6 +182,11 @@ const SignUpForm = (props) => {
                     onChange={(event) => setEmail(event.target.value)}
                   />
                 </FormControl>
+                {!email && (
+                  <Typography variant="subtitle2" color="red">
+                    {validationMsg.email}
+                  </Typography>
+                )}
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
                   variant="outlined"
@@ -164,6 +204,11 @@ const SignUpForm = (props) => {
                     onChange={(event) => setPhone(event.target.value)}
                   />
                 </FormControl>
+                {!phone && (
+                  <Typography variant="subtitle2" color="red">
+                    {validationMsg.phone}
+                  </Typography>
+                )}
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
                   variant="outlined"
@@ -194,6 +239,11 @@ const SignUpForm = (props) => {
                     onChange={(event) => setPassword(event.target.value)}
                   />
                 </FormControl>
+                {!password && (
+                  <Typography variant="subtitle2" color="red">
+                    {validationMsg.password}
+                  </Typography>
+                )}
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
                   variant="outlined"
@@ -224,8 +274,15 @@ const SignUpForm = (props) => {
                         </IconButton>
                       </InputAdornment>
                     }
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
                   />
                 </FormControl>
+                {!confirmPassword && (
+                  <Typography variant="subtitle2" color="red">
+                    {validationMsg.confirmPassword}
+                  </Typography>
+                )}
                 <ControlledRadioButtons role={role} setRole={setRole} />
                 <Button
                   type="submit"

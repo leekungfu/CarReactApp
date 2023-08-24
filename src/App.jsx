@@ -25,11 +25,13 @@ import MyFeedBack from "./containers/Account/FeedBack";
 import ResetPass from "./containers/Account/Reset/ResetPass";
 import ConfirmReset from "./containers/Account/Reset/ConfirmReset";
 import Layout from "./components/Layout";
+import { SnackProvider } from "./components/Hooks/useSnackBar";
 
 
 const ProviderPack = createPack(
   (props) => <ThemeProvider theme={DefaultTheme} {...props} />,
   (props) => <StyledThemeProvider theme={DefaultTheme} {...props} />,
+  (props) => <SnackProvider {...props} />,
   (props) => (
     <LocalizationProvider
       dateAdapter={AdapterDayjs}
