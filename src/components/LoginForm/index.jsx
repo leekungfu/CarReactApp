@@ -36,12 +36,10 @@ function LoginForm(props) {
     event.preventDefault();
     try {
       if (email && password) {
-        const response = await axiosInstance.post("/login", null, {
-          params: {
-            email,
-            password,
-          },
-        });
+        const formData = new FormData();
+        formData.append("email", email);
+        formData.append("password", password);
+        const response = await axiosInstance.post("/login", formData);
 
         console.log(response.data);
         dispatch(setData(response.data));

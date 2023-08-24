@@ -67,9 +67,9 @@ const SignUpForm = (props) => {
     );
     if (validator.isEmpty(email)) {
       msg.email = "Email is required.";
-      if (email !== regexEmail) {
-        msg.email = "Invalid email. Try again please!";
-      }
+    }
+    if (email !== regexEmail) {
+      msg.email = "Invalid email. Try again please!";
     }
     if (validator.isEmpty(password)) {
       msg.password = "Password is required.";
@@ -94,16 +94,14 @@ const SignUpForm = (props) => {
     event.preventDefault();
     const checkInputValue = validate();
     try {
-      if (checkInputValue) {
-        const response = await axiosInstance.post("/signup", null, {
-          params: {
-            fullName,
-            email,
-            phone,
-            password,
-            role,
-          },
-        });
+      if (!checkInputValue) {
+        const formData = new FormData();
+        formData.append("fullName", fullName);
+        formData.append("email", email);
+        formData.append("phone", phone);
+        formData.append("password", password);
+        formData.append("role", role);
+        const response = await axiosInstance.post("/signup", formData);
         const data = await response.data;
         console.log(response.data);
         dispatch(setData(data));
@@ -171,7 +169,6 @@ const SignUpForm = (props) => {
                 >
                   <OutlinedInput
                     id="email"
-                    
                     placeholder="Email Address"
                     startAdornment={
                       <InputAdornment position="start">
