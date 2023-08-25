@@ -56,6 +56,7 @@ function LoginForm(props) {
     return true;
   };
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleClickLogin = async (event) => {
     event.preventDefault();
@@ -65,9 +66,9 @@ function LoginForm(props) {
       formData.append("email", email);
       formData.append("password", password);
       const response = await axiosInstance.post("/login", formData);
-      
+
       if (response.data.isSuccess === true) {
-        localStorage.setItem("userData", JSON.stringify(response.data.member));
+        dispatch(setData(response.data.member));
         createSnack(response.data.message, { severity: "success" });
         if (response.data.member.role === "customer") {
           navigate("/homecustomer");

@@ -6,8 +6,7 @@ import NavMenuUser from "./NavMenuUser";
 import { useSelector } from "react-redux";
 
 function Layout({ children }) {
-  const getUserInfo = localStorage.getItem("userData");
-  const userInfo = JSON.parse(getUserInfo);
+  const userInfo = useSelector((state) => state.backendData);
   return (
     <>
       <Box
@@ -18,9 +17,11 @@ function Layout({ children }) {
           minHeight: "100vh",
         }}
       >
-        {userInfo && userInfo.role === "customer" && <NavMenuUser />}
-        {userInfo && userInfo.role === "owner" && <NavMenuUser /> }
-        {!userInfo && <NavBar />}
+        {userInfo.role === "customer" || userInfo.role === "owner" ? (
+          <NavMenuUser />
+        ) : (
+          <NavBar />
+        )}
         <Box
           className="app-content"
           sx={{

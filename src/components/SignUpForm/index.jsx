@@ -96,11 +96,10 @@ const SignUpForm = (props) => {
         formData.append("password", password);
         formData.append("role", role);
         const response = await axiosInstance.post("/signup", formData);
-        const data = await response.data;
-        console.log(response.data);
+        const data = await response.data.member;
         dispatch(setData(data));
 
-        if (response.status === 200) {
+        if (response.data.isSuccess === true) {
           if (role === "customer") {
             navigate("/homecustomer");
           } else {

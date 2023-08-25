@@ -30,6 +30,7 @@
     "sub-vn": "^0.0.2",
     "swiper": "^10.2.0",
     "validator": "^13.11.0",
+    "validator-js": "^0.2.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

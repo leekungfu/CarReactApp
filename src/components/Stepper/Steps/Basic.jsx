@@ -25,15 +25,38 @@ import Certificate from "../../UploadFile/Certificate";
 import Insurance from "../../UploadFile/Insurance";
 
 const Basic = () => {
-  const [gearValue, setGearValue] = useState("");
-  const [fuelValue, setFuelValue] = useState("");
+  const [data, setData] = useState({
+    plateNumber: "",
+    color: [],
+    brand: [],
+    type: [],
+    productionYear: [],
+    numberOfSeat: [],
+    transmission: "",
+    fuel: "",
+    document: [],
+  });
 
-  const handleGearChange = (event) => {
-    setGearValue(event.target.value);
+  const handleDataChange = (event) => {
+    const { name, value } = event.target;
+    setData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    console.log(data);
   };
 
-  const handleFuelChange = (event) => {
-    setFuelValue(event.target.value);
+  // const handleGearChange = (event) => {
+  //   setGearValue(event.target.value);
+  // };
+
+  // const handleFuelChange = (event) => {
+  //   setFuelValue(event.target.value);
+  // };
+
+  // Hàm callback để nhận giá trị từ component con
+  const handleOnTypeChange = (selectedType) => {
+    setData((prevData) => ({ ...prevData, type: selectedType }));
   };
 
   return (
@@ -49,8 +72,15 @@ const Basic = () => {
           </Grid>
           <Grid item xs={4}>
             <Stack direction="column" spacing={2}>
-              <OutlinedInput size="small" placeholder="Plate Number" required />
-              <ModelsSelection />
+              <OutlinedInput
+                name="plateNumber"
+                value={data.plateNumber}
+                onChange={handleDataChange}
+                size="small"
+                placeholder="Plate Number"
+                required
+              />
+              <ModelsSelection name="type" onTypeChange={handleOnTypeChange} />
             </Stack>
           </Grid>
           <Grid item xs={4}>
@@ -66,7 +96,7 @@ const Basic = () => {
             </Stack>
           </Grid>
           <Grid item xs={4}>
-            <RadioGroup value={gearValue} onChange={handleGearChange}>
+            <RadioGroup name="transmission" value={data.transmission} onChange={handleDataChange}>
               <InputLabel required>Transmission</InputLabel>
               <FormControlLabel
                 control={<Radio value="automatic" color="primary" />}
@@ -79,7 +109,7 @@ const Basic = () => {
             </RadioGroup>
           </Grid>
           <Grid item xs={4}>
-            <RadioGroup value={fuelValue} onChange={handleFuelChange}>
+            <RadioGroup name="fuel" value={data.fuel} onChange={handleDataChange}>
               <InputLabel required>Fuel</InputLabel>
               <FormControlLabel
                 control={<Radio value="gasoline" color="primary" />}
@@ -93,7 +123,7 @@ const Basic = () => {
           </Grid>
           <Grid item xs={4}></Grid>
           <Grid item xs={12}>
-          <InputLabel required>Documents</InputLabel>
+            <InputLabel required>Documents</InputLabel>
           </Grid>
           <Grid item xs={4}>
             <Stack direction="column">

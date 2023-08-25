@@ -36,7 +36,8 @@ function getStyles(name, carTypes, theme) {
   };
 }
 
-const ModelsSelection = () => {
+const ModelsSelection = (props) => {
+  const { name, onTypeChange } = props;
   const theme = useTheme();
   const [type, setType] = useState([]);
 
@@ -45,6 +46,7 @@ const ModelsSelection = () => {
       target: { value },
     } = event;
     setType(typeof value === "string" ? value.split(",") : value);
+    onTypeChange(typeof value === "string" ? value.split(",") : value);
   };
 
   return (
