@@ -18,52 +18,72 @@ import {
   InputAdornment,
   Stack,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
 import SignUpForm from "../SignUpForm";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useDispatch } from "react-redux";
 import { setData } from "../stores/slice";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import validator from "validator";
 
 function LoginForm(props) {
   const { open, onClose } = props;
-
+  const { createSnack } = useSnackbar();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [validationMsg, setValidationMsg] = useState("");
+
+  const validate = () => {
+    const msg = {};
+    function regexEmail(email) {
+      return /\S+@\S+\.\S+/.test(email);
+    }
+    if (validator.isEmpty(email)) {
+      msg.email = "Email is required.";
+    }
+    if (validator.isEmpty(password)) {
+      msg.password = "Password is required.";
+    }
+
+    // if (regexEmail(email)) {
+    //   msg.email = "Invalid email.";
+    // }
+
+    setValidationMsg(msg);
+    if (Object.keys(msg).length > 0) return false;
+    return true;
+  };
+
   const navigate = useNavigate();
   const handleClickLogin = async (event) => {
     event.preventDefault();
-    try {
-      if (email && password) {
-        const formData = new FormData();
-        formData.append("email", email);
-        formData.append("password", password);
-        const response = await axiosInstance.post("/login", formData);
-
-        console.log(response.data);
-        dispatch(setData(response.data));
-
-        if (response.status === 200) {
-          if (response.data.role === "customer") {
-            navigate("/homecustomer");
-          } else if (response.data.role === "owner") {
-            navigate("/homeowner");
-          }
-        } else {
-          console.log("Login failed");
+    const checkInputValid = validate();
+    if (checkInputValid) {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      const response = await axiosInstance.post("/login", formData);
+      
+      if (response.data.isSuccess === true) {
+        localStorage.setItem("userData", JSON.stringify(response.data.member));
+        createSnack(response.data.message, { severity: "success" });
+        if (response.data.member.role === "customer") {
+          navigate("/homecustomer");
+        } else if (response.data.member.role === "owner") {
+          navigate("/homeowner");
         }
       } else {
-        console.log("Email and password are required.");
+        createSnack(response.data.message, { severity: "error" });
       }
-    } catch (error) {
-      console.error("Error during login:", error);
+    } else {
+      createSnack("Email and password are required!", { severity: "info" });
     }
   };
 
-  const dispatch = useDispatch();
-
   const handleClickForgot = () => {
+    handleClose();
     navigate("/reset");
   };
 
@@ -74,6 +94,9 @@ function LoginForm(props) {
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+  const handleSubmit = (event) => {
     event.preventDefault();
   };
 
@@ -119,6 +142,11 @@ function LoginForm(props) {
                     }
                     onChange={(event) => setEmail(event.target.value)}
                   />
+                  {!email && (
+                    <Typography variant="subtitle2" color="red">
+                      {validationMsg.email}
+                    </Typography>
+                  )}
                 </FormControl>
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
@@ -149,6 +177,11 @@ function LoginForm(props) {
                       </InputAdornment>
                     }
                   />
+                  {!password && (
+                    <Typography variant="subtitle2" color="red">
+                      {validationMsg.password}
+                    </Typography>
+                  )}
                 </FormControl>
                 <FormControlLabel
                   sx={{ mt: 1 }}
@@ -169,6 +202,7 @@ function LoginForm(props) {
                     },
                   }}
                   onClick={handleClickLogin}
+                  onSubmit={handleSubmit}
                 >
                   Log in
                 </Button>

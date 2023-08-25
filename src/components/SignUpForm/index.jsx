@@ -62,14 +62,8 @@ const SignUpForm = (props) => {
 
   const validate = () => {
     const msg = {};
-    const regexEmail = new RegExp(
-      "/^[a-zA-Z0-9-.]+@([a-zA-Z0-9-]+.)+[a-zA-Z0-9-]{2,4}$/"
-    );
     if (validator.isEmpty(email)) {
       msg.email = "Email is required.";
-    }
-    if (email !== regexEmail) {
-      msg.email = "Invalid email. Try again please!";
     }
     if (validator.isEmpty(password)) {
       msg.password = "Password is required.";
@@ -94,7 +88,7 @@ const SignUpForm = (props) => {
     event.preventDefault();
     const checkInputValue = validate();
     try {
-      if (!checkInputValue) {
+      if (checkInputValue) {
         const formData = new FormData();
         formData.append("fullName", fullName);
         formData.append("email", email);

@@ -27,9 +27,8 @@ const LogOutt = (props) => {
 
   const handleClick = async (event) => {
     event.preventDefault();
-
     const response = axiosInstance.post("/logout");
-   
+    localStorage.clear();
     window.location.href = "/";
   };
 
