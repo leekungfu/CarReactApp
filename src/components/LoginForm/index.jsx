@@ -37,23 +37,14 @@ function LoginForm(props) {
 
   const validate = () => {
     const msg = {};
-    function regexEmail(email) {
-      return /\S+@\S+\.\S+/.test(email);
-    }
     if (validator.isEmpty(email)) {
       msg.email = "Email is required.";
     }
     if (validator.isEmpty(password)) {
       msg.password = "Password is required.";
     }
-
-    // if (regexEmail(email)) {
-    //   msg.email = "Invalid email.";
-    // }
-
     setValidationMsg(msg);
-    if (Object.keys(msg).length > 0) return false;
-    return true;
+    return Object.keys(msg).length === 0
   };
 
   const dispatch = useDispatch();
@@ -79,7 +70,7 @@ function LoginForm(props) {
         createSnack(response.data.message, { severity: "error" });
       }
     } else {
-      createSnack("Email and password are required!", { severity: "info" });
+      createSnack("Email or password is invalid!", { severity: "info" });
     }
   };
 
@@ -147,6 +138,11 @@ function LoginForm(props) {
                     <Typography variant="subtitle2" color="red">
                       {validationMsg.email}
                     </Typography>
+                  )}
+                  {email && !validator.isEmail(email) && (
+                    <Typography variant="subtitle2" color="red">
+                    Please enter a valid email!
+                  </Typography>
                   )}
                 </FormControl>
                 <FormControl

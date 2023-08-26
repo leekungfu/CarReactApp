@@ -45,7 +45,8 @@ function getStyles(name, carBrands, theme) {
   };
 }
 
-const BrandsSelection = () => {
+const BrandsSelection = (props) => {
+  const { name, onBrandChange } = props;
   const theme = useTheme();
   const [brand, setBrand] = useState([]);
 
@@ -54,6 +55,7 @@ const BrandsSelection = () => {
       target: { value },
     } = event;
     setBrand(typeof value === "string" ? value.split(",") : value);
+    onBrandChange(typeof value === "string" ? value.split(",") : value);
   };
 
   return (

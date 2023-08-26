@@ -2,12 +2,14 @@ import { CloudUpload } from "@mui/icons-material";
 import { Button, Input, InputLabel, Paper } from "@mui/material";
 import React, { useState } from "react";
 
-const Certificate = () => {
+const Certificate = (props) => {
+  const { name, onCertificateChange } = props;
   const [selectedImage, setSelectedImage] = useState(null);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     setSelectedImage(file);
+    onCertificateChange(file);
   };
 
   return (

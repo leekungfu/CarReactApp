@@ -29,7 +29,7 @@ import {
   Alert,
   Snackbar,
 } from "@mui/material";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import CustomTabPanels from "../../../components/CustomTabPanels/CustomTabPanels";
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -44,6 +44,7 @@ import {
 } from "../../../shared/configs/constants";
 import { useSnackbar } from "../../../components/Hooks/useSnackBar";
 import { create } from "lodash";
+import validator from "validator";
 
 function a11yProps(index) {
   return {
@@ -152,8 +153,9 @@ const ProfileTabs = () => {
 
   const handleClickSave = async (event) => {
     event.preventDefault();
-    try {
-      if (password && password === confirmPassword) {
+
+    if (password && confirmPassword && isPasswordValidRef) {
+      if (password === confirmPassword) {
         const email = userInfo.email;
         const response = await axiosInstance.post("/updatePassword", null, {
           params: {
@@ -161,7 +163,8 @@ const ProfileTabs = () => {
             password,
           },
         });
-        if (response.status === 200 && response.data.isSuccess === true) {
+
+        if (response.data.isSuccess === true) {
           createSnack(response.data.message, { severity: "success" });
           setPassword("");
           setConfirmPassword("");
@@ -169,12 +172,68 @@ const ProfileTabs = () => {
           createSnack(response.data.message, { severity: "error" });
         }
       } else {
-        createSnack("The confirm password is not match to password!", { severity: "warning"})
+        createSnack("Change password failed! Try again please", {
+          severity: "error",
+        });
       }
-    } catch (error) {
-      createSnack(error, { severity: "error" });
+    } else {
+      createSnack("Enter new password to change!", {
+        severity: "warning",
+      });
     }
   };
+
+  const passwordValueOptions = {
+    minLength: 8,
+    minLowercase: 1,
+    minUppercase: 1,
+    minNumbers: 1,
+    minSymbols: 1,
+    returnScore: true,
+    pointsPerUnique: 1,
+    pointsPerRepeat: 0.5,
+    pointsForContainingLower: 10,
+    pointsForContainingUpper: 10,
+    pointsForContainingNumber: 10,
+    pointsForContainingSymbol: 10,
+  };
+
+  const [checkMessage, setCheckMessage] = useState("");
+
+  const checkPassword = () => {
+    const msg = {
+      message: {},
+      color: "",
+    };
+    const passwordPoint = validator.isStrongPassword(
+      password,
+      passwordValueOptions
+    );
+    if (passwordPoint >= 50) {
+      msg.message.password = "Password is very strong.";
+      msg.color = "#0ead69";
+    } else if (passwordPoint < 50 && passwordPoint > 40) {
+      msg.message.password = "Password is strong.";
+      msg.color = "#2a9d8f";
+    } else if (passwordPoint <= 40 && passwordPoint > 30) {
+      msg.message.password = "Password is moderate.";
+      msg.color = "#e9c46a";
+    } else if (passwordPoint <= 30 && passwordPoint > 20) {
+      msg.message.password = "Password is weak.";
+      msg.color = "#f4a261";
+    } else {
+      msg.message.password = "Password is very weak.";
+      msg.color = "#ae2012";
+    }
+    setCheckMessage(msg);
+    return Object.keys(msg.message).length === 0;
+  };
+
+  const isPasswordValidRef = useRef(false);
+
+  useEffect(() => {
+    isPasswordValidRef.current = checkPassword(password);
+  }, [password]);
 
   return (
     <Fragment>
@@ -364,12 +423,17 @@ const ProfileTabs = () => {
                       value={password}
                       onChange={(event) => setPassword(event.target.value)}
                     />
+                    {password && (
+                      <Typography
+                        variant="subtitle2"
+                        color={checkMessage.color}
+                      >
+                        {checkMessage.message.password}
+                      </Typography>
+                    )}
                   </FormControl>
                 </Box>
                 <Box>
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    Use at least one letter, one number and seven characters.
-                  </Typography>
                   <FormControl
                     sx={{ width: "50%" }}
                     variant="outlined"
@@ -405,6 +469,13 @@ const ProfileTabs = () => {
                         </InputAdornment>
                       }
                     />
+                    {password &&
+                      confirmPassword &&
+                      !validator.equals(password, confirmPassword) && (
+                        <Typography variant="subtitle2" color="red">
+                          Password don't match
+                        </Typography>
+                      )}
                   </FormControl>
                 </Box>
                 <Button

@@ -33,7 +33,7 @@ const pages = [
   },
 ];
 
-const NavBar = () => {
+const NavBarGuest = () => {
   const [openLogin, setOpenLogin] = useState(false);
   const [openSignup, setOpenSignup] = useState(false);
 
@@ -107,4 +107,4 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+export default NavBarGuest;

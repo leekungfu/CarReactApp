@@ -14,7 +14,7 @@ import {
   Link,
   InputLabel,
 } from "@mui/material";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import ColorSelection from "../../Select/ColorSelection";
 import BrandsSelection from "../../Select/BrandsSelection";
 import ModelsSelection from "../../Select/ModelsSelection";
@@ -27,14 +27,14 @@ import Insurance from "../../UploadFile/Insurance";
 const Basic = () => {
   const [data, setData] = useState({
     plateNumber: "",
-    color: [],
-    brand: [],
-    type: [],
-    productionYear: [],
-    numberOfSeat: [],
+    color: "",
+    brand: "",
+    type: "",
+    productionYear: "",
+    numberOfSeat: "",
     transmission: "",
     fuel: "",
-    document: [],
+    documents: "",
   });
 
   const handleDataChange = (event) => {
@@ -43,21 +43,11 @@ const Basic = () => {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  useEffect(() => {
     console.log(data);
-  };
-
-  // const handleGearChange = (event) => {
-  //   setGearValue(event.target.value);
-  // };
-
-  // const handleFuelChange = (event) => {
-  //   setFuelValue(event.target.value);
-  // };
-
-  // Hàm callback để nhận giá trị từ component con
-  const handleOnTypeChange = (selectedType) => {
-    setData((prevData) => ({ ...prevData, type: selectedType }));
-  };
+  }, [data]);
 
   return (
     <Fragment>
@@ -80,23 +70,54 @@ const Basic = () => {
                 placeholder="Plate Number"
                 required
               />
-              <ModelsSelection name="type" onTypeChange={handleOnTypeChange} />
+              <ModelsSelection
+                name="type"
+                onTypeChange={(selectedType) =>
+                  setData((prevData) => ({ ...prevData, type: selectedType }))
+                }
+              />
             </Stack>
           </Grid>
           <Grid item xs={4}>
             <Stack direction="column" spacing={2}>
-              <ColorSelection />
-              <ProductionYearSelection />
+              <ColorSelection
+                onColorChange={(selectedType) =>
+                  setData((prevData) => ({ ...prevData, color: selectedType }))
+                }
+              />
+              <ProductionYearSelection
+                onProductionYearChange={(selectedType) =>
+                  setData((prevData) => ({
+                    ...prevData,
+                    productionYear: selectedType,
+                  }))
+                }
+              />
             </Stack>
           </Grid>
           <Grid item xs={4}>
             <Stack direction="column" spacing={2}>
-              <BrandsSelection />
-              <NumberOfSeatsSelection />
+              <BrandsSelection
+                onBrandChange={(selectedType) =>
+                  setData((prevData) => ({ ...prevData, brand: selectedType }))
+                }
+              />
+              <NumberOfSeatsSelection
+                onNumberOfSeatChange={(selectedType) =>
+                  setData((prevData) => ({
+                    ...prevData,
+                    numberOfSeat: selectedType,
+                  }))
+                }
+              />
             </Stack>
           </Grid>
           <Grid item xs={4}>
-            <RadioGroup name="transmission" value={data.transmission} onChange={handleDataChange}>
+            <RadioGroup
+              name="transmission"
+              value={data.transmission}
+              onChange={handleDataChange}
+            >
               <InputLabel required>Transmission</InputLabel>
               <FormControlLabel
                 control={<Radio value="automatic" color="primary" />}
@@ -109,7 +130,11 @@ const Basic = () => {
             </RadioGroup>
           </Grid>
           <Grid item xs={4}>
-            <RadioGroup name="fuel" value={data.fuel} onChange={handleDataChange}>
+            <RadioGroup
+              name="fuel"
+              value={data.fuel}
+              onChange={handleDataChange}
+            >
               <InputLabel required>Fuel</InputLabel>
               <FormControlLabel
                 control={<Radio value="gasoline" color="primary" />}
@@ -130,7 +155,14 @@ const Basic = () => {
               <Typography variant="subtitle2" fontWeight={600}>
                 Registration paper
               </Typography>
-              <RegistrationPaper />
+              <RegistrationPaper
+                onRegistrationPaperChange={(selectedType) =>
+                  setData((prevData) => ({
+                    ...prevData,
+                    registrationPaper: selectedType,
+                  }))
+                }
+              />
             </Stack>
           </Grid>
           <Grid item xs={4}>
@@ -138,7 +170,14 @@ const Basic = () => {
               <Typography variant="subtitle2" fontWeight={600}>
                 Certificate of inspection
               </Typography>
-              <Certificate />
+              <Certificate
+                onCertificateChange={(selectedType) =>
+                  setData((prevData) => ({
+                    ...prevData,
+                    certificate: selectedType,
+                  }))
+                }
+              />
             </Stack>
           </Grid>
           <Grid item xs={4}>
@@ -146,7 +185,14 @@ const Basic = () => {
               <Typography variant="subtitle2" fontWeight={600}>
                 Insurance
               </Typography>
-              <Insurance />
+              <Insurance
+                onInsuranceChange={(selectedType) =>
+                  setData((prevData) => ({
+                    ...prevData,
+                    insurance: selectedType,
+                  }))
+                }
+              />
             </Stack>
           </Grid>
         </Grid>

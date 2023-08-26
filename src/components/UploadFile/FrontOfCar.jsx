@@ -2,12 +2,14 @@ import { CloudUpload } from "@mui/icons-material";
 import { Button, Input, InputLabel, Paper } from "@mui/material";
 import React, { useState } from "react";
 
-const FrontOfCar = () => {
+const FrontOfCar = (props) => {
+  const { onFrontImageChange } = props;
   const [selectedImage, setSelectedImage] = useState(null);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     setSelectedImage(file);
+    onFrontImageChange(file);
   };
 
   return (

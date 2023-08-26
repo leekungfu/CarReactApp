@@ -35,9 +35,11 @@ import axiosInstance from "../../shared/configs/axiosConfig";
 import { useDispatch } from "react-redux";
 import { setData } from "../stores/slice";
 import validator from "validator";
+import { useSnackbar } from "../Hooks/useSnackBar";
 
 const SignUpForm = (props) => {
   const { open, onClose } = props;
+  const { createSnack } = useSnackbar();
   const handleClose = () => onClose();
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -57,8 +59,14 @@ const SignUpForm = (props) => {
   const [phone, setPhone] = useState("");
   const [fullName, setFullName] = useState("");
   const [role, setRole] = useState("");
+  const [checkboxState, setCheckboxState] = useState(false);
   const [validationMsg, setValidationMsg] = useState("");
+  
   const dispatch = useDispatch();
+
+  const handleCheckbox = (checked) => {
+    setCheckboxState(checked);
+  };
 
   const validate = () => {
     const msg = {};
@@ -68,7 +76,6 @@ const SignUpForm = (props) => {
     if (validator.isEmpty(password)) {
       msg.password = "Password is required.";
     }
-
     if (validator.isEmpty(phone)) {
       msg.phone = "Phone is required.";
     }
@@ -78,10 +85,8 @@ const SignUpForm = (props) => {
     if (validator.isEmpty(confirmPassword)) {
       msg.confirmPassword = "Confirm password is required.";
     }
-
     setValidationMsg(msg);
-    if (Object.keys(msg).length > 0) return false;
-    return true;
+    return Object.keys(msg).length === 0;
   };
 
   const handleClickSignup = async (event) => {
@@ -106,10 +111,10 @@ const SignUpForm = (props) => {
             navigate("/homeowner");
           }
         } else {
-          console.log("Signup failed");
+          createSnack(response.data.message, { severity: "error" });
         }
       } else {
-        console.log("Some fields are empty");
+        createSnack("Fields are required and valid", { severity: "error" });
       }
     } catch (error) {
       console.error("Error during sign up:", error);
@@ -177,6 +182,11 @@ const SignUpForm = (props) => {
                     {validationMsg.email}
                   </Typography>
                 )}
+                {email && !validator.isEmail(email) && (
+                  <Typography variant="subtitle2" color="red">
+                  Please enter valid email!
+                </Typography>
+                )}
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
                   variant="outlined"
@@ -198,6 +208,11 @@ const SignUpForm = (props) => {
                   <Typography variant="subtitle2" color="red">
                     {validationMsg.phone}
                   </Typography>
+                )}
+                {phone && !validator.isMobilePhone(phone) && (
+                  <Typography variant="subtitle2" color="red">
+                  Please enter correct phone number!
+                </Typography>
                 )}
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
@@ -273,8 +288,14 @@ const SignUpForm = (props) => {
                     {validationMsg.confirmPassword}
                   </Typography>
                 )}
-                <ControlledRadioButtons role={role} setRole={setRole} />
+                {confirmPassword && !validator.equals(password, confirmPassword) && (
+                  <Typography variant="subtitle2" color="red">
+                    Password don't match
+                  </Typography>
+                )}
+                <ControlledRadioButtons role={role} setRole={setRole} onCheckboxChange={handleCheckbox} />
                 <Button
+                  disabled={!checkboxState}
                   type="submit"
                   fullWidth
                   variant="outlined"

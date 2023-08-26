@@ -11,10 +11,17 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 
 export default function ControlledRadioButtons(props) {
-  const { role, setRole } = props;
+  const { role, setRole, onCheckboxChange } = props;
 
   const handleChange = (event) => {
     setRole(event.target.value);
+  };
+
+  const [checkboxState, setCheckboxState] = useState(false);
+  const handleCheckboxChange = (event) => {
+    const checked = event.target.checked;
+    setCheckboxState(checked);
+    onCheckboxChange(checked); // Gọi hàm từ props của thành phần cha
   };
 
   return (
@@ -29,10 +36,12 @@ export default function ControlledRadioButtons(props) {
           label="I am a car owner"
         />
         <FormControlLabel
-          control={<Checkbox />}
+          control={
+            <Checkbox checked={checkboxState} onChange={handleCheckboxChange} />
+          }
           label={
             <Typography noWrap>
-              I have read and agree with the {" "}
+              I have read and agree with the{" "}
               <Link href="#" color="#fca311" noWrap>
                 Terms & Conditions
               </Link>
@@ -42,9 +51,9 @@ export default function ControlledRadioButtons(props) {
       </RadioGroup>
     </FormControl>
   );
-};
+}
 
 ControlledRadioButtons.propTypes = {
   role: PropTypes.string.isRequired,
   setRole: PropTypes.func.isRequired,
-}
+};

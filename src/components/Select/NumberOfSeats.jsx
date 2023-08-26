@@ -24,7 +24,8 @@ function getStyles(name, seats, theme) {
   };
 }
 
-const NumberOfSeatsSelection = () => {
+const NumberOfSeatsSelection = (props) => {
+  const { name, onNumberOfSeatChange } = props;
   const theme = useTheme();
   const [seat, setSeat] = useState([]);
 
@@ -33,6 +34,7 @@ const NumberOfSeatsSelection = () => {
       target: { value },
     } = event;
     setSeat(typeof value === "string" ? value.split(",") : value);
+    onNumberOfSeatChange(typeof value === "string" ? value.split(",") : value);
   };
 
   return (

@@ -27,7 +27,8 @@ function getStyles(name, years, theme) {
   };
 }
 
-const ProductionYearSelection = () => {
+const ProductionYearSelection = (props) => {
+  const { name, onProductionYearChange } = props;
   const theme = useTheme();
   const [year, setYear] = useState([]);
 
@@ -36,6 +37,7 @@ const ProductionYearSelection = () => {
       target: { value },
     } = event;
     setYear(typeof value === "string" ? value.split(",") : value);
+    onProductionYearChange(typeof value === "string" ? value.split(",") : value);
   };
 
   return (

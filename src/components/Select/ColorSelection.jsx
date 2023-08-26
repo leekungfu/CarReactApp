@@ -172,7 +172,8 @@ function getStyles(name, colors, theme) {
   };
 }
 
-const ColorSelection = () => {
+const ColorSelection = (props) => {
+  const { name, onColorChange } = props;
   const theme = useTheme();
   const [color, setColor] = useState([]);
 
@@ -181,6 +182,7 @@ const ColorSelection = () => {
       target: { value },
     } = event;
     setColor(typeof value === "string" ? value.split(",") : value);
+    onColorChange(typeof value === "string" ? value.split(",") : value);
   };
 
   return (
