@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -39,13 +40,12 @@ function getStyles(name, carTypes, theme) {
 const ModelsSelection = (props) => {
   const { name, onTypeChange } = props;
   const theme = useTheme();
-  const [type, setType] = useState([]);
+  const data = useSelector((state) => state.basic.data);
 
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
-    setType(typeof value === "string" ? value.split(",") : value);
     onTypeChange(typeof value === "string" ? value.split(",") : value);
   };
 
@@ -54,7 +54,7 @@ const ModelsSelection = (props) => {
       <FormControl>
         <Select
           displayEmpty
-          value={type}
+          value={data.type}
           onChange={handleChange}
           input={<OutlinedInput size="small" />}
           renderValue={(selected) => {

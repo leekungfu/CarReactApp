@@ -35,6 +35,9 @@ const AddCarStepper = (props) => {
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (activeStep === steps.length - 1) {
+       
+    }
   };
 
   const handleBack = () => {
@@ -42,7 +45,6 @@ const AddCarStepper = (props) => {
   };
 
   const navigate = useNavigate();
-  
   const handleClickViewCars = () => {
     navigate("/cars");
   };

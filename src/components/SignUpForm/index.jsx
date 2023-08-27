@@ -33,9 +33,9 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useDispatch } from "react-redux";
-import { setData } from "../stores/slice";
 import validator from "validator";
 import { useSnackbar } from "../Hooks/useSnackBar";
+import { setData } from "../ReduxToolkit/slice";
 
 const SignUpForm = (props) => {
   const { open, onClose } = props;

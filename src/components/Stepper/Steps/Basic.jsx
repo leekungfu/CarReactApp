@@ -23,26 +23,17 @@ import NumberOfSeatsSelection from "../../Select/NumberOfSeats";
 import RegistrationPaper from "../../UploadFile/RegistrationPaper";
 import Certificate from "../../UploadFile/Certificate";
 import Insurance from "../../UploadFile/Insurance";
+import { useDispatch, useSelector } from "react-redux";
+import { updateBasicData, updateData } from "../../ReduxToolkit/basicSlice";
 
 const Basic = () => {
-  const [data, setData] = useState({
-    plateNumber: "",
-    color: "",
-    brand: "",
-    type: "",
-    productionYear: "",
-    numberOfSeat: "",
-    transmission: "",
-    fuel: "",
-    documents: "",
-  });
+  const dispatch = useDispatch();
+  const data = useSelector((state) => state.basic.data);
 
   const handleDataChange = (event) => {
     const { name, value } = event.target;
-    setData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    const updateStore = { ...data, [name]: value };
+    dispatch(updateBasicData(updateStore));
   };
 
   useEffect(() => {
@@ -72,43 +63,45 @@ const Basic = () => {
               />
               <ModelsSelection
                 name="type"
-                onTypeChange={(selectedType) =>
-                  setData((prevData) => ({ ...prevData, type: selectedType }))
-                }
+                onTypeChange={(type) => {
+                  const updateStore = { ...data, type: type };
+                  dispatch(updateBasicData(updateStore));
+                }}
               />
             </Stack>
           </Grid>
           <Grid item xs={4}>
             <Stack direction="column" spacing={2}>
               <ColorSelection
-                onColorChange={(selectedType) =>
-                  setData((prevData) => ({ ...prevData, color: selectedType }))
-                }
+                onColorChange={(color) => {
+                  const updateStore = { ...data, color: color };
+                  dispatch(updateBasicData(updateStore));
+                }}
               />
               <ProductionYearSelection
-                onProductionYearChange={(selectedType) =>
-                  setData((prevData) => ({
-                    ...prevData,
-                    productionYear: selectedType,
-                  }))
-                }
+                onProductionYearChange={(productionYear) => {
+                  const updateStore = {
+                    ...data,
+                    productionYear: productionYear,
+                  };
+                  dispatch(updateBasicData(updateStore));
+                }}
               />
             </Stack>
           </Grid>
           <Grid item xs={4}>
             <Stack direction="column" spacing={2}>
               <BrandsSelection
-                onBrandChange={(selectedType) =>
-                  setData((prevData) => ({ ...prevData, brand: selectedType }))
-                }
+                onBrandChange={(brand) => {
+                  const updateStore = { ...data, brand: brand };
+                  dispatch(updateBasicData(updateStore));
+                }}
               />
               <NumberOfSeatsSelection
-                onNumberOfSeatChange={(selectedType) =>
-                  setData((prevData) => ({
-                    ...prevData,
-                    numberOfSeat: selectedType,
-                  }))
-                }
+                onNumberOfSeatChange={(numberOfSeat) => {
+                  const updateStore = { ...data, numberOfSeat: numberOfSeat };
+                  dispatch(updateBasicData(updateStore));
+                }}
               />
             </Stack>
           </Grid>
@@ -132,7 +125,7 @@ const Basic = () => {
           <Grid item xs={4}>
             <RadioGroup
               name="fuel"
-              value={data.fuel}
+              value={data.fuel || ""}
               onChange={handleDataChange}
             >
               <InputLabel required>Fuel</InputLabel>
@@ -156,12 +149,13 @@ const Basic = () => {
                 Registration paper
               </Typography>
               <RegistrationPaper
-                onRegistrationPaperChange={(selectedType) =>
-                  setData((prevData) => ({
-                    ...prevData,
-                    registrationPaper: selectedType,
-                  }))
-                }
+                onRegistrationPaperChange={(registrationPaper) => {
+                  const updateStore = {
+                    ...data,
+                    registrationPaper: registrationPaper,
+                  };
+                  dispatch(updateBasicData(updateStore));
+                }}
               />
             </Stack>
           </Grid>
@@ -171,12 +165,10 @@ const Basic = () => {
                 Certificate of inspection
               </Typography>
               <Certificate
-                onCertificateChange={(selectedType) =>
-                  setData((prevData) => ({
-                    ...prevData,
-                    certificate: selectedType,
-                  }))
-                }
+                onCertificateChange={(certificate) => {
+                  const updateStore = { ...data, certificate: certificate };
+                  dispatch(updateBasicData(updateStore));
+                }}
               />
             </Stack>
           </Grid>
@@ -186,12 +178,10 @@ const Basic = () => {
                 Insurance
               </Typography>
               <Insurance
-                onInsuranceChange={(selectedType) =>
-                  setData((prevData) => ({
-                    ...prevData,
-                    insurance: selectedType,
-                  }))
-                }
+                onInsuranceChange={(insurance) => {
+                  const updateStore = { ...data, insurance: insurance };
+                  dispatch(updateBasicData(updateStore));
+                }}
               />
             </Stack>
           </Grid>

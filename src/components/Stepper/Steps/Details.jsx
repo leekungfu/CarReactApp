@@ -25,56 +25,41 @@ import {
   SolarPower,
   Usb,
 } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import { updateDetailsData } from "../../ReduxToolkit/detailsSlice";
 
 const Details = () => {
-  const [data, setData] = useState({
-    mileage: "",
-    fuelConsumption: "",
-    province: "",
-    district: "",
-    ward: "",
-    street: "",
-    description: "",
-    additionalFunctions: [],
-    images: [],
-  });
+  const dispatch = useDispatch();
+  const data = useSelector((state) => state.details.data);
 
   const handleDataChange = (event) => {
     const { name, value } = event.target;
-    setData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    const updateDetails = { ...data, [name]: value };
+    dispatch(updateDetailsData(updateDetails));
   };
 
   const handleCheckboxChange = (event) => {
     const { value } = event.target;
-    setData((prevData) => {
-      const updated = {
-        ...prevData,
-      };
-      const checkExisted = prevData.additionalFunctions.includes(value)
-        ? prevData.additionalFunctions.filter((func) => func !== value)
-        : [...prevData.additionalFunctions, value];
-      updated.additionalFunctions = checkExisted;
-      return updated;
-    });
+    const updatedAdditionalFunctions = data.additionalFunctions.includes(value)
+      ? data.additionalFunctions.filter((func) => func !== value)
+      : [...data.additionalFunctions, value];
+
+    const updateDetails = {
+      ...data,
+      additionalFunctions: updatedAdditionalFunctions,
+    };
+
+    dispatch(updateDetailsData(updateDetails));
   };
 
-  
-  
-    // province = selectedOptions[0].province;
-    // district = selectedOptions[0].district;
-    // ward = selectedOptions[0].ward;
-
-
   const handleSelectedOptionsChange = (options) => {
-    setData((prevData) => ({
-      ...prevData,
+    const updateDetails = {
+      ...data,
       province: options[0].province,
       district: options[0].district,
       ward: options[0].ward,
-    }))
+    };
+    dispatch(updateDetailsData(updateDetails));
   };
 
   useEffect(() => {
@@ -126,7 +111,7 @@ const Details = () => {
             <Stack>
               <FormControlLabel
                 control={
-                  <Checkbox value="bluetooth" onChange={handleCheckboxChange} />
+                  <Checkbox checked={data.additionalFunctions.includes("bluetooth")} value="bluetooth" onChange={handleCheckboxChange} />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -139,7 +124,7 @@ const Details = () => {
               />
               <FormControlLabel
                 control={
-                  <Checkbox value="gps" onChange={handleCheckboxChange} />
+                  <Checkbox checked={data.additionalFunctions.includes("gps")} value="gps" onChange={handleCheckboxChange} />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -152,7 +137,7 @@ const Details = () => {
               />
               <FormControlLabel
                 control={
-                  <Checkbox value="camera" onChange={handleCheckboxChange} />
+                  <Checkbox checked={data.additionalFunctions.includes("camera")} value="camera" onChange={handleCheckboxChange} />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -169,7 +154,7 @@ const Details = () => {
             <Stack>
               <FormControlLabel
                 control={
-                  <Checkbox value="sunRoof" onChange={handleCheckboxChange} />
+                  <Checkbox checked={data.additionalFunctions.includes("sunRoof")} value="sunRoof" onChange={handleCheckboxChange} />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -182,7 +167,7 @@ const Details = () => {
               />
               <FormControlLabel
                 control={
-                  <Checkbox value="childLock" onChange={handleCheckboxChange} />
+                  <Checkbox checked={data.additionalFunctions.includes("childLock")} value="childLock" onChange={handleCheckboxChange} />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -195,7 +180,7 @@ const Details = () => {
               />
               <FormControlLabel
                 control={
-                  <Checkbox value="childSeat" onChange={handleCheckboxChange} />
+                  <Checkbox checked={data.additionalFunctions.includes("childSeat")} value="childSeat" onChange={handleCheckboxChange} />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -212,7 +197,7 @@ const Details = () => {
             <Stack>
               <FormControlLabel
                 control={
-                  <Checkbox value="dvd" onChange={handleCheckboxChange} />
+                  <Checkbox checked={data.additionalFunctions.includes("dvd")} value="dvd" onChange={handleCheckboxChange} />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -225,7 +210,7 @@ const Details = () => {
               />
               <FormControlLabel
                 control={
-                  <Checkbox value="usb" onChange={handleCheckboxChange} />
+                  <Checkbox checked={data.additionalFunctions.includes("usb")} value="usb" onChange={handleCheckboxChange} />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -244,29 +229,31 @@ const Details = () => {
                 Front image
               </Typography>
               <FrontOfCar
-                onFrontImageChange={(value) =>
-                  setData((prevData) => ({
-                    ...prevData,
+                onFrontImageChange={(value) => {
+                  const updateData = {
+                    ...data,
                     images: {
-                      ...prevData.images,
+                      ...data.images,
                       frontImage: value,
                     },
-                  }))
-                }
+                  };
+                  dispatch(updateDetailsData(updateData));
+                }}
               />
               <Typography variant="subtitle2" fontWeight={600}>
                 Right image
               </Typography>
               <RightOfCar
-                onRightImageChange={(value) =>
-                  setData((prevData) => ({
-                    ...prevData,
+                onRightImageChange={(value) => {
+                  const updateData = {
+                    ...data,
                     images: {
-                      ...prevData.images,
+                      ...data.images,
                       rightImage: value,
                     },
-                  }))
-                }
+                  };
+                  dispatch(updateDetailsData(updateData));
+                }}
               />
             </Stack>
           </Grid>
@@ -278,29 +265,31 @@ const Details = () => {
                 Left image
               </Typography>
               <LeftOfCar
-                onLeftImageChange={(value) =>
-                  setData((prevData) => ({
-                    ...prevData,
+                onLeftImageChange={(value) => {
+                  const updateData = {
+                    ...data,
                     images: {
-                      ...prevData.images,
+                      ...data.images,
                       leftImage: value,
                     },
-                  }))
-                }
+                  };
+                  dispatch(updateDetailsData(updateData));
+                }}
               />
               <Typography variant="subtitle2" fontWeight={600}>
                 Back image
               </Typography>
               <BackOfCar
-                onBackImageChange={(value) =>
-                  setData((prevData) => ({
-                    ...prevData,
+                onBackImageChange={(value) => {
+                  const updateData = {
+                    ...data,
                     images: {
-                      ...prevData.images,
+                      ...data.images,
                       backImage: value,
                     },
-                  }))
-                }
+                  };
+                  dispatch(updateDetailsData(updateData));
+                }}
               />
             </Stack>
           </Grid>

@@ -24,9 +24,9 @@ import { Link, useNavigate } from "react-router-dom";
 import SignUpForm from "../SignUpForm";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useDispatch } from "react-redux";
-import { setData } from "../stores/slice";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import validator from "validator";
+import { setData } from "../ReduxToolkit/slice";
 
 function LoginForm(props) {
   const { open, onClose } = props;

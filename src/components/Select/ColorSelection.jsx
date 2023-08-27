@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -175,13 +176,11 @@ function getStyles(name, colors, theme) {
 const ColorSelection = (props) => {
   const { name, onColorChange } = props;
   const theme = useTheme();
-  const [color, setColor] = useState([]);
-
+  const data = useSelector((state) => state.basic.data);
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
-    setColor(typeof value === "string" ? value.split(",") : value);
     onColorChange(typeof value === "string" ? value.split(",") : value);
   };
 
@@ -190,7 +189,7 @@ const ColorSelection = (props) => {
       <FormControl>
         <Select
           displayEmpty
-          value={color}
+          value={data.color}
           onChange={handleChange}
           input={<OutlinedInput size="small" />}
           renderValue={(selected) => {
