@@ -20,6 +20,8 @@ import { Add, Commute, Home, NavigateNext } from "@mui/icons-material";
 import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { carSelectedAll } from "../../../components/ReduxToolkit/CarAdapter";
 
 const data = [
   {
@@ -83,6 +85,11 @@ const MyCars = (props) => {
   const [rateValue, setRateValue] = useState(4.5);
   const [openAddCar, setOpenAddCar] = useState(false);
   const [openViewDetails, setOpenViewDetails] = useState(false);
+
+  const cars = useSelector(carSelectedAll).payload.cars;
+  const carArray = Object.values(cars.entities);
+  console.log("Car array: ", carArray);
+  console.log("Car:", cars);
 
   const handleClickOpenAddCar = () => {
     setOpenAddCar(true);
@@ -172,10 +179,10 @@ const MyCars = (props) => {
               <Typography variant="h6">LIST CARS:</Typography>
             </Stack>
             <Grid container columnSpacing={4} rowSpacing={5}>
-              {(loading ? Array.from(new Array(4)) : data).map(
-                (item, index) => (
-                  <Grid item xs={4} key={index}>
-                    {item ? (
+              {(loading ? Array.from(new Array(6)) : carArray).map(
+                (car, index) => (
+                  <Grid item xs={4} key={car.id}>
+                    {car ? (
                       <Box
                         sx={{
                           border: "0.5px solid #ccc",
@@ -185,8 +192,8 @@ const MyCars = (props) => {
                       >
                         <img
                           style={{ width: "100%", height: 210 }}
-                          alt={item.title}
-                          src={item.src}
+                          alt="xe 1"
+                          src=""
                         />
                       </Box>
                     ) : (
@@ -197,11 +204,11 @@ const MyCars = (props) => {
                       />
                     )}
 
-                    {item ? (
+                    {car ? (
                       <Grid container>
                         <Grid item xs={12}>
                           <Typography gutterBottom variant="subtitle1">
-                            {item.name}
+                            {car.brand} {car.model} {car.productionYear}
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
@@ -218,35 +225,35 @@ const MyCars = (props) => {
                               <Rating
                                 size="small"
                                 name="half-rating-read"
-                                defaultValue={item.rating}
+                                defaultValue={car.rating}
                                 precision={0.5}
                                 readOnly
                               />
                             </Box>
                             <Typography variant="body2" color="text.secondary">
-                              Price: {item.price}
+                              Price: {car.basePrice}
                             </Typography>
                           </Stack>
                         </Grid>
                         <Grid item xs={6}>
                           <Stack spacing={1}>
                             <Typography variant="body2" color="text.secondary">
-                              No. of rides: {item.nor}
+                              No. of rides: {car.nor}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                               Status:{" "}
                               <span
                                 style={{
                                   color:
-                                    item.status === "Booked"
+                                  car.status === "Booked"
                                       ? "#15616d"
-                                      : item.status === "Stopped"
+                                      : car.status === "Stopped"
                                       ? "#d00000"
                                       : "#38b000",
                                   fontWeight: "bold",
                                 }}
                               >
-                                {item.status}
+                                {car.status}
                               </span>
                             </Typography>
                           </Stack>
@@ -257,7 +264,7 @@ const MyCars = (props) => {
                             variant="body2"
                             color="text.secondary"
                           >
-                            Location: {item.location}
+                            Location: {car.ward}, {car.district}, {car.province}
                           </Typography>
                           <Stack direction="row" spacing={3}>
                             <Link to="/editcardetails">
@@ -275,7 +282,7 @@ const MyCars = (props) => {
                                 View details
                               </Button>
                             </Link>
-                            {item.status === "Booked" ? (
+                            {car.status === "Booked" ? (
                               <Button
                                 sx={{
                                   minWidth: "50%",
@@ -291,7 +298,7 @@ const MyCars = (props) => {
                               >
                                 Confirm payment
                               </Button>
-                            ) : item.status === "Stopped" ? (
+                            ) : car.status === "Stopped" ? (
                               <Button
                                 disabled
                                 sx={{

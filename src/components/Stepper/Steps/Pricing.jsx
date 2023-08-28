@@ -10,6 +10,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePricingData } from "../../ReduxToolkit/pricingSlice";
+import { NumericFormat } from "react-number-format";
 
 const Pricing = () => {
   const dispatch = useDispatch();
@@ -31,6 +32,9 @@ const Pricing = () => {
     dispatch(updatePricingData(updateTerms));
   };
 
+  const MAX_BASE_PRICE = 10000000;
+  const MAX_DEPOSIT = 1000000000;
+
   useEffect(() => {
     console.log(data);
   }, [data]);
@@ -50,19 +54,33 @@ const Pricing = () => {
         </Grid>
         <Grid item xs={3}>
           <Stack spacing={2}>
-            <OutlinedInput
+            <NumericFormat
+              customInput={OutlinedInput}
               name="basePrice"
+              suffix=" VND/day"
               value={data.basePrice}
+              thousandSeparator={true}
               onChange={handleInputChange}
               size="small"
               placeholder="1.000.000 VND / day"
+              isAllowed={(value) => {
+                const { floatValue, formattedValue } = value;
+                return floatValue < MAX_BASE_PRICE || formattedValue === "";
+              }}
             />
-            <OutlinedInput
+            <NumericFormat
+              customInput={OutlinedInput}
+              thousandSeparator={true}
               name="deposit"
+              suffix=" VND"
               value={data.deposit}
               onChange={handleInputChange}
               size="small"
               placeholder="5.000.000 VND"
+              isAllowed={(value) => {
+                const { floatValue, formattedValue } = value;
+                return floatValue < MAX_DEPOSIT || formattedValue === "";
+              }}
             />
           </Stack>
         </Grid>

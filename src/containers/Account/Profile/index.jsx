@@ -45,6 +45,7 @@ import {
 import { useSnackbar } from "../../../components/Hooks/useSnackBar";
 import { create } from "lodash";
 import validator from "validator";
+import { NumericFormat } from "react-number-format";
 
 function a11yProps(index) {
   return {
@@ -87,11 +88,11 @@ const ProfileTabs = () => {
   };
 
   const [selectedOptions, setSelectedOptions] = useState([]);
-  let city;
+  let province;
   let district;
   let ward;
   if (selectedOptions.length > 0) {
-    city = selectedOptions[0].province;
+    province = selectedOptions[0].province;
     district = selectedOptions[0].district;
     ward = selectedOptions[0].ward;
   }
@@ -115,7 +116,7 @@ const ProfileTabs = () => {
         birthDay &&
         phone &&
         nationalID &&
-        city &&
+        province &&
         district &&
         ward &&
         street &&
@@ -126,7 +127,7 @@ const ProfileTabs = () => {
         formData.append("birthDay", dobFormated);
         formData.append("phone", phone);
         formData.append("nationalID", nationalID);
-        formData.append("city", city);
+        formData.append("province", province);
         formData.append("district", district);
         formData.append("ward", ward);
         formData.append("street", street);
@@ -230,6 +231,10 @@ const ProfileTabs = () => {
   };
 
   const isPasswordValidRef = useRef(false);
+  const MAX_FULLNAME_LENGTH = 30;
+  const MAX_PHONE_LENGTH = 11;
+  const MAX_NATIONALID_LENGTH = 12;
+  const MAX_STREET_LENGTH = 255;
 
   useEffect(() => {
     isPasswordValidRef.current = checkPassword(password);
@@ -301,25 +306,35 @@ const ProfileTabs = () => {
                         value={fullName}
                         required
                         onChange={(event) => setFullName(event.target.value)}
+                        inputProps={{ maxLength: MAX_FULLNAME_LENGTH }}
                       />
                     </Box>
                     <Box>
                       <InputLabel required>Phone Number</InputLabel>
-                      <OutlinedInput
+                      <NumericFormat
+                        customInput={OutlinedInput}
                         fullWidth
                         value={phone}
                         required
                         onChange={(event) => setPhone(event.target.value)}
+                        inputProps={{ maxLength: MAX_PHONE_LENGTH }}
                       />
+                      {phone && !validator.isMobilePhone(phone) && (
+                        <Typography variant="subtitle2" color="red">
+                          Please enter the correct phone number!
+                        </Typography>
+                      )}
                     </Box>
                     <Box>
                       <InputLabel required>National ID</InputLabel>
-                      <OutlinedInput
+                      <NumericFormat
+                        customInput={OutlinedInput}
                         fullWidth
-                        placeholder="Example: 122318181"
+                        placeholder="Example: 024098010203"
                         required
                         value={nationalID}
                         onChange={(event) => setNationalId(event.target.value)}
+                        inputProps={{ maxLength: MAX_NATIONALID_LENGTH }}
                       />
                     </Box>
                   </Stack>
@@ -351,7 +366,13 @@ const ProfileTabs = () => {
                         placeholder="Street"
                         value={street}
                         onChange={(event) => setStreet(event.target.value)}
+                        inputProps={{ maxLength: MAX_STREET_LENGTH }}
                       />
+                      {street && street.length == MAX_STREET_LENGTH && (
+                        <Typography variant="subtitle2" color="red">
+                          Exceed maximum length of street address!
+                        </Typography>
+                      )}
                     </Box>
                   </Stack>
                 </Grid>

@@ -24,7 +24,7 @@ const Preview = (props) => {
         </Grid>
         <Grid item xs={6}>
           <Typography variant="h6">
-            {basicData.brand} {basicData.type} {basicData.productionYear}
+            {basicData.brand} {basicData.model} {basicData.productionYear}
           </Typography>
           <Stack direction="row" spacing={1}>
             <StyleTypography variant="subtitle1">Rating:</StyleTypography>
@@ -34,7 +34,7 @@ const Preview = (props) => {
             Number of rides: 0
           </StyleTypography>
           <StyleTypography variant="subtitle1">
-            Price: {pricingData.basePrice} VND
+            Price: {pricingData.basePrice}
           </StyleTypography>
           <StyleTypography variant="subtitle1">
             Location: {detailsData.ward}, {detailsData.district},{" "}

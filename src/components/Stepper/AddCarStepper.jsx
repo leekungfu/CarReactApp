@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState, Fragment } from "react";
 import {
   Box,
@@ -19,6 +19,9 @@ import Pricing from "./Steps/Pricing";
 import Preview from "./Steps/Preview";
 import PropTypes from "prop-types";
 import { Link, useHistory, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { carAdded } from "../ReduxToolkit/CarAdapter";
+import { v4 as uuidv4 } from "uuid";
 
 const AddCarStepper = (props) => {
   const { open, onClose } = props;
@@ -32,11 +35,48 @@ const AddCarStepper = (props) => {
   const steps = ["Basic", "Details", "Pricing", "Preview"];
 
   const [activeStep, setActiveStep] = useState(0);
+  const basicData = useSelector((state) => state.basic.data);
+  const detailsData = useSelector((state) => state.details.data);
+  const pricingData = useSelector((state) => state.pricing.data);
+  const dispatch = useDispatch();
+
+  const cars = useSelector((state) => state.cars);
+  useEffect(() => {
+    console.log(cars);
+  }, [cars]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {
-       
+      //  const formData = new FormData();
+      //  formData.append("")
+
+      dispatch(
+        carAdded({
+          id: uuidv4(),
+          plateNumber: basicData.plateNumber,
+          color: basicData.color,
+          brand: basicData.brand,
+          model: basicData.model,
+          productionYear: basicData.productionYear,
+          numberOfSeat: basicData.numberOfSeat,
+          transmissionType: basicData.transmissionType,
+          fuelType: basicData.fuelType,
+          documents: basicData.documents,
+          mileage: parseFloat(detailsData.mileage.replace(/[^0-9.]/g, "")),
+          fuelConsumption: parseFloat(detailsData.fuelConsumption.replace(/[^0-9.]/g, "")),
+          province: detailsData.province,
+          district: detailsData.district,
+          ward: detailsData.ward,
+          street: detailsData.street,
+          description: detailsData.description,
+          additionalFunctions: detailsData.additionalFunctions,
+          images: detailsData.images,
+          basePrice: parseInt(pricingData.basePrice.replace(/[^0-9]/g, "")),
+          deposit: parseInt(pricingData.deposit.replace(/[^0-9]/g, "")),
+          terms: pricingData.terms,
+        })
+      );
     }
   };
 

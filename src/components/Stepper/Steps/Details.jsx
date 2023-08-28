@@ -27,6 +27,7 @@ import {
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { updateDetailsData } from "../../ReduxToolkit/detailsSlice";
+import { NumericFormat } from "react-number-format";
 
 const Details = () => {
   const dispatch = useDispatch();
@@ -66,18 +67,41 @@ const Details = () => {
     console.log(data);
   }, [data]);
 
+  const MAX_LIMIT_MILEAGE = 100000;
+  const MAX_LIMIT_FUELCONSUMPTION = 20;
+  const MAX_WORD_LIMIT = 1000;
+
   return (
     <Box>
       <Paper elevation={0}>
         <Stack direction="column" spacing={2}>
-          <OutlinedInput
+          <NumericFormat
+            customInput={OutlinedInput}
+            thousandSeparator={true}
+            isAllowed={(value) => {
+              const { floatValue, formattedValue } = value;
+              return floatValue <= MAX_LIMIT_MILEAGE || formattedValue === "";
+            }}
+            suffix=" (km)"
             name="mileage"
             fullWidth
-            placeholder="Mileage"
+            placeholder="Total Kilometers - Max: 100.000 km"
             value={data.mileage}
             onChange={handleDataChange}
           />
-          <OutlinedInput
+          <NumericFormat
+            customInput={OutlinedInput}
+            thousandSeparator={true}
+            decimalSeparator="."
+            decimalScale={1}
+            fixedDecimalScale
+            suffix=" (liter/100km)"
+            isAllowed={(value) => {
+              const { floatValue, formattedValue } = value;
+              return (
+                floatValue <= MAX_LIMIT_FUELCONSUMPTION || formattedValue === ""
+              );
+            }}
             name="fuelConsumption"
             fullWidth
             placeholder="Fuel Consumption (liter/100km)"
@@ -99,7 +123,16 @@ const Details = () => {
             placeholder="Description of vehicle"
             value={data.description}
             onChange={handleDataChange}
+            inputProps={{ maxLength: MAX_WORD_LIMIT }}
           />
+          {data.description && data.description.length <= MAX_WORD_LIMIT && (
+            <Typography variant="caption" color="red">
+              <span style={{ fontWeight: "bold" }}>
+                {MAX_WORD_LIMIT - data.description.length}{" "}
+              </span>
+              characters remaining.
+            </Typography>
+          )}
         </Stack>
         <Grid container sx={{ pt: 2 }}>
           <Grid item xs={12}>
@@ -111,7 +144,11 @@ const Details = () => {
             <Stack>
               <FormControlLabel
                 control={
-                  <Checkbox checked={data.additionalFunctions.includes("bluetooth")} value="bluetooth" onChange={handleCheckboxChange} />
+                  <Checkbox
+                    checked={data.additionalFunctions.includes("bluetooth")}
+                    value="bluetooth"
+                    onChange={handleCheckboxChange}
+                  />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -124,7 +161,11 @@ const Details = () => {
               />
               <FormControlLabel
                 control={
-                  <Checkbox checked={data.additionalFunctions.includes("gps")} value="gps" onChange={handleCheckboxChange} />
+                  <Checkbox
+                    checked={data.additionalFunctions.includes("gps")}
+                    value="gps"
+                    onChange={handleCheckboxChange}
+                  />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -137,7 +178,11 @@ const Details = () => {
               />
               <FormControlLabel
                 control={
-                  <Checkbox checked={data.additionalFunctions.includes("camera")} value="camera" onChange={handleCheckboxChange} />
+                  <Checkbox
+                    checked={data.additionalFunctions.includes("camera")}
+                    value="camera"
+                    onChange={handleCheckboxChange}
+                  />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -154,7 +199,11 @@ const Details = () => {
             <Stack>
               <FormControlLabel
                 control={
-                  <Checkbox checked={data.additionalFunctions.includes("sunRoof")} value="sunRoof" onChange={handleCheckboxChange} />
+                  <Checkbox
+                    checked={data.additionalFunctions.includes("sunRoof")}
+                    value="sunRoof"
+                    onChange={handleCheckboxChange}
+                  />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -167,7 +216,11 @@ const Details = () => {
               />
               <FormControlLabel
                 control={
-                  <Checkbox checked={data.additionalFunctions.includes("childLock")} value="childLock" onChange={handleCheckboxChange} />
+                  <Checkbox
+                    checked={data.additionalFunctions.includes("childLock")}
+                    value="childLock"
+                    onChange={handleCheckboxChange}
+                  />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -180,7 +233,11 @@ const Details = () => {
               />
               <FormControlLabel
                 control={
-                  <Checkbox checked={data.additionalFunctions.includes("childSeat")} value="childSeat" onChange={handleCheckboxChange} />
+                  <Checkbox
+                    checked={data.additionalFunctions.includes("childSeat")}
+                    value="childSeat"
+                    onChange={handleCheckboxChange}
+                  />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -197,7 +254,11 @@ const Details = () => {
             <Stack>
               <FormControlLabel
                 control={
-                  <Checkbox checked={data.additionalFunctions.includes("dvd")} value="dvd" onChange={handleCheckboxChange} />
+                  <Checkbox
+                    checked={data.additionalFunctions.includes("dvd")}
+                    value="dvd"
+                    onChange={handleCheckboxChange}
+                  />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -210,7 +271,11 @@ const Details = () => {
               />
               <FormControlLabel
                 control={
-                  <Checkbox checked={data.additionalFunctions.includes("usb")} value="usb" onChange={handleCheckboxChange} />
+                  <Checkbox
+                    checked={data.additionalFunctions.includes("usb")}
+                    value="usb"
+                    onChange={handleCheckboxChange}
+                  />
                 }
                 label={
                   <Box sx={{ display: "flex", alignItems: "center" }}>

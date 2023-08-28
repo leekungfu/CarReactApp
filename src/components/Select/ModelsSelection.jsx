@@ -54,7 +54,7 @@ const ModelsSelection = (props) => {
       <FormControl>
         <Select
           displayEmpty
-          value={data.type}
+          value={data.model}
           onChange={handleChange}
           input={<OutlinedInput size="small" />}
           renderValue={(selected) => {

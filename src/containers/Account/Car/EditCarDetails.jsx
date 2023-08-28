@@ -211,7 +211,7 @@ const EditCarDetails = () => {
                   Production year:
                 </StyledTypography>
                 <StyledTypography variant="subtitle1">
-                  Transmission:
+                  Transmission type:
                 </StyledTypography>
               </Stack>
             </Grid>
@@ -222,7 +222,7 @@ const EditCarDetails = () => {
                 <StyledTypography variant="subtitle1">
                   No. of seats:
                 </StyledTypography>
-                <StyledTypography variant="subtitle1">Fuel:</StyledTypography>
+                <StyledTypography variant="subtitle1">Fuel type:</StyledTypography>
               </Stack>
             </Grid>
             <Grid item xs={12}>

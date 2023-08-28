@@ -36,6 +36,7 @@ import { useDispatch } from "react-redux";
 import validator from "validator";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import { setData } from "../ReduxToolkit/slice";
+import { NumericFormat } from "react-number-format";
 
 const SignUpForm = (props) => {
   const { open, onClose } = props;
@@ -61,7 +62,7 @@ const SignUpForm = (props) => {
   const [role, setRole] = useState("");
   const [checkboxState, setCheckboxState] = useState(false);
   const [validationMsg, setValidationMsg] = useState("");
-  
+
   const dispatch = useDispatch();
 
   const handleCheckbox = (checked) => {
@@ -184,15 +185,17 @@ const SignUpForm = (props) => {
                 )}
                 {email && !validator.isEmail(email) && (
                   <Typography variant="subtitle2" color="red">
-                  Please enter valid email!
-                </Typography>
+                    Please enter valid email!
+                  </Typography>
                 )}
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
                   variant="outlined"
                   required
                 >
-                  <OutlinedInput
+                  <NumericFormat
+                    customInput={OutlinedInput}
+                    allowLeadingZeros
                     id="phone"
                     placeholder="Phone Number"
                     startAdornment={
@@ -211,8 +214,8 @@ const SignUpForm = (props) => {
                 )}
                 {phone && !validator.isMobilePhone(phone) && (
                   <Typography variant="subtitle2" color="red">
-                  Please enter correct phone number!
-                </Typography>
+                    Please enter correct phone number!
+                  </Typography>
                 )}
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
@@ -288,12 +291,17 @@ const SignUpForm = (props) => {
                     {validationMsg.confirmPassword}
                   </Typography>
                 )}
-                {confirmPassword && !validator.equals(password, confirmPassword) && (
-                  <Typography variant="subtitle2" color="red">
-                    Password don't match
-                  </Typography>
-                )}
-                <ControlledRadioButtons role={role} setRole={setRole} onCheckboxChange={handleCheckbox} />
+                {confirmPassword &&
+                  !validator.equals(password, confirmPassword) && (
+                    <Typography variant="subtitle2" color="red">
+                      Password don't match
+                    </Typography>
+                  )}
+                <ControlledRadioButtons
+                  role={role}
+                  setRole={setRole}
+                  onCheckboxChange={handleCheckbox}
+                />
                 <Button
                   disabled={!checkboxState}
                   type="submit"

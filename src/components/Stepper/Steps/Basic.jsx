@@ -35,7 +35,8 @@ const Basic = () => {
     const updateStore = { ...data, [name]: value };
     dispatch(updateBasicData(updateStore));
   };
-
+  
+  const MAX_CHAR = 11;
   useEffect(() => {
     console.log(data);
   }, [data]);
@@ -60,11 +61,12 @@ const Basic = () => {
                 size="small"
                 placeholder="Plate Number"
                 required
+                inputProps={{ maxLength: MAX_CHAR }}
               />
               <ModelsSelection
-                name="type"
-                onTypeChange={(type) => {
-                  const updateStore = { ...data, type: type };
+                name="model"
+                onTypeChange={(model) => {
+                  const updateStore = { ...data, model: model };
                   dispatch(updateBasicData(updateStore));
                 }}
               />
@@ -107,8 +109,8 @@ const Basic = () => {
           </Grid>
           <Grid item xs={4}>
             <RadioGroup
-              name="transmission"
-              value={data.transmission}
+              name="transmissionType"
+              value={data.transmissionType}
               onChange={handleDataChange}
             >
               <InputLabel required>Transmission</InputLabel>
@@ -124,8 +126,8 @@ const Basic = () => {
           </Grid>
           <Grid item xs={4}>
             <RadioGroup
-              name="fuel"
-              value={data.fuel || ""}
+              name="fuelType"
+              value={data.fuelType || ""}
               onChange={handleDataChange}
             >
               <InputLabel required>Fuel</InputLabel>

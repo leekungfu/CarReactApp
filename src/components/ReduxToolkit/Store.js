@@ -14,6 +14,7 @@ import {
 } from "redux-persist";
 import detailsSlice from "./detailsSlice.js";
 import pricingSlice from "./pricingSlice.js";
+import carSlice from "./CarAdapter.js";
 
 const persistConfig = {
   key: "root",
@@ -29,6 +30,7 @@ const store = configureStore({
     details: detailsSlice,
     pricing: pricingSlice,
     backendData: backendDataSlice,
+    cars: carSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -41,8 +43,17 @@ const store = configureStore({
           PURGE,
           REGISTER,
           "basic/updateData",
+          "details/updateDetailsData",
         ],
-        ignoredPaths: ["basic.data.registrationPaper", "basic.data.certificate", "basic.data.insurance"],
+        ignoredPaths: [
+          "basic.data.registrationPaper",
+          "basic.data.certificate",
+          "basic.data.insurance",
+          "details.data.images.frontImage",
+          "details.data.images.backImage",
+          "details.data.images.leftImage",
+          "details.data.images.rightImage",
+        ],
       },
     }),
 });
