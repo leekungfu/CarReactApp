@@ -19,72 +19,14 @@ import AddCar from "../../../components/Dialogs/AddCar";
 import { Add, Commute, Home, NavigateNext } from "@mui/icons-material";
 import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { carSelectedAll } from "../../../components/ReduxToolkit/CarAdapter";
-
-const data = [
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.00 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.00 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Booked",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.00 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.00 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Stopped",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.00 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Booked",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.00 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-];
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { carSelectedAll, carUpdated } from "../../../components/ReduxToolkit/CarAdapter";
 
 const MyCars = (props) => {
   const { loading = false } = props;
   const [rateValue, setRateValue] = useState(4.5);
   const [openAddCar, setOpenAddCar] = useState(false);
-  const [openViewDetails, setOpenViewDetails] = useState(false);
 
   const cars = useSelector(carSelectedAll).payload.cars;
   const carArray = Object.values(cars.entities);
@@ -95,13 +37,13 @@ const MyCars = (props) => {
     setOpenAddCar(true);
   };
 
-  const handleClickOpenViewDetails = () => {
-    setOpenViewDetails(true);
+const navigate = useNavigate();
+  const handleCarClick = (carId) => {
+    navigate(`/editcardetails/${carId}`)  
   };
 
   const handleClose = () => {
     setOpenAddCar(false);
-    setOpenViewDetails(false);
     setOpenConfirmDeposit(false);
     setOpenConfirmPayment(false);
   };
@@ -245,7 +187,7 @@ const MyCars = (props) => {
                               <span
                                 style={{
                                   color:
-                                  car.status === "Booked"
+                                    car.status === "Booked"
                                       ? "#15616d"
                                       : car.status === "Stopped"
                                       ? "#d00000"
@@ -267,21 +209,20 @@ const MyCars = (props) => {
                             Location: {car.ward}, {car.district}, {car.province}
                           </Typography>
                           <Stack direction="row" spacing={3}>
-                            <Link to="/editcardetails">
-                              <Button
-                                sx={{
-                                  minWidth: "50%",
-                                  color: "white",
+                            <Button
+                              sx={{
+                                minWidth: "50%",
+                                color: "white",
+                                borderColor: "#fca311",
+                                "&:hover": {
                                   borderColor: "#fca311",
-                                  "&:hover": {
-                                    borderColor: "#fca311",
-                                  },
-                                }}
-                                variant="outlined"
-                              >
-                                View details
-                              </Button>
-                            </Link>
+                                },
+                              }}
+                              variant="outlined"
+                              onClick={() => handleCarClick(car.id)}
+                            >
+                              View details
+                            </Button>
                             {car.status === "Booked" ? (
                               <Button
                                 sx={{

@@ -58,7 +58,7 @@ const ModelsSelection = (props) => {
           onChange={handleChange}
           input={<OutlinedInput size="small" />}
           renderValue={(selected) => {
-            if (selected.length === 0) {
+            if (!selected) {
               return <em>Type</em>;
             }
             return selected;

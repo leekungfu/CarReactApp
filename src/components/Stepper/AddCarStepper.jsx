@@ -48,9 +48,6 @@ const AddCarStepper = (props) => {
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {
-      //  const formData = new FormData();
-      //  formData.append("")
-
       dispatch(
         carAdded({
           id: uuidv4(),
@@ -86,6 +83,7 @@ const AddCarStepper = (props) => {
 
   const navigate = useNavigate();
   const handleClickViewCars = () => {
+    onClose();
     navigate("/cars");
   };
 

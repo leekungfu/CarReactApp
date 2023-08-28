@@ -27,8 +27,10 @@ import {
 import Details from "../../../components/Stepper/Steps/Details";
 import Pricing from "../../../components/Stepper/Steps/Pricing";
 import Preview from "../../../components/Stepper/Steps/Preview";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import AutoPlaySwipePreview from "../../../components/Stepper/AutoPlaySwipePreview";
+import { useSelector } from "react-redux";
+import { carSelected } from "../../../components/ReduxToolkit/CarAdapter";
 
 const StyledTypography = styled(Typography)`
   font-weight: bold !important;
@@ -43,6 +45,7 @@ const data = {
   status: "Availabel",
 };
 
+
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
@@ -52,10 +55,12 @@ function a11yProps(index) {
 
 const EditCarDetails = () => {
   const [tab, setTab] = useState(0);
-
+  const { carId } = useParams();
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
+  // const cars = useSelector((state) => carSelectById(state, carId));
+  console.log(carId);
 
   return (
     <div>

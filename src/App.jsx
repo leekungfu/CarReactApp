@@ -58,7 +58,7 @@ function App() {
             <Route path="/cars" element={<MyCars />} />
             <Route path="/feedback" element={<MyFeedBack />} />
             <Route path="/rentnow" element={<RentNow />} />
-            <Route path="/editcardetails" element={<EditCarDetails />} />
+            <Route path="/editcardetails/:carId" element={<EditCarDetails />} />
             <Route path="/viewcardetails" element={<ViewCarDetails />} />
             <Route path="/bookingdetails" element={<BookingDetails />} />
             <Route path="/reset" element={<ResetPass />} />
