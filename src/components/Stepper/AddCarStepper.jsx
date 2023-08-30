@@ -22,6 +22,7 @@ import { Link, useHistory, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { carAdded } from "../ReduxToolkit/CarAdapter";
 import { v4 as uuidv4 } from "uuid";
+import { addCarAndSendToServer } from "../ReduxToolkit/SaveCarToServer";
 
 const AddCarStepper = (props) => {
   const { open, onClose } = props;
@@ -42,38 +43,41 @@ const AddCarStepper = (props) => {
 
   const cars = useSelector((state) => state.cars);
   useEffect(() => {
-    console.log(cars);
+    console.log("Xe vuawf add: ", cars);
   }, [cars]);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {
-      dispatch(
-        carAdded({
-          id: uuidv4(),
-          plateNumber: basicData.plateNumber,
-          color: basicData.color,
-          brand: basicData.brand,
-          model: basicData.model,
-          productionYear: basicData.productionYear,
-          numberOfSeat: basicData.numberOfSeat,
-          transmissionType: basicData.transmissionType,
-          fuelType: basicData.fuelType,
-          documents: basicData.documents,
-          mileage: parseFloat(detailsData.mileage.replace(/[^0-9.]/g, "")),
-          fuelConsumption: parseFloat(detailsData.fuelConsumption.replace(/[^0-9.]/g, "")),
-          province: detailsData.province,
-          district: detailsData.district,
-          ward: detailsData.ward,
-          street: detailsData.street,
-          description: detailsData.description,
-          additionalFunctions: detailsData.additionalFunctions,
-          images: detailsData.images,
-          basePrice: parseInt(pricingData.basePrice.replace(/[^0-9]/g, "")),
-          deposit: parseInt(pricingData.deposit.replace(/[^0-9]/g, "")),
-          terms: pricingData.terms,
-        })
-      );
+      const carData = {
+        id: uuidv4(),
+        plateNumber: basicData.plateNumber,
+        color: basicData.color,
+        brand: basicData.brand,
+        model: basicData.model,
+        productionYear: basicData.productionYear,
+        numberOfSeat: basicData.numberOfSeat,
+        transmissionType: basicData.transmissionType,
+        fuelType: basicData.fuelType,
+        documents: basicData.documents,
+        mileage: parseFloat(detailsData.mileage.replace(/[^0-9.]/g, "")),
+        fuelConsumption: parseFloat(
+          detailsData.fuelConsumption.replace(/[^0-9.]/g, "")
+        ),
+        province: detailsData.province,
+        district: detailsData.district,
+        ward: detailsData.ward,
+        street: detailsData.street,
+        description: detailsData.description,
+        additionalFunctions: detailsData.additionalFunctions,
+        images: detailsData.images,
+        basePrice: parseInt(pricingData.basePrice.replace(/[^0-9]/g, "")),
+        deposit: parseInt(pricingData.deposit.replace(/[^0-9]/g, "")),
+        terms: pricingData.terms,
+        status: "Available",
+      };
+
+      dispatch(addCarAndSendToServer(carData));
     }
   };
 

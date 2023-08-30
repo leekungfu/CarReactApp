@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, getDefaultMiddleware  } from "@reduxjs/toolkit";
 import backendDataSlice from "./slice.js";
 import basicSlice from "./basicSlice.js";
 import storage from "redux-persist/lib/storage";
@@ -15,6 +15,7 @@ import {
 import detailsSlice from "./detailsSlice.js";
 import pricingSlice from "./pricingSlice.js";
 import carSlice from "./CarAdapter.js";
+import thunkMiddleware from "redux-thunk";
 
 const persistConfig = {
   key: "root",
@@ -32,8 +33,8 @@ const store = configureStore({
     backendData: backendDataSlice,
     cars: carSlice,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
+  middleware: [
+    ...getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [
           FLUSH,
@@ -44,6 +45,7 @@ const store = configureStore({
           REGISTER,
           "basic/updateData",
           "details/updateDetailsData",
+          "basic/updateBasicData",
         ],
         ignoredPaths: [
           "basic.data.registrationPaper",
@@ -53,9 +55,14 @@ const store = configureStore({
           "details.data.images.backImage",
           "details.data.images.leftImage",
           "details.data.images.rightImage",
+          "basic.data.documents.registrationPaper",
+          "basic.data.documents.certificate",
+          "basic.data.documents.insurance",
         ],
       },
     }),
+    thunkMiddleware,
+  ],
 });
 
 export const persistor = persistStore(store);

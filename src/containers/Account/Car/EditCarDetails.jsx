@@ -11,6 +11,13 @@ import {
   Container,
   Breadcrumbs,
   Rating,
+  TableContainer,
+  Paper,
+  Table,
+  TableRow,
+  TableCell,
+  TableBody,
+  TableHead,
 } from "@mui/material";
 import React from "react";
 import { useState } from "react";
@@ -30,21 +37,23 @@ import Preview from "../../../components/Stepper/Steps/Preview";
 import { Link, useParams } from "react-router-dom";
 import AutoPlaySwipePreview from "../../../components/Stepper/AutoPlaySwipePreview";
 import { useSelector } from "react-redux";
-import { carSelected } from "../../../components/ReduxToolkit/CarAdapter";
+import {
+  carSelected,
+  carUpdated,
+} from "../../../components/ReduxToolkit/CarAdapter";
 
 const StyledTypography = styled(Typography)`
   font-weight: bold !important;
 `;
 
-const data = {
-  name: "Mercedes-Benz Pickup Truck 2008",
-  rating: 4.5,
-  nor: 3,
-  price: "1.000.000 VND",
-  location: "Phường Ngọc Hà, Thành phố Hà Giang, Tỉnh Hà Giang",
-  status: "Availabel",
-};
-
+// const data = {
+//   name: "Mercedes-Benz Pickup Truck 2008",
+//   rating: 4.5,
+//   nor: 3,
+//   price: "1.000.000 VND",
+//   location: "Phường Ngọc Hà, Thành phố Hà Giang, Tỉnh Hà Giang",
+//   status: "Availabel",
+// };
 
 function a11yProps(index) {
   return {
@@ -59,8 +68,11 @@ const EditCarDetails = () => {
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
-  // const cars = useSelector((state) => carSelectById(state, carId));
-  console.log(carId);
+
+  const car = useSelector((state) => carSelected(state, carId)).payload.cars;
+  console.log(car);
+  const carInfo = car.entities[carId];
+  console.log(carInfo);
 
   return (
     <div>
@@ -126,27 +138,29 @@ const EditCarDetails = () => {
             <AutoPlaySwipePreview />
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="h6">{data.name}</Typography>
+            <Typography variant="h6">
+              {carInfo.brand} {carInfo.model} {carInfo.productionYear}{" "}
+            </Typography>
             <Stack direction="row" spacing={1}>
               <StyledTypography variant="subtitle1">Rating:</StyledTypography>
               <Rating defaultValue={3.5} precision={0.5} readOnly />
             </Stack>
             <StyledTypography variant="subtitle1">
-              Number of rides: {data.nor}
+              Number of rides: 4
             </StyledTypography>
             <StyledTypography variant="subtitle1">
-              Price: {data.price}
+              Price: {carInfo.basePrice}
             </StyledTypography>
             <StyledTypography variant="subtitle1">
-              Location: {data.location}
+              Location: {carInfo.ward} {carInfo.district} {carInfo.province}
             </StyledTypography>
             <StyledTypography variant="subtitle1">
               Status:{" "}
               <span style={{ color: "#38b000", fontWeight: "bold" }}>
-                {data.status}
+                {carInfo.status}
               </span>
             </StyledTypography>
-            {data.status === "Booked" ? (
+            {car.status === "Booked" ? (
               <Button
                 sx={{
                   mt: 3,
@@ -207,33 +221,59 @@ const EditCarDetails = () => {
             <Grid item xs={6}>
               <Stack spacing={2}>
                 <StyledTypography variant="subtitle1">
-                  Plate number:
+                  Plate number: {carInfo.plateNumber}
                 </StyledTypography>
                 <StyledTypography variant="subtitle1">
-                  Brand name:
+                  Brand name: {carInfo.brand}
                 </StyledTypography>
                 <StyledTypography variant="subtitle1">
-                  Production year:
+                  Production year: {carInfo.productionYear}
                 </StyledTypography>
                 <StyledTypography variant="subtitle1">
-                  Transmission type:
+                  Transmission type: {carInfo.transmissionType}
                 </StyledTypography>
               </Stack>
             </Grid>
             <Grid item xs={6}>
               <Stack spacing={2}>
-                <StyledTypography variant="subtitle1">Color:</StyledTypography>
-                <StyledTypography variant="subtitle1">Model:</StyledTypography>
                 <StyledTypography variant="subtitle1">
-                  No. of seats:
+                  Color: {carInfo.color}
                 </StyledTypography>
-                <StyledTypography variant="subtitle1">Fuel type:</StyledTypography>
+                <StyledTypography variant="subtitle1">
+                  Model: {carInfo.model}
+                </StyledTypography>
+                <StyledTypography variant="subtitle1">
+                  No. of seats: {carInfo.numberOfSeat}
+                </StyledTypography>
+                <StyledTypography variant="subtitle1">
+                  Fuel type: {carInfo.fuelType}
+                </StyledTypography>
               </Stack>
             </Grid>
             <Grid item xs={12}>
               <StyledTypography sx={{ pt: 2 }} variant="subtitle1">
                 Documents:
               </StyledTypography>
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ID</TableCell>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Note</TableCell>
+                      <TableCell>Link</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    
+                      <TableRow key={car.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                        {/* <TableCell>{carInfo.documents.registrationPaper}</TableCell>
+                        <TableCell>{carInfo.documents.certificate}</TableCell>
+                        <TableCell>{carInfo.documents.insurance}</TableCell> */}
+                      </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </Grid>
           </Grid>
         </CustomTabPanels>

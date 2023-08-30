@@ -28,6 +28,7 @@ function Layout({ children }) {
             position: "relative",
             width: "100%",
             flex: 1,
+            mb: 10
           }}
         >
           {children}

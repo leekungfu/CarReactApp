@@ -35,7 +35,7 @@ const Basic = () => {
     const updateStore = { ...data, [name]: value };
     dispatch(updateBasicData(updateStore));
   };
-  
+
   const MAX_CHAR = 11;
   useEffect(() => {
     console.log(data);
@@ -154,7 +154,10 @@ const Basic = () => {
                 onRegistrationPaperChange={(registrationPaper) => {
                   const updateStore = {
                     ...data,
-                    registrationPaper: registrationPaper,
+                    documents: {
+                      ...data.documents,
+                      registrationPaper: registrationPaper,
+                    },
                   };
                   dispatch(updateBasicData(updateStore));
                 }}
@@ -168,7 +171,13 @@ const Basic = () => {
               </Typography>
               <Certificate
                 onCertificateChange={(certificate) => {
-                  const updateStore = { ...data, certificate: certificate };
+                  const updateStore = {
+                    ...data,
+                    documents: {
+                      ...data.documents,
+                      certificate: certificate,
+                    },
+                  };
                   dispatch(updateBasicData(updateStore));
                 }}
               />
@@ -181,7 +190,13 @@ const Basic = () => {
               </Typography>
               <Insurance
                 onInsuranceChange={(insurance) => {
-                  const updateStore = { ...data, insurance: insurance };
+                  const updateStore = {
+                    ...data,
+                    documents: {
+                      ...data.documents,
+                      insurance: insurance,
+                    },
+                  };
                   dispatch(updateBasicData(updateStore));
                 }}
               />
