@@ -28,11 +28,11 @@ export default function ControlledRadioButtons(props) {
     <FormControl sx={{ mt: 1 }}>
       <RadioGroup value={role} onChange={handleChange}>
         <FormControlLabel
-          control={<Radio value="customer" color="primary" />}
+          control={<Radio value="CUSTOMER" color="primary" />}
           label="I want to rent a car"
         />
         <FormControlLabel
-          control={<Radio value="owner" color="primary" />}
+          control={<Radio value="OWNER" color="primary" />}
           label="I am a car owner"
         />
         <FormControlLabel

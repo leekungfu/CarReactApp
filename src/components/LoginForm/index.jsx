@@ -61,9 +61,9 @@ function LoginForm(props) {
       if (response.data.isSuccess === true) {
         dispatch(setData(response.data.member));
         createSnack(response.data.message, { severity: "success" });
-        if (response.data.member.role === "customer") {
+        if (response.data.member.role === "CUSTOMER") {
           navigate("/homecustomer");
-        } else if (response.data.member.role === "owner") {
+        } else if (response.data.member.role === "OWNER") {
           navigate("/homeowner");
         }
       } else {

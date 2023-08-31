@@ -17,7 +17,7 @@ function Layout({ children }) {
           minHeight: "100vh",
         }}
       >
-        {userInfo.role === "customer" || userInfo.role === "owner" ? (
+        {userInfo.role === "CUSTOMER" || userInfo.role === "OWNER" ? (
           <NavMenuUser />
         ) : (
           <NavBar />

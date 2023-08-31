@@ -28,8 +28,8 @@ function uploadCarToServer(carData) {
   });
 
   // Thêm các trường dữ liệu khác vào FormData
-  formData.append("plateNumber", carData.plateNumber);
-  formData.append("color", carData.color);
+  // formData.append("plateNumber", carData.plateNumber);
+  // formData.append("color", carData.color);
   // ... thêm các trường khác
 
   return axiosInstance.post("/addCar", formData, {

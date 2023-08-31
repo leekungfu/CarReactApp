@@ -106,7 +106,7 @@ const SignUpForm = (props) => {
         dispatch(setData(data));
 
         if (response.data.isSuccess === true) {
-          if (role === "customer") {
+          if (role === "CUSTOMER") {
             navigate("/homecustomer");
           } else {
             navigate("/homeowner");

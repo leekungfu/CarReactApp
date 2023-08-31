@@ -96,7 +96,7 @@ export default function UserMenu() {
         <StyledMenuItem component={Link} to="/profile">
           <Typography variant="subtitle1">My Profile</Typography>
         </StyledMenuItem>
-        {userInfo.role === "owner" && (
+        {userInfo.role === "OWNER" && (
           <Box>
             <StyledMenuItem component={Link} to="/cars">
               <Typography variant="subtitle1">My Cars</Typography>
