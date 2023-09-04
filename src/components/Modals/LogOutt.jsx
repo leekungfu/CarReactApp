@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router";
 import axiosInstance from "../../shared/configs/axiosConfig";
+import { useSnackbar } from "../Hooks/useSnackBar";
 
 const style = {
   position: "absolute",
@@ -18,7 +19,7 @@ const style = {
 
 const LogOutt = (props) => {
   const { open, onClose } = props;
-
+  const { createSnack } = useSnackbar();
   const handleClose = () => {
     onClose();
   };
@@ -27,9 +28,12 @@ const LogOutt = (props) => {
 
   const handleClick = async (event) => {
     event.preventDefault();
-    const response = axiosInstance.post("/logout");
-    localStorage.clear();
-    window.location.href = "/";
+    const response = await axiosInstance.post("/logout");
+    if (response.data.isSuccess === true) {
+      localStorage.clear();
+      window.location.href = "/";
+    }
+    createSnack("Failed!", { severity: "eror" });
   };
 
   return (

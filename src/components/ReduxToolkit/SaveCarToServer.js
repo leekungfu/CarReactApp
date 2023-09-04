@@ -3,7 +3,7 @@ import { carAdded } from "./CarAdapter";
 
 export const addCarAndSendToServer = (carData) => async (dispatch) => {
     dispatch(carAdded(carData));
-  
+    const member = localStorage.getItem("userData");
     try {
         const formData = new FormData();
         for (const key in carData) {
@@ -19,8 +19,9 @@ export const addCarAndSendToServer = (carData) => async (dispatch) => {
             formData.append(key, carData[key]);
           }
         }
+        formData.append("member", member);
   
-      const response = await axiosInstance.post("/addCar", formData, {
+      const response = await axiosInstance.post("/owner/addCar", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

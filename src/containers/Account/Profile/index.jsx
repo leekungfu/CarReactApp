@@ -105,6 +105,9 @@ const ProfileTabs = () => {
     setDrivingLicense(newValue);
   };
 
+  const token = localStorage.getItem("jwtToken");
+  console.log(token);
+
   const handleClickSaveChange = async (event) => {
     event.preventDefault();
     try {
@@ -135,6 +138,7 @@ const ProfileTabs = () => {
 
         const response = await axiosInstance.post("/personalInfo", formData, {
           headers: {
+            // "Authorization": `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         });
