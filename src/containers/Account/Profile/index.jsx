@@ -106,7 +106,8 @@ const ProfileTabs = () => {
   };
 
   const token = localStorage.getItem("jwtToken");
-  console.log(token);
+  const user = useSelector((state) => state.backendData);
+  console.log("user ", user);
 
   const handleClickSaveChange = async (event) => {
     event.preventDefault();
@@ -138,7 +139,6 @@ const ProfileTabs = () => {
 
         const response = await axiosInstance.post("/personalInfo", formData, {
           headers: {
-            // "Authorization": `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         });
