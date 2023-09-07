@@ -37,15 +37,14 @@ import DrivingLicense from "../../../components/UploadFile/DrivingLicense";
 import Provinces from "../../../components/Select/Provinces";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import axiosInstance from "../../../shared/configs/axiosConfig";
 import {
   DATE_PICKER_DISPLAY_FORMAT,
   DATE_PICKER_URI_FORMAT,
 } from "../../../shared/configs/constants";
 import { useSnackbar } from "../../../components/Hooks/useSnackBar";
-import { create } from "lodash";
 import validator from "validator";
 import { NumericFormat } from "react-number-format";
+import axiosInstance from "../../../shared/configs/axiosConfig";
 
 function a11yProps(index) {
   return {
@@ -137,9 +136,11 @@ const ProfileTabs = () => {
         formData.append("street", street);
         formData.append("drivingLicense", drivingLicense);
 
+        const token = localStorage.getItem("jwtToken");
         const response = await axiosInstance.post("/personalInfo", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${token}`,
           },
         });
 
@@ -167,6 +168,9 @@ const ProfileTabs = () => {
             email,
             password,
           },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
         });
 
         if (response.data.isSuccess === true) {

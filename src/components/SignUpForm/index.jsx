@@ -31,12 +31,12 @@ import { useState } from "react";
 import ControlledRadioButtons from "../ControlledRadioButtons";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../shared/configs/axiosConfig";
 import { useDispatch } from "react-redux";
 import validator from "validator";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import { setData } from "../ReduxToolkit/slice";
 import { NumericFormat } from "react-number-format";
+import axiosInstance from "../../shared/configs/axiosConfig";
 
 const SignUpForm = (props) => {
   const { open, onClose } = props;
@@ -103,8 +103,9 @@ const SignUpForm = (props) => {
         formData.append("role", role);
         const response = await axiosInstance.post("/signup", formData);
         const data = await response.data.member;
+        localStorage.setItem("jwtToken", response.data.token);
         dispatch(setData(data));
-
+        
         if (response.data.isSuccess === true) {
           if (role === "CUSTOMER") {
             navigate("/homecustomer");

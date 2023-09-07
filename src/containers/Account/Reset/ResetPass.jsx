@@ -7,11 +7,10 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import NotifyReset from "../../../components/Modals/NotifyReset";
 import { useState } from "react";
-import axiosInstance from "../../../shared/configs/axiosConfig";
 import { useSnackbar } from "../../../components/Hooks/useSnackBar";
+import axiosInstance from "../../../shared/configs/axiosConfig";
 
 const ResetPass = () => {
   const [openNotifyReset, setOpenNotifyReset] = useState(false);

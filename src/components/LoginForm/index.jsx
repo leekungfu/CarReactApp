@@ -22,11 +22,11 @@ import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
 import SignUpForm from "../SignUpForm";
-import axiosInstance from "../../shared/configs/axiosConfig";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import validator from "validator";
 import { setData } from "../ReduxToolkit/slice";
+import axiosInstance from "../../shared/configs/axiosConfig";
 
 function LoginForm(props) {
   const { open, onClose } = props;
@@ -57,12 +57,11 @@ function LoginForm(props) {
       formData.append("email", email);
       formData.append("password", password);
       const response = await axiosInstance.post("/login", formData);
-
+      
       if (response.data.isSuccess === true) {
         dispatch(setData(response.data.member));
         localStorage.setItem("jwtToken", response.data.token);
-        localStorage.setItem("userData", response.data.member);
-        console.log(response.data.token);
+        localStorage.setItem("userData", JSON.stringify(response.data.member));
         createSnack(response.data.message, { severity: "success" });
         if (response.data.member.role === "CUSTOMER") {
           navigate("/homecustomer");
