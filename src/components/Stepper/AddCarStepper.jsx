@@ -43,7 +43,7 @@ const AddCarStepper = (props) => {
 
   const cars = useSelector((state) => state.cars);
   useEffect(() => {
-    console.log("Xe vuawf add: ", cars);
+    console.log("Xe vừa add: ", cars);
   }, [cars]);
 
   const handleNext = () => {
@@ -59,7 +59,6 @@ const AddCarStepper = (props) => {
         numberOfSeat: basicData.numberOfSeat,
         transmissionType: basicData.transmissionType,
         fuelType: basicData.fuelType,
-        documents: basicData.documents,
         mileage: parseFloat(detailsData.mileage.replace(/[^0-9.]/g, "")),
         fuelConsumption: parseFloat(
           detailsData.fuelConsumption.replace(/[^0-9.]/g, "")
@@ -70,14 +69,13 @@ const AddCarStepper = (props) => {
         street: detailsData.street,
         description: detailsData.description,
         additionalFunctions: detailsData.additionalFunctions,
-        images: detailsData.images,
         basePrice: parseInt(pricingData.basePrice.replace(/[^0-9]/g, "")),
         deposit: parseInt(pricingData.deposit.replace(/[^0-9]/g, "")),
         terms: pricingData.terms,
         status: "Available",
       };
-
-      dispatch(addCarAndSendToServer(carData));
+      
+      dispatch(addCarAndSendToServer(carData, basicData, detailsData));
     }
   };
 
