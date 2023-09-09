@@ -61,7 +61,7 @@ function LoginForm(props) {
       if (response.data.isSuccess === true) {
         dispatch(setData(response.data.member));
         localStorage.setItem("jwtToken", response.data.token);
-        localStorage.setItem("userData", JSON.stringify(response.data.member));
+        // localStorage.setItem("userData", JSON.stringify(response.data.member));
         createSnack(response.data.message, { severity: "success" });
         if (response.data.member.role === "CUSTOMER") {
           navigate("/homecustomer");

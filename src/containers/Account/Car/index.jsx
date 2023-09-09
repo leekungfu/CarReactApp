@@ -20,8 +20,8 @@ import { Add, Commute, Home, NavigateNext } from "@mui/icons-material";
 import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { carSelectedAll, carUpdated } from "../../../components/ReduxToolkit/CarAdapter";
+import { useSelector } from "react-redux";
+import { carSelectedAll } from "../../../components/ReduxToolkit/CarAdapter";
 
 const MyCars = (props) => {
   const { loading = false } = props;
@@ -30,8 +30,6 @@ const MyCars = (props) => {
 
   const cars = useSelector(carSelectedAll).payload.cars;
   const carArray = Object.values(cars.entities);
-  console.log("Car array: ", carArray);
-  console.log("Car:", cars);
 
   const handleClickOpenAddCar = () => {
     setOpenAddCar(true);
