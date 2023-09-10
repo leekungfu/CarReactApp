@@ -35,10 +35,6 @@ const Pricing = () => {
   const MAX_BASE_PRICE = 10000000;
   const MAX_DEPOSIT = 1000000000;
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
   return (
     <div>
       <Grid container sx={{ mb: 3 }}>

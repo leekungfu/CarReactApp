@@ -4,8 +4,6 @@ import { carAdded } from "./CarAdapter";
 
 export const addCarAndSendToServer =
   (carData, basicData, detailsData) => async (dispatch) => {
-    dispatch(carAdded(carData));
-
     try {
       const formData = new FormData();
       for (const key in carData) {
@@ -33,7 +31,6 @@ export const addCarAndSendToServer =
       formData.append("images", leftImage, "leftImage");
       formData.append("images", rightImage, "rightImage");
 
-
       const token = localStorage.getItem("jwtToken");
       const response = await axiosInstance.post("/owner/addCar", formData, {
         headers: {
@@ -41,7 +38,41 @@ export const addCarAndSendToServer =
           Authorization: `Bearer ${token}`,
         },
       });
+
+      if (response.data.isSuccess === true) {
+        const carDBData = response.data.car;
+        const files = response.data.files;
+        const carEntityAdapter = {
+          id: carDBData.id,
+          plateNumber: carDBData.plateNumber,
+          color: carDBData.color,
+          brand: carDBData.brand,
+          model: carDBData.model,
+          productionYear: carDBData.productionYear,
+          numberOfSeat: carDBData.numberOfSeat,
+          transmissionType: carDBData.transmissionType,
+          fuelType: carDBData.fuelType,
+          mileage: carDBData.mileage,
+          fuelConsumption: carDBData.fuelConsumption,
+          province: carDBData.province,
+          district: carDBData.district,
+          ward: carDBData.ward,
+          street: carDBData.street,
+          description: carDBData.description,
+          additionalFunctions: carDBData.additionalFunctions,
+          basePrice: carDBData.price,
+          deposit: carDBData.deposit,
+          terms: carDBData.terms,
+          status: carDBData.status,
+          files: files,
+        };
+        dispatch(carAdded(carEntityAdapter));
+        console.log("Add car to database success!");
+      }
+      else {
+        console.log("Add car to database failed!");
+      }
     } catch (error) {
-      console.error("Error sending data to server:", error);
+      console.error("Error sending car data to server:", error);
     }
   };

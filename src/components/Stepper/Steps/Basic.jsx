@@ -37,9 +37,6 @@ const Basic = () => {
   };
 
   const MAX_CHAR = 11;
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
 
   return (
     <Fragment>

@@ -43,7 +43,7 @@ const Preview = (props) => {
           <StyleTypography variant="subtitle1">
             Status:{" "}
             <span style={{ color: "#38b000", fontWeight: "bold" }}>
-              Availabel
+              Available
             </span>
           </StyleTypography>
         </Grid>

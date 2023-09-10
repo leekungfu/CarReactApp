@@ -63,10 +63,6 @@ const Details = () => {
     dispatch(updateDetailsData(updateDetails));
   };
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
   const MAX_LIMIT_MILEAGE = 100000;
   const MAX_LIMIT_FUELCONSUMPTION = 20;
   const MAX_WORD_LIMIT = 1000;

@@ -1,7 +1,7 @@
 import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
 
 const carAdapter = createEntityAdapter({
-  sortComparer: (a, b) => a.id.localeCompare(b.id),
+  
 });
 
 const carsSelectors = carAdapter.getSelectors((state) => state.cars);
@@ -13,6 +13,9 @@ const carSlice = createSlice({
     carAdded: (state, action) => {
       carAdapter.addOne(state, action.payload);
     },
+    carsAdded: (state, action) => {
+      carAdapter.addMany(state, action.payload);
+    },
     carUpdated: carAdapter.updateOne,
     carRemoved: carAdapter.removeOne,
     carSelectedAll: carsSelectors.selectAll,
@@ -20,6 +23,6 @@ const carSlice = createSlice({
   },
 });
 
-export const { carAdded, carUpdated, carRemoved, carSelectedAll, carSelected } =
+export const { carAdded, carsAdded, carUpdated, carRemoved, carSelectedAll, carSelected } =
   carSlice.actions;
 export default carSlice.reducer;

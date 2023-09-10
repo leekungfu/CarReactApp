@@ -27,6 +27,7 @@ import { useSnackbar } from "../Hooks/useSnackBar";
 import validator from "validator";
 import { setData } from "../ReduxToolkit/slice";
 import axiosInstance from "../../shared/configs/axiosConfig";
+import { carAdded, carsAdded } from "../ReduxToolkit/CarAdapter";
 
 function LoginForm(props) {
   const { open, onClose } = props;
@@ -44,11 +45,25 @@ function LoginForm(props) {
       msg.password = "Password is required.";
     }
     setValidationMsg(msg);
-    return Object.keys(msg).length === 0
+    return Object.keys(msg).length === 0;
   };
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const init = async () => {
+    const token = localStorage.getItem("jwtToken");
+    const response = await axiosInstance.get("/owner/cars", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.data.isSuccess === true) {
+      dispatch(carsAdded(response.data.cars));
+      console.log(response.data);
+    }
+  };
+
   const handleClickLogin = async (event) => {
     event.preventDefault();
     const checkInputValid = validate();
@@ -57,7 +72,7 @@ function LoginForm(props) {
       formData.append("email", email);
       formData.append("password", password);
       const response = await axiosInstance.post("/login", formData);
-      
+
       if (response.data.isSuccess === true) {
         dispatch(setData(response.data.member));
         localStorage.setItem("jwtToken", response.data.token);
@@ -66,6 +81,7 @@ function LoginForm(props) {
         if (response.data.member.role === "CUSTOMER") {
           navigate("/homecustomer");
         } else if (response.data.member.role === "OWNER") {
+          init();
           navigate("/homeowner");
         }
       } else {
@@ -143,8 +159,8 @@ function LoginForm(props) {
                   )}
                   {email && !validator.isEmail(email) && (
                     <Typography variant="subtitle2" color="red">
-                    Please enter a valid email!
-                  </Typography>
+                      Please enter a valid email!
+                    </Typography>
                   )}
                 </FormControl>
                 <FormControl

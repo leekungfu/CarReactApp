@@ -41,11 +41,6 @@ const AddCarStepper = (props) => {
   const pricingData = useSelector((state) => state.pricing.data);
   const dispatch = useDispatch();
 
-  const cars = useSelector((state) => state.cars);
-  useEffect(() => {
-    console.log("Xe vừa add: ", cars);
-  }, [cars]);
-
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {

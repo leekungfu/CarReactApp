@@ -13,7 +13,7 @@ import {
   Rating,
   Breadcrumbs,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import AddCar from "../../../components/Dialogs/AddCar";
 import { Add, Commute, Home, NavigateNext } from "@mui/icons-material";
@@ -22,6 +22,7 @@ import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { carSelectedAll } from "../../../components/ReduxToolkit/CarAdapter";
+import axiosInstance from "../../../shared/configs/axiosConfig";
 
 const MyCars = (props) => {
   const { loading = false } = props;
@@ -35,9 +36,9 @@ const MyCars = (props) => {
     setOpenAddCar(true);
   };
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const handleCarClick = (carId) => {
-    navigate(`/editcardetails/${carId}`)  
+    navigate(`/editcardetails/${carId}`);
   };
 
   const handleClose = () => {
@@ -132,8 +133,11 @@ const navigate = useNavigate();
                       >
                         <img
                           style={{ width: "100%", height: 210 }}
-                          alt="xe 1"
-                          src=""
+                          alt={`frontImage-${car.id}`}
+                          src={`data:image/jpeg;base64, ${
+                            car.files.find((item) => item.name === "frontImage")
+                              .data
+                          }`}
                         />
                       </Box>
                     ) : (
