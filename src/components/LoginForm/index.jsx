@@ -51,19 +51,6 @@ function LoginForm(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const init = async () => {
-    const token = localStorage.getItem("jwtToken");
-    const response = await axiosInstance.get("/owner/cars", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (response.data.isSuccess === true) {
-      dispatch(carsAdded(response.data.cars));
-      console.log(response.data);
-    }
-  };
-
   const handleClickLogin = async (event) => {
     event.preventDefault();
     const checkInputValid = validate();
@@ -76,13 +63,12 @@ function LoginForm(props) {
       if (response.data.isSuccess === true) {
         dispatch(setData(response.data.member));
         localStorage.setItem("jwtToken", response.data.token);
-        // localStorage.setItem("userData", JSON.stringify(response.data.member));
+        localStorage.setItem("userRole", response.data.member.role);
         createSnack(response.data.message, { severity: "success" });
         if (response.data.member.role === "CUSTOMER") {
-          navigate("/homecustomer");
+          window.location.href = "/homecustomer";
         } else if (response.data.member.role === "OWNER") {
-          init();
-          navigate("/homeowner");
+          window.location.href = "/homeowner";
         }
       } else {
         createSnack(response.data.message, { severity: "error" });

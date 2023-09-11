@@ -104,13 +104,14 @@ const SignUpForm = (props) => {
         const response = await axiosInstance.post("/signup", formData);
         const data = await response.data.member;
         localStorage.setItem("jwtToken", response.data.token);
+        localStorage.setItem("userRole", response.data.member.role);
         dispatch(setData(data));
         
         if (response.data.isSuccess === true) {
           if (role === "CUSTOMER") {
-            navigate("/homecustomer");
+            window.location.href = "/homecustomer";
           } else {
-            navigate("/homeowner");
+            window.location.href = "/homeowner";
           }
         } else {
           createSnack(response.data.message, { severity: "error" });

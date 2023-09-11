@@ -8,13 +8,9 @@ import {
   Typography,
   FormControlLabel,
   Checkbox,
+  Button,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import Provinces from "../../Select/Provinces";
-import FrontOfCar from "../../UploadFile/FrontOfCar";
-import RightOfCar from "../../UploadFile/RightOfCar";
-import LeftOfCar from "../../UploadFile/LeftOfCar";
-import BackOfCar from "../../UploadFile/BackOfCar";
 import {
   Album,
   Bluetooth,
@@ -26,46 +22,101 @@ import {
   Usb,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
-import { updateDetailsData } from "../../ReduxToolkit/detailsSlice";
 import { NumericFormat } from "react-number-format";
+import {
+  carSelected,
+  carUpdated,
+} from "../../../components/ReduxToolkit/CarAdapter";
+import Provinces from "../../../components/Select/Provinces";
+import FrontOfCar from "../../../components/UploadFile/FrontOfCar";
+import RightOfCar from "../../../components/UploadFile/RightOfCar";
+import LeftOfCar from "../../../components/UploadFile/LeftOfCar";
+import BackOfCar from "../../../components/UploadFile/BackOfCar";
+import { updateDetailsData } from "../../../components/ReduxToolkit/detailsSlice";
 
-const Details = () => {
+const DetailsTab = (props) => {
+  const { carId } = props;
   const dispatch = useDispatch();
-  const data = useSelector((state) => state.details.data);
+  const car = useSelector((state) => carSelected(state, carId)).payload.cars;
+  const carInfo = car.entities[carId];
+
+  const [fieldsState, setFieldsState] = useState({
+    mileage: carInfo.mileage,
+    fuelConsumption: carInfo.fuelConsumption,
+    province: carInfo.province,
+    district: carInfo.district,
+    ward: carInfo.ward,
+    street: carInfo.street,
+    description: carInfo.description,
+    bluetooth: carInfo.additionalFunctions.includes("bluetooth"),
+    gps: carInfo.additionalFunctions.includes("gps"),
+    camera: carInfo.additionalFunctions.includes("camera"),
+    sunRoof: carInfo.additionalFunctions.includes("sunRoof"),
+    childLock: carInfo.additionalFunctions.includes("childLock"),
+    childSeat: carInfo.additionalFunctions.includes("childSeat"),
+    dvd: carInfo.additionalFunctions.includes("dvd"),
+    usb: carInfo.additionalFunctions.includes("usb"),
+  });
 
   const handleDataChange = (event) => {
     const { name, value } = event.target;
-    const updateDetails = { ...data, [name]: value };
-    dispatch(updateDetailsData(updateDetails));
+    setFieldsState((prevFieldsState) => ({
+      ...prevFieldsState,
+      [name]: value,
+    }));
   };
 
   const handleCheckboxChange = (event) => {
     const { value } = event.target;
-    const updatedAdditionalFunctions = data.additionalFunctions.includes(value)
-      ? data.additionalFunctions.filter((func) => func !== value)
-      : [...data.additionalFunctions, value];
+    const updatedAdditionalFunctions = carInfo.additionalFunctions.includes(
+      value
+    )
+      ? carInfo.additionalFunctions.filter((func) => func !== value)
+      : [...carInfo.additionalFunctions, value];
 
-    const updateDetails = {
-      ...data,
-      additionalFunctions: updatedAdditionalFunctions,
-    };
+    const updatedStates = { ...fieldsState };
 
-    dispatch(updateDetailsData(updateDetails));
+    // Cập nhật trạng thái cho checkbox được click
+    updatedStates[value] = !updatedStates[value];
+
+    // Cập nhật trạng thái của tất cả các checkbox
+    setFieldsState(updatedStates);
   };
 
   const handleSelectedOptionsChange = (options) => {
-    const updateDetails = {
-      ...data,
+    setFieldsState((prevFieldsState) => ({
+      ...prevFieldsState,
       province: options[0].province,
       district: options[0].district,
       ward: options[0].ward,
-    };
-    dispatch(updateDetailsData(updateDetails));
+    }));
+  };
+
+  const handleClickSave = () => {
+    // Create a copy of carInfo
+  const updatedCarInfo = { ...carInfo };
+
+  // Update the fields in updatedCarInfo with the values in fieldsState
+  updatedCarInfo.mileage = fieldsState.mileage;
+  updatedCarInfo.fuelConsumption = fieldsState.fuelConsumption;
+  updatedCarInfo.province = fieldsState.province;
+  updatedCarInfo.district = fieldsState.district;
+  updatedCarInfo.ward = fieldsState.ward;
+  updatedCarInfo.street = fieldsState.street;
+  updatedCarInfo.description = fieldsState.description;
+
+  // Update additionalFunctions based on checkbox state
+  updatedCarInfo.additionalFunctions = Object.keys(fieldsState).filter(
+    (key) => fieldsState[key] && key !== "province" && key !== "district" && key !== "ward"
+  );
+
+  // Dispatch the action to update the car details
+  dispatch(carUpdated(updatedCarInfo));
   };
 
   useEffect(() => {
-    console.log(data);
-  }, [data])
+    console.log(carInfo);
+  }, [carInfo]);
 
   const MAX_LIMIT_MILEAGE = 100000;
   const MAX_LIMIT_FUELCONSUMPTION = 20;
@@ -86,7 +137,7 @@ const Details = () => {
             name="mileage"
             fullWidth
             placeholder="Total Kilometers - Max: 100.000 km"
-            value={data.mileage}
+            value={carInfo.mileage}
             onChange={handleDataChange}
           />
           <NumericFormat
@@ -105,7 +156,7 @@ const Details = () => {
             name="fuelConsumption"
             fullWidth
             placeholder="Fuel Consumption (liter/100km)"
-            value={data.fuelConsumption}
+            value={carInfo.fuelConsumption}
             onChange={handleDataChange}
           />
           <Provinces onSelectedOptionsChange={handleSelectedOptionsChange} />
@@ -113,7 +164,7 @@ const Details = () => {
             name="street"
             fullWidth
             placeholder="Street"
-            value={data.street}
+            value={carInfo.street}
             onChange={handleDataChange}
           />
           <OutlinedInput
@@ -121,18 +172,19 @@ const Details = () => {
             multiline
             fullWidth
             placeholder="Description of vehicle"
-            value={data.description}
+            value={carInfo.description}
             onChange={handleDataChange}
             inputProps={{ maxLength: MAX_WORD_LIMIT }}
           />
-          {data.description && data.description.length <= MAX_WORD_LIMIT && (
-            <Typography variant="caption" color="red">
-              <span style={{ fontWeight: "bold" }}>
-                {MAX_WORD_LIMIT - data.description.length}{" "}
-              </span>
-              characters remaining.
-            </Typography>
-          )}
+          {carInfo.description &&
+            carInfo.description.length <= MAX_WORD_LIMIT && (
+              <Typography variant="caption" color="red">
+                <span style={{ fontWeight: "bold" }}>
+                  {MAX_WORD_LIMIT - carInfo.description.length}{" "}
+                </span>
+                characters remaining.
+              </Typography>
+            )}
         </Stack>
         <Grid container sx={{ pt: 2 }}>
           <Grid item xs={12}>
@@ -145,7 +197,7 @@ const Details = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={data.additionalFunctions.includes("bluetooth")}
+                    checked={fieldsState.bluetooth}
                     value="bluetooth"
                     onChange={handleCheckboxChange}
                   />
@@ -162,7 +214,7 @@ const Details = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={data.additionalFunctions.includes("gps")}
+                    checked={fieldsState.gps}
                     value="gps"
                     onChange={handleCheckboxChange}
                   />
@@ -179,7 +231,7 @@ const Details = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={data.additionalFunctions.includes("camera")}
+                    checked={fieldsState.camera}
                     value="camera"
                     onChange={handleCheckboxChange}
                   />
@@ -200,7 +252,7 @@ const Details = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={data.additionalFunctions.includes("sunRoof")}
+                    checked={fieldsState.sunRoof}
                     value="sunRoof"
                     onChange={handleCheckboxChange}
                   />
@@ -217,7 +269,7 @@ const Details = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={data.additionalFunctions.includes("childLock")}
+                    checked={fieldsState.childLock}
                     value="childLock"
                     onChange={handleCheckboxChange}
                   />
@@ -234,7 +286,7 @@ const Details = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={data.additionalFunctions.includes("childSeat")}
+                    checked={fieldsState.childSeat}
                     value="childSeat"
                     onChange={handleCheckboxChange}
                   />
@@ -255,7 +307,7 @@ const Details = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={data.additionalFunctions.includes("dvd")}
+                    checked={fieldsState.dvd}
                     value="dvd"
                     onChange={handleCheckboxChange}
                   />
@@ -272,7 +324,7 @@ const Details = () => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={data.additionalFunctions.includes("usb")}
+                    checked={fieldsState.usb}
                     value="usb"
                     onChange={handleCheckboxChange}
                   />
@@ -296,9 +348,9 @@ const Details = () => {
               <FrontOfCar
                 onFrontImageChange={(value) => {
                   const updateData = {
-                    ...data,
-                    images: {
-                      ...data.images,
+                    ...carInfo,
+                    files: {
+                      ...carInfo.files,
                       frontImage: value,
                     },
                   };
@@ -311,9 +363,9 @@ const Details = () => {
               <RightOfCar
                 onRightImageChange={(value) => {
                   const updateData = {
-                    ...data,
-                    images: {
-                      ...data.images,
+                    ...carInfo,
+                    files: {
+                      ...carInfo.files,
                       rightImage: value,
                     },
                   };
@@ -332,9 +384,9 @@ const Details = () => {
               <LeftOfCar
                 onLeftImageChange={(value) => {
                   const updateData = {
-                    ...data,
-                    images: {
-                      ...data.images,
+                    ...carInfo,
+                    files: {
+                      ...carInfo.files,
                       leftImage: value,
                     },
                   };
@@ -347,9 +399,9 @@ const Details = () => {
               <BackOfCar
                 onBackImageChange={(value) => {
                   const updateData = {
-                    ...data,
-                    images: {
-                      ...data.images,
+                    ...carInfo,
+                    files: {
+                      ...carInfo.files,
                       backImage: value,
                     },
                   };
@@ -359,9 +411,45 @@ const Details = () => {
             </Stack>
           </Grid>
         </Grid>
+        <Stack
+          direction="row"
+          spacing={1.5}
+          justifyContent="center"
+          sx={{ mt: 5 }}
+        >
+          <Button
+            sx={{
+              border: "solid 1px",
+              color: "white",
+              borderColor: "#fca311",
+              "&:hover": {
+                borderColor: "#fca311",
+              },
+              width: "16%",
+            }}
+            variant="outlined"
+          >
+            Discard
+          </Button>
+          <Button
+            sx={{
+              color: "white",
+              border: "solid 1px",
+              borderColor: "#fca311",
+              "&:hover": {
+                borderColor: "#fca311",
+              },
+              width: "16%",
+            }}
+            variant="outlined"
+            onClick={handleClickSave}
+          >
+            Save
+          </Button>
+        </Stack>
       </Paper>
     </Box>
   );
 };
 
-export default Details;
+export default DetailsTab;

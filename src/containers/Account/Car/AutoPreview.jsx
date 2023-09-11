@@ -7,6 +7,7 @@ import { Navigation, Autoplay } from "swiper/modules";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
+import { carSelected } from "../../../components/ReduxToolkit/CarAdapter";
 
 const StyleButton = styled(Button)`
   background-color: white !important;
@@ -14,25 +15,39 @@ const StyleButton = styled(Button)`
 
 SwiperCore.use([Navigation, Autoplay]);
 
-function AutoPlaySwipePreview() {
+function AutoPreview(props) {
+  const { carId } = props;
+  const car = useSelector((state) => carSelected(state, carId)).payload.cars;
+  const carInfo = car.entities[carId];
   let swiperInstance;
-  const imageData = useSelector((state) => state.details.data);
   const images = [
     {
       label: "Front Image",
-      imgPath: URL.createObjectURL(imageData.images.frontImage),
+      imgPath: `data:image/jpeg;base64, ${
+        carInfo.files.find((item) => item.name === "frontImage")
+          .data
+      }`,
     },
     {
       label: "Right Image",
-      imgPath: URL.createObjectURL(imageData.images.rightImage),
+      imgPath: `data:image/jpeg;base64, ${
+        carInfo.files.find((item) => item.name === "rightImage")
+          .data
+      }`,
     },
     {
       label: "Left Image",
-      imgPath: URL.createObjectURL(imageData.images.leftImage),
+      imgPath: `data:image/jpeg;base64, ${
+        carInfo.files.find((item) => item.name === "leftImage")
+          .data
+      }`,
     },
     {
       label: "Back Image",
-      imgPath: URL.createObjectURL(imageData.images.backImage),
+      imgPath: `data:image/jpeg;base64, ${
+        carInfo.files.find((item) => item.name === "backImage")
+          .data
+      }`,
     },
   ];
 
@@ -81,4 +96,4 @@ function AutoPlaySwipePreview() {
   );
 }
 
-export default AutoPlaySwipePreview;
+export default AutoPreview;

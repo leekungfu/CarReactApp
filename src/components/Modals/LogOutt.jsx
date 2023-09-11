@@ -24,15 +24,13 @@ const LogOutt = (props) => {
     onClose();
   };
 
-  const navigate = useNavigate();
   const token = localStorage.getItem("jwtToken");
-
   const handleClick = async (event) => {
     event.preventDefault();
     const response = await axiosInstance.post("/logout", {
       headers: {
-        "Authorization": `Bearer ${token}`,
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
     if (response.data.isSuccess === true) {
       localStorage.clear();

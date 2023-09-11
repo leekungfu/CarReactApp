@@ -25,7 +25,7 @@ const StyledMenuItem = styled(MenuItem)`
 export default function UserMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const userInfo = useSelector((state) => state.backendData);
+  const role = localStorage.getItem("userRole");
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -96,7 +96,7 @@ export default function UserMenu() {
         <StyledMenuItem component={Link} to="/profile">
           <Typography variant="subtitle1">My Profile</Typography>
         </StyledMenuItem>
-        {userInfo.role === "OWNER" && (
+        {role === "OWNER" && (
           <Box>
             <StyledMenuItem component={Link} to="/cars">
               <Typography variant="subtitle1">My Cars</Typography>

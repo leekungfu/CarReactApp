@@ -41,19 +41,13 @@ import {
   carSelected,
   carUpdated,
 } from "../../../components/ReduxToolkit/CarAdapter";
+import AutoPreview from "./AutoPreview";
+import DetailsTab from "./DetailsTab";
+import PricingTab from "./PricingTab";
 
 const StyledTypography = styled(Typography)`
   font-weight: bold !important;
 `;
-
-// const data = {
-//   name: "Mercedes-Benz Pickup Truck 2008",
-//   rating: 4.5,
-//   nor: 3,
-//   price: "1.000.000 VND",
-//   location: "Phường Ngọc Hà, Thành phố Hà Giang, Tỉnh Hà Giang",
-//   status: "Availabel",
-// };
 
 function a11yProps(index) {
   return {
@@ -70,9 +64,9 @@ const EditCarDetails = () => {
   };
 
   const car = useSelector((state) => carSelected(state, carId)).payload.cars;
-  console.log(car);
+  console.log("Car: ", car);
   const carInfo = car.entities[carId];
-  console.log(carInfo);
+  console.log("Car info: ", carInfo);
 
   return (
     <div>
@@ -135,7 +129,7 @@ const EditCarDetails = () => {
         </StyledTypography>
         <Grid container>
           <Grid item xs={6}>
-            <AutoPlaySwipePreview />
+            <AutoPreview carId={carId} />
           </Grid>
           <Grid item xs={6}>
             <Typography variant="h6">
@@ -265,12 +259,19 @@ const EditCarDetails = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    
-                      <TableRow key={car.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                        {/* <TableCell>{carInfo.documents.registrationPaper}</TableCell>
-                        <TableCell>{carInfo.documents.certificate}</TableCell>
-                        <TableCell>{carInfo.documents.insurance}</TableCell> */}
+                    {carInfo.files.map((item) => (
+                      <TableRow
+                        key={item.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell>{item.id}</TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{item.type}</TableCell>
+                        <TableCell>{item.url}</TableCell>
                       </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </TableContainer>
@@ -278,80 +279,10 @@ const EditCarDetails = () => {
           </Grid>
         </CustomTabPanels>
         <CustomTabPanels value={tab} index={1}>
-          <Details />
-          <Stack
-            direction="row"
-            spacing={1.5}
-            justifyContent="center"
-            sx={{ mt: 5 }}
-          >
-            <Button
-              sx={{
-                border: "solid 1px",
-                color: "white",
-                borderColor: "#fca311",
-                "&:hover": {
-                  borderColor: "#fca311",
-                },
-                width: "16%",
-              }}
-              variant="outlined"
-            >
-              Discard
-            </Button>
-            <Button
-              sx={{
-                color: "white",
-                border: "solid 1px",
-                borderColor: "#fca311",
-                "&:hover": {
-                  borderColor: "#fca311",
-                },
-                width: "16%",
-              }}
-              variant="outlined"
-            >
-              Save
-            </Button>
-          </Stack>
+          <DetailsTab carId={carId} />
         </CustomTabPanels>
         <CustomTabPanels value={tab} index={2}>
-          <Pricing />
-          <Stack
-            direction="row"
-            spacing={3.5}
-            justifyContent="center"
-            sx={{ mt: 5 }}
-          >
-            <Button
-              sx={{
-                border: "solid 1px",
-                color: "white",
-                borderColor: "#fca311",
-                "&:hover": {
-                  borderColor: "#fca311",
-                },
-                width: "18%",
-              }}
-              variant="outlined"
-            >
-              Discard
-            </Button>
-            <Button
-              sx={{
-                color: "white",
-                border: "solid 1px",
-                borderColor: "#fca311",
-                "&:hover": {
-                  borderColor: "#fca311",
-                },
-                width: "18%",
-              }}
-              variant="outlined"
-            >
-              Save
-            </Button>
-          </Stack>
+          <PricingTab carId={carId} />
         </CustomTabPanels>
       </Container>
     </div>
