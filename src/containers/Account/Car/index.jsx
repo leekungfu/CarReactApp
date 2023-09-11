@@ -56,7 +56,6 @@ const MyCars = (props) => {
           console.error("Error fetching data:", error);
         })
         .finally(() => {
-          // Đánh dấu rằng đã gọi API
           setApiCalled(true);
         });
     }

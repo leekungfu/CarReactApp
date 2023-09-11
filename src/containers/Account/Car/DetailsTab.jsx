@@ -33,12 +33,14 @@ import RightOfCar from "../../../components/UploadFile/RightOfCar";
 import LeftOfCar from "../../../components/UploadFile/LeftOfCar";
 import BackOfCar from "../../../components/UploadFile/BackOfCar";
 import { updateDetailsData } from "../../../components/ReduxToolkit/detailsSlice";
+import axiosInstance from "../../../shared/configs/axiosConfig";
 
 const DetailsTab = (props) => {
   const { carId } = props;
   const dispatch = useDispatch();
   const car = useSelector((state) => carSelected(state, carId)).payload.cars;
   const carInfo = car.entities[carId];
+  const token = localStorage.getItem("jwtToken");
 
   const [fieldsState, setFieldsState] = useState({
     mileage: carInfo.mileage,
@@ -48,6 +50,14 @@ const DetailsTab = (props) => {
     ward: carInfo.ward,
     street: carInfo.street,
     description: carInfo.description,
+    additionalFunctions: carInfo.additionalFunctions,
+    files: carInfo.files,
+    price: carInfo.price,
+    deposit: carInfo.deposit,
+    terms: carInfo.terms,
+  });
+
+  const [additionalFunctionsState, setAdditionalFunctionsState] = useState({
     bluetooth: carInfo.additionalFunctions.includes("bluetooth"),
     gps: carInfo.additionalFunctions.includes("gps"),
     camera: carInfo.additionalFunctions.includes("camera"),
@@ -68,19 +78,20 @@ const DetailsTab = (props) => {
 
   const handleCheckboxChange = (event) => {
     const { value } = event.target;
-    const updatedAdditionalFunctions = carInfo.additionalFunctions.includes(
+    const updatedAdditionalFunctions = fieldsState.additionalFunctions.includes(
       value
     )
-      ? carInfo.additionalFunctions.filter((func) => func !== value)
-      : [...carInfo.additionalFunctions, value];
+      ? fieldsState.additionalFunctions.filter((func) => func !== value)
+      : [...fieldsState.additionalFunctions, value];
 
-    const updatedStates = { ...fieldsState };
-
-    // Cập nhật trạng thái cho checkbox được click
-    updatedStates[value] = !updatedStates[value];
-
-    // Cập nhật trạng thái của tất cả các checkbox
-    setFieldsState(updatedStates);
+    setAdditionalFunctionsState((prevState) => ({
+      ...prevState,
+      [value]: !prevState[value],
+    }));
+    setFieldsState((prevFieldsState) => ({
+      ...prevFieldsState,
+      additionalFunctions: updatedAdditionalFunctions,
+    }));
   };
 
   const handleSelectedOptionsChange = (options) => {
@@ -92,31 +103,44 @@ const DetailsTab = (props) => {
     }));
   };
 
-  const handleClickSave = () => {
-    // Create a copy of carInfo
-  const updatedCarInfo = { ...carInfo };
+  const handleClickSave = async () => {
+    const formData = new FormData();
+    formData.append("mileage", fieldsState.mileage);
+    formData.append("fuelConsumption", fieldsState.fuelConsumption);
+    formData.append("province", fieldsState.province);
+    formData.append("district", fieldsState.district);
+    formData.append("ward", fieldsState.ward);
+    formData.append("street", fieldsState.street);
+    formData.append("description", fieldsState.description);
+    formData.append("additionalFunctions", fieldsState.additionalFunctions);
+    formData.append("terms", fieldsState.terms);
+    formData.append("price", fieldsState.price);
+    formData.append("deposit", fieldsState.deposit);
+    fieldsState.files.forEach((file) => {
+      formData.append("files", file);
+    });
 
-  // Update the fields in updatedCarInfo with the values in fieldsState
-  updatedCarInfo.mileage = fieldsState.mileage;
-  updatedCarInfo.fuelConsumption = fieldsState.fuelConsumption;
-  updatedCarInfo.province = fieldsState.province;
-  updatedCarInfo.district = fieldsState.district;
-  updatedCarInfo.ward = fieldsState.ward;
-  updatedCarInfo.street = fieldsState.street;
-  updatedCarInfo.description = fieldsState.description;
-
-  // Update additionalFunctions based on checkbox state
-  updatedCarInfo.additionalFunctions = Object.keys(fieldsState).filter(
-    (key) => fieldsState[key] && key !== "province" && key !== "district" && key !== "ward"
-  );
-
-  // Dispatch the action to update the car details
-  dispatch(carUpdated(updatedCarInfo));
+    const response = await axiosInstance.post(
+      `/owner/update/${carId}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    if (response.data.isSuccess === true) {
+      console.log("Update successfully");
+      dispatch(carUpdated(response.data.car));
+    }
   };
 
   useEffect(() => {
-    console.log(carInfo);
-  }, [carInfo]);
+    console.log("Car info: ", carInfo);
+    console.log("Additionals: ", additionalFunctionsState);
+    console.log("Fields: ", fieldsState);
+  }, [carInfo, additionalFunctionsState, fieldsState]);
 
   const MAX_LIMIT_MILEAGE = 100000;
   const MAX_LIMIT_FUELCONSUMPTION = 20;
@@ -137,7 +161,7 @@ const DetailsTab = (props) => {
             name="mileage"
             fullWidth
             placeholder="Total Kilometers - Max: 100.000 km"
-            value={carInfo.mileage}
+            value={fieldsState.mileage}
             onChange={handleDataChange}
           />
           <NumericFormat
@@ -156,7 +180,7 @@ const DetailsTab = (props) => {
             name="fuelConsumption"
             fullWidth
             placeholder="Fuel Consumption (liter/100km)"
-            value={carInfo.fuelConsumption}
+            value={fieldsState.fuelConsumption}
             onChange={handleDataChange}
           />
           <Provinces onSelectedOptionsChange={handleSelectedOptionsChange} />
@@ -164,7 +188,7 @@ const DetailsTab = (props) => {
             name="street"
             fullWidth
             placeholder="Street"
-            value={carInfo.street}
+            value={fieldsState.street}
             onChange={handleDataChange}
           />
           <OutlinedInput
@@ -172,12 +196,12 @@ const DetailsTab = (props) => {
             multiline
             fullWidth
             placeholder="Description of vehicle"
-            value={carInfo.description}
+            value={fieldsState.description}
             onChange={handleDataChange}
             inputProps={{ maxLength: MAX_WORD_LIMIT }}
           />
-          {carInfo.description &&
-            carInfo.description.length <= MAX_WORD_LIMIT && (
+          {fieldsState.description &&
+            fieldsState.description.length <= MAX_WORD_LIMIT && (
               <Typography variant="caption" color="red">
                 <span style={{ fontWeight: "bold" }}>
                   {MAX_WORD_LIMIT - carInfo.description.length}{" "}
@@ -197,7 +221,7 @@ const DetailsTab = (props) => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={fieldsState.bluetooth}
+                    checked={additionalFunctionsState.bluetooth}
                     value="bluetooth"
                     onChange={handleCheckboxChange}
                   />
@@ -214,7 +238,7 @@ const DetailsTab = (props) => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={fieldsState.gps}
+                    checked={additionalFunctionsState.gps}
                     value="gps"
                     onChange={handleCheckboxChange}
                   />
@@ -231,7 +255,7 @@ const DetailsTab = (props) => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={fieldsState.camera}
+                    checked={additionalFunctionsState.camera}
                     value="camera"
                     onChange={handleCheckboxChange}
                   />
@@ -252,7 +276,7 @@ const DetailsTab = (props) => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={fieldsState.sunRoof}
+                    checked={additionalFunctionsState.sunRoof}
                     value="sunRoof"
                     onChange={handleCheckboxChange}
                   />
@@ -269,7 +293,7 @@ const DetailsTab = (props) => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={fieldsState.childLock}
+                    checked={additionalFunctionsState.childLock}
                     value="childLock"
                     onChange={handleCheckboxChange}
                   />
@@ -286,7 +310,7 @@ const DetailsTab = (props) => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={fieldsState.childSeat}
+                    checked={additionalFunctionsState.childSeat}
                     value="childSeat"
                     onChange={handleCheckboxChange}
                   />
@@ -307,7 +331,7 @@ const DetailsTab = (props) => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={fieldsState.dvd}
+                    checked={additionalFunctionsState.dvd}
                     value="dvd"
                     onChange={handleCheckboxChange}
                   />
@@ -324,7 +348,7 @@ const DetailsTab = (props) => {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={fieldsState.usb}
+                    checked={additionalFunctionsState.usb}
                     value="usb"
                     onChange={handleCheckboxChange}
                   />
@@ -346,16 +370,15 @@ const DetailsTab = (props) => {
                 Front image
               </Typography>
               <FrontOfCar
-                onFrontImageChange={(value) => {
-                  const updateData = {
-                    ...carInfo,
+                onFrontImageChange={(value) =>
+                  setFieldsState((prevFieldsState) => ({
+                    ...prevFieldsState,
                     files: {
-                      ...carInfo.files,
+                      ...prevFieldsState.files,
                       frontImage: value,
                     },
-                  };
-                  dispatch(updateDetailsData(updateData));
-                }}
+                  }))
+                }
               />
               <Typography variant="subtitle2" fontWeight={600}>
                 Right image
