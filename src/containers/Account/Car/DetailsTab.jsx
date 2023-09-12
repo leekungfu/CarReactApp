@@ -1,6 +1,5 @@
 import {
   Box,
-  Container,
   Grid,
   OutlinedInput,
   Paper,
@@ -32,7 +31,6 @@ import FrontOfCar from "../../../components/UploadFile/FrontOfCar";
 import RightOfCar from "../../../components/UploadFile/RightOfCar";
 import LeftOfCar from "../../../components/UploadFile/LeftOfCar";
 import BackOfCar from "../../../components/UploadFile/BackOfCar";
-import { updateDetailsData } from "../../../components/ReduxToolkit/detailsSlice";
 import axiosInstance from "../../../shared/configs/axiosConfig";
 
 const DetailsTab = (props) => {
@@ -51,10 +49,7 @@ const DetailsTab = (props) => {
     street: carInfo.street,
     description: carInfo.description,
     additionalFunctions: carInfo.additionalFunctions,
-    files: carInfo.files,
-    price: carInfo.price,
-    deposit: carInfo.deposit,
-    terms: carInfo.terms,
+    files: [],
   });
 
   const [additionalFunctionsState, setAdditionalFunctionsState] = useState({
@@ -104,20 +99,35 @@ const DetailsTab = (props) => {
   };
 
   const handleClickSave = async () => {
+    const carData = {
+      mileage: fieldsState.mileage.replace(/[,\.]/g, ""),
+      fuelConsumption: fieldsState.fuelConsumption.replace(/[,\.]/g, ""),
+      province: fieldsState.province,
+      district: fieldsState.district,
+      ward: fieldsState.ward,
+      street: fieldsState.street,
+      description: fieldsState.description,
+      additionalFunctions: fieldsState.additionalFunctions,
+    };
+
     const formData = new FormData();
-    formData.append("mileage", fieldsState.mileage);
-    formData.append("fuelConsumption", fieldsState.fuelConsumption);
-    formData.append("province", fieldsState.province);
-    formData.append("district", fieldsState.district);
-    formData.append("ward", fieldsState.ward);
-    formData.append("street", fieldsState.street);
-    formData.append("description", fieldsState.description);
-    formData.append("additionalFunctions", fieldsState.additionalFunctions);
-    formData.append("terms", fieldsState.terms);
-    formData.append("price", fieldsState.price);
-    formData.append("deposit", fieldsState.deposit);
-    fieldsState.files.forEach((file) => {
-      formData.append("files", file);
+    for (const key in carData) {
+      if (Array.isArray(carData[key])) {
+        carData[key].forEach((item) => {
+          formData.append(key, item);
+        });
+      } else {
+        formData.append(key, carData[key]);
+      }
+    }
+
+    const imageNames = ["frontImage", "backImage", "rightImage", "leftImage"];
+
+    imageNames.forEach((imageName) => {
+      const imageData = fieldsState.files[imageName];
+      if (imageData) {
+        formData.append("images", imageData, imageName);
+      }
     });
 
     const response = await axiosInstance.post(
@@ -125,21 +135,35 @@ const DetailsTab = (props) => {
       formData,
       {
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       }
     );
     if (response.data.isSuccess === true) {
       console.log("Update successfully");
-      dispatch(carUpdated(response.data.car));
+      // dispatch(carUpdated(response.data.car));
     }
   };
 
   useEffect(() => {
-    console.log("Car info: ", carInfo);
+    const fieldsStateText = JSON.stringify(fieldsState, null, 2);
+    console.log("FieldsState: ", fieldsStateText);
+    // console.log("Value: ", fieldsStateText);
+    // const filesArray = Object.entries(fieldsState.files).map(
+    //   ([key, value]) => ({
+    //     name: key,
+    //     data: value,
+    //   })
+    // );
+    console.log("Car info: ", typeof carInfo.additionalFunctions);
     console.log("Additionals: ", additionalFunctionsState);
     console.log("Fields: ", fieldsState);
+    console.log("Type: ", typeof fieldsState.additionalFunctions);
+    // console.log(
+    //   "Array: ",
+    //   filesArray.find((item) => item.name === "frontImage").data
+    // );
   }, [carInfo, additionalFunctionsState, fieldsState]);
 
   const MAX_LIMIT_MILEAGE = 100000;
@@ -157,7 +181,6 @@ const DetailsTab = (props) => {
               const { floatValue, formattedValue } = value;
               return floatValue <= MAX_LIMIT_MILEAGE || formattedValue === "";
             }}
-            suffix=" (km)"
             name="mileage"
             fullWidth
             placeholder="Total Kilometers - Max: 100.000 km"
@@ -170,7 +193,6 @@ const DetailsTab = (props) => {
             decimalSeparator="."
             decimalScale={1}
             fixedDecimalScale
-            suffix=" (liter/100km)"
             isAllowed={(value) => {
               const { floatValue, formattedValue } = value;
               return (
@@ -384,16 +406,15 @@ const DetailsTab = (props) => {
                 Right image
               </Typography>
               <RightOfCar
-                onRightImageChange={(value) => {
-                  const updateData = {
-                    ...carInfo,
+                onRightImageChange={(value) =>
+                  setFieldsState((prevFieldsState) => ({
+                    ...prevFieldsState,
                     files: {
-                      ...carInfo.files,
+                      ...prevFieldsState.files,
                       rightImage: value,
                     },
-                  };
-                  dispatch(updateDetailsData(updateData));
-                }}
+                  }))
+                }
               />
             </Stack>
           </Grid>
@@ -405,31 +426,29 @@ const DetailsTab = (props) => {
                 Left image
               </Typography>
               <LeftOfCar
-                onLeftImageChange={(value) => {
-                  const updateData = {
-                    ...carInfo,
+                onLeftImageChange={(value) =>
+                  setFieldsState((prevFieldsState) => ({
+                    ...prevFieldsState,
                     files: {
-                      ...carInfo.files,
+                      ...prevFieldsState.files,
                       leftImage: value,
                     },
-                  };
-                  dispatch(updateDetailsData(updateData));
-                }}
+                  }))
+                }
               />
               <Typography variant="subtitle2" fontWeight={600}>
                 Back image
               </Typography>
               <BackOfCar
-                onBackImageChange={(value) => {
-                  const updateData = {
-                    ...carInfo,
+                onBackImageChange={(value) =>
+                  setFieldsState((prevFieldsState) => ({
+                    ...prevFieldsState,
                     files: {
-                      ...carInfo.files,
+                      ...prevFieldsState.files,
                       backImage: value,
                     },
-                  };
-                  dispatch(updateDetailsData(updateData));
-                }}
+                  }))
+                }
               />
             </Stack>
           </Grid>

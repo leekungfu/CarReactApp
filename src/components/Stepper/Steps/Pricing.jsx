@@ -53,7 +53,6 @@ const Pricing = () => {
             <NumericFormat
               customInput={OutlinedInput}
               name="basePrice"
-              suffix=" VND/day"
               value={data.basePrice}
               thousandSeparator={true}
               onChange={handleInputChange}
@@ -68,7 +67,6 @@ const Pricing = () => {
               customInput={OutlinedInput}
               thousandSeparator={true}
               name="deposit"
-              suffix=" VND"
               value={data.deposit}
               onChange={handleInputChange}
               size="small"

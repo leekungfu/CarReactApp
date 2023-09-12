@@ -112,11 +112,11 @@ const Basic = () => {
             >
               <InputLabel required>Transmission</InputLabel>
               <FormControlLabel
-                control={<Radio value="automatic" color="primary" />}
+                control={<Radio value="Automatic" color="primary" />}
                 label="Automatic"
               />
               <FormControlLabel
-                control={<Radio value="manual" color="primary" />}
+                control={<Radio value="Manual" color="primary" />}
                 label="Manual"
               />
             </RadioGroup>
@@ -129,11 +129,11 @@ const Basic = () => {
             >
               <InputLabel required>Fuel</InputLabel>
               <FormControlLabel
-                control={<Radio value="gasoline" color="primary" />}
+                control={<Radio value="Gasoline" color="primary" />}
                 label="Gasoline"
               />
               <FormControlLabel
-                control={<Radio value="diesel" color="primary" />}
+                control={<Radio value="Diesel" color="primary" />}
                 label="Diesel"
               />
             </RadioGroup>

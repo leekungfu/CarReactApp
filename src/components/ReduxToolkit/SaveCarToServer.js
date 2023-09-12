@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { carAdded } from "./CarAdapter";
 

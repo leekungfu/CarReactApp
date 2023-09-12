@@ -82,7 +82,6 @@ const Details = () => {
               const { floatValue, formattedValue } = value;
               return floatValue <= MAX_LIMIT_MILEAGE || formattedValue === "";
             }}
-            suffix=" (km)"
             name="mileage"
             fullWidth
             placeholder="Total Kilometers - Max: 100.000 km"
@@ -95,7 +94,6 @@ const Details = () => {
             decimalSeparator="."
             decimalScale={1}
             fixedDecimalScale
-            suffix=" (liter/100km)"
             isAllowed={(value) => {
               const { floatValue, formattedValue } = value;
               return (

@@ -15,12 +15,20 @@ import {
   carSelected,
   carUpdated,
 } from "../../../components/ReduxToolkit/CarAdapter";
+import axiosInstance from "../../../shared/configs/axiosConfig";
 
 const PricingTab = (props) => {
   const { carId } = props;
   const car = useSelector((state) => carSelected(state, carId)).payload.cars;
   const carInfo = car.entities[carId];
   const dispatch = useDispatch();
+  const token = localStorage.getItem("jwtToken");
+
+  const [fieldsState, setFieldsState] = useState({
+    basePrice: carInfo.price,
+    deposit: carInfo.deposit,
+    terms: carInfo.terms,
+  });
 
   const [checkboxStates, setCheckboxStates] = useState({
     noSmoking: carInfo.terms.includes("noSmoking"),
@@ -28,11 +36,13 @@ const PricingTab = (props) => {
     noFoodInCar: carInfo.terms.includes("noFoodInCar"),
     other: carInfo.terms.includes("other"),
   });
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-
-    const updateData = { ...carInfo, [name]: value };
-    dispatch(carUpdated(updateData));
+    setFieldsState((prevFieldsState) => ({
+      ...prevFieldsState,
+      [name]: value,
+    }));
   };
 
   const handleCheckboxChange = (event) => {
@@ -41,15 +51,48 @@ const PricingTab = (props) => {
       ? carInfo.terms.filter((term) => term !== value)
       : [...carInfo.terms, value];
 
-      const updatedStates = { ...checkboxStates };
+    setCheckboxStates((prevState) => ({
+      ...prevState,
+      [value]: !prevState[value],
+    }));
+    setFieldsState((prevFieldsState) => ({
+      ...prevFieldsState,
+      terms: checkExisted,
+    }));
+  };
 
-      // Cập nhật trạng thái cho checkbox được click
-      updatedStates[value] = !updatedStates[value];
-  
-      // Cập nhật trạng thái của tất cả các checkbox
-      setCheckboxStates(updatedStates);
-    const updateTerms = { ...carInfo, terms: checkExisted };
-    dispatch(carUpdated(updateTerms));
+  const handleClickSave = async () => {
+    const carData = {
+      basePrice: fieldsState.price,
+      deposit: fieldsState.deposit,
+      terms: fieldsState.terms,
+    };
+
+    const formData = new FormData();
+    for (const key in carData) {
+      if (Array.isArray(carData[key])) {
+        carData[key].forEach((item) => {
+          formData.append(key, item);
+        });
+      } else {
+        formData.append(key, carData[key]);
+      }
+    }
+
+    const response = await axiosInstance.post(
+      `/owner/update/${carId}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response.data.isSuccess === true) {
+      console.log("Update successfully");
+      // dispatch(carUpdated(response.data.car));
+    }
   };
 
   const MAX_BASE_PRICE = 10000000;
@@ -73,8 +116,7 @@ const PricingTab = (props) => {
             <NumericFormat
               customInput={OutlinedInput}
               name="basePrice"
-              suffix=" VND/day"
-              value={carInfo.price}
+              value={fieldsState.basePrice}
               thousandSeparator={true}
               onChange={handleInputChange}
               size="small"
@@ -88,8 +130,7 @@ const PricingTab = (props) => {
               customInput={OutlinedInput}
               thousandSeparator={true}
               name="deposit"
-              suffix=" VND"
-              value={carInfo.deposit}
+              value={fieldsState.deposit}
               onChange={handleInputChange}
               size="small"
               placeholder="5.000.000 VND"
@@ -185,6 +226,7 @@ const PricingTab = (props) => {
             width: "16%",
           }}
           variant="outlined"
+          onClick={handleClickSave}
         >
           Save
         </Button>
