@@ -16,12 +16,14 @@ import {
   carUpdated,
 } from "../../../components/ReduxToolkit/CarAdapter";
 import axiosInstance from "../../../shared/configs/axiosConfig";
+import { useNavigate } from "react-router-dom";
 
 const PricingTab = (props) => {
   const { carId } = props;
   const car = useSelector((state) => carSelected(state, carId)).payload.cars;
   const carInfo = car.entities[carId];
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const token = localStorage.getItem("jwtToken");
 
   const [fieldsState, setFieldsState] = useState({
@@ -63,8 +65,14 @@ const PricingTab = (props) => {
 
   const handleClickSave = async () => {
     const carData = {
-      basePrice: fieldsState.price,
-      deposit: fieldsState.deposit,
+      basePrice:
+        typeof fieldsState.basePrice === "string"
+          ? fieldsState.basePrice.replace(/,|\./g, "")
+          : fieldsState.basePrice,
+      deposit:
+        typeof fieldsState.deposit === "string"
+          ? fieldsState.deposit.replace(/,|\./g, "")
+          : fieldsState.deposit,
       terms: fieldsState.terms,
     };
 
@@ -80,7 +88,7 @@ const PricingTab = (props) => {
     }
 
     const response = await axiosInstance.post(
-      `/owner/update/${carId}`,
+      `/owner/updatePricing/${carId}`,
       formData,
       {
         headers: {
@@ -90,10 +98,14 @@ const PricingTab = (props) => {
       }
     );
     if (response.data.isSuccess === true) {
-      console.log("Update successfully");
-      // dispatch(carUpdated(response.data.car));
+      console.log("Update pricing successfully");
+      dispatch(carUpdated(response.data.car));
     }
   };
+
+  useEffect(() => {
+    console.log("Deposit: ", fieldsState.deposit);
+  }, [fieldsState])
 
   const MAX_BASE_PRICE = 10000000;
   const MAX_DEPOSIT = 1000000000;
@@ -212,6 +224,7 @@ const PricingTab = (props) => {
             width: "16%",
           }}
           variant="outlined"
+          onClick={() => navigate("/cars")}
         >
           Discard
         </Button>

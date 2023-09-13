@@ -32,10 +32,12 @@ import RightOfCar from "../../../components/UploadFile/RightOfCar";
 import LeftOfCar from "../../../components/UploadFile/LeftOfCar";
 import BackOfCar from "../../../components/UploadFile/BackOfCar";
 import axiosInstance from "../../../shared/configs/axiosConfig";
+import { useNavigate } from "react-router-dom";
 
 const DetailsTab = (props) => {
   const { carId } = props;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const car = useSelector((state) => carSelected(state, carId)).payload.cars;
   const carInfo = car.entities[carId];
   const token = localStorage.getItem("jwtToken");
@@ -100,8 +102,13 @@ const DetailsTab = (props) => {
 
   const handleClickSave = async () => {
     const carData = {
-      mileage: fieldsState.mileage.replace(/[,\.]/g, ""),
-      fuelConsumption: fieldsState.fuelConsumption.replace(/[,\.]/g, ""),
+      mileage: typeof fieldsState.mileage === "string"
+      ? fieldsState.mileage.replace(/,|\./g, "")
+      : fieldsState.mileage,
+      fuelConsumption:
+      typeof fieldsState.fuelConsumption === "string"
+      ? fieldsState.fuelConsumption.replace(/,|\./g, "")
+       : fieldsState.fuelConsumption ,
       province: fieldsState.province,
       district: fieldsState.district,
       ward: fieldsState.ward,
@@ -131,7 +138,7 @@ const DetailsTab = (props) => {
     });
 
     const response = await axiosInstance.post(
-      `/owner/update/${carId}`,
+      `/owner/updateDetails/${carId}`,
       formData,
       {
         headers: {
@@ -142,28 +149,16 @@ const DetailsTab = (props) => {
     );
     if (response.data.isSuccess === true) {
       console.log("Update successfully");
-      // dispatch(carUpdated(response.data.car));
+      dispatch(carUpdated(response.data.car));
     }
   };
 
   useEffect(() => {
     const fieldsStateText = JSON.stringify(fieldsState, null, 2);
     console.log("FieldsState: ", fieldsStateText);
-    // console.log("Value: ", fieldsStateText);
-    // const filesArray = Object.entries(fieldsState.files).map(
-    //   ([key, value]) => ({
-    //     name: key,
-    //     data: value,
-    //   })
-    // );
     console.log("Car info: ", typeof carInfo.additionalFunctions);
     console.log("Additionals: ", additionalFunctionsState);
     console.log("Fields: ", fieldsState);
-    console.log("Type: ", typeof fieldsState.additionalFunctions);
-    // console.log(
-    //   "Array: ",
-    //   filesArray.find((item) => item.name === "frontImage").data
-    // );
   }, [carInfo, additionalFunctionsState, fieldsState]);
 
   const MAX_LIMIT_MILEAGE = 100000;
@@ -470,6 +465,7 @@ const DetailsTab = (props) => {
               width: "16%",
             }}
             variant="outlined"
+            onClick={() => navigate("/cars")}
           >
             Discard
           </Button>
