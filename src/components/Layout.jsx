@@ -7,13 +7,20 @@ import { useSelector } from "react-redux";
 
 function Layout({ children }) {
   const reduxUserRole = useSelector((state) => state.backendData);
-  const [role, setRole] = useState(
-    localStorage.getItem("userRole") || reduxUserRole.role
-  );
+  const userData = localStorage.getItem("userData");
+  const userRole = JSON.parse(userData);
+  const initialRole =
+    userRole && userRole.role ? userRole.role : reduxUserRole.role;
+
+  const [role, setRole] = useState(initialRole);
+
   useEffect(() => {
     const handleLocalStorageChange = (e) => {
-      if (e.key === "userRole") {
-        setRole(e.newValue || reduxUserRole.role);
+      if (e.key === "userData") {
+        const newValue = JSON.parse(e.newValue);
+        const updatedRole =
+          newValue && newValue.role ? newValue.role : reduxUserRole.role;
+        setRole(updatedRole);
       }
     };
 

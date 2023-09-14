@@ -12,7 +12,6 @@ import {
   Box,
   Card,
   CardContent,
-  CardHeader,
   Tab,
   Tabs,
   Container,
@@ -26,17 +25,20 @@ import {
   InputAdornment,
   IconButton,
   Breadcrumbs,
-  Alert,
-  Snackbar,
 } from "@mui/material";
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import CustomTabPanels from "../../../components/CustomTabPanels/CustomTabPanels";
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import DrivingLicense from "../../../components/UploadFile/DrivingLicense";
 import Provinces from "../../../components/Select/Provinces";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import {
   DATE_PICKER_DISPLAY_FORMAT,
   DATE_PICKER_URI_FORMAT,
@@ -45,6 +47,8 @@ import { useSnackbar } from "../../../components/Hooks/useSnackBar";
 import validator from "validator";
 import { NumericFormat } from "react-number-format";
 import axiosInstance from "../../../shared/configs/axiosConfig";
+import { useDispatch, useSelector } from "react-redux";
+import { setData } from "../../../components/ReduxToolkit/slice";
 
 function a11yProps(index) {
   return {
@@ -54,19 +58,22 @@ function a11yProps(index) {
 }
 
 const ProfileTabs = () => {
-  const userInfo = useSelector((state) => state.backendData);
   const { createSnack } = useSnackbar();
-
+  const dispatch = useDispatch();
+  const token = localStorage.getItem("jwtToken");
+  const user = useSelector((state) => state.backendData);
+  console.log("user ", user);
+  
   const [tab, setTab] = useState(0);
-  const [fullName, setFullName] = useState(userInfo.fullName);
-  const [phone, setPhone] = useState(userInfo.phone);
-  const [nationalID, setNationalId] = useState("");
+  const [fullName, setFullName] = useState(user.fullName);
+  const [phone, setPhone] = useState(user.phone);
+  const [nationalID, setNationalId] = useState(user.nationalID);
   const [birthDay, setBirthDay] = useState(dayjs);
-  const [street, setStreet] = useState("");
+  const [street, setStreet] = useState(user.street);
   const [drivingLicense, setDrivingLicense] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
+  
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
@@ -104,10 +111,6 @@ const ProfileTabs = () => {
     setDrivingLicense(newValue);
   };
 
-  const token = localStorage.getItem("jwtToken");
-  const user = useSelector((state) => state.backendData);
-  console.log("user ", user);
-
   const handleClickSaveChange = async (event) => {
     event.preventDefault();
     try {
@@ -125,7 +128,7 @@ const ProfileTabs = () => {
         street &&
         drivingLicense
       ) {
-        formData.append("email", userInfo.email);
+        formData.append("email", user.email);
         formData.append("fullName", fullName);
         formData.append("birthDay", dobFormated);
         formData.append("phone", phone);
@@ -140,11 +143,12 @@ const ProfileTabs = () => {
         const response = await axiosInstance.post("/personalInfo", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
 
-        if (response.status === 200 && response.data.isSuccess === true) {
+        if (response.data.isSuccess === true) {
+          dispatch(setData(response.data.member));
           createSnack(response.data.message, { severity: "success" });
         } else {
           createSnack(response.data.message, { severity: "error" });
@@ -162,7 +166,7 @@ const ProfileTabs = () => {
 
     if (password && confirmPassword && isPasswordValidRef) {
       if (password === confirmPassword) {
-        const email = userInfo.email;
+        const email = user.email;
         const response = await axiosInstance.post("/updatePassword", null, {
           params: {
             email,
@@ -170,7 +174,7 @@ const ProfileTabs = () => {
           },
           headers: {
             Authorization: `Bearer ${token}`,
-          }
+          },
         });
 
         if (response.data.isSuccess === true) {
@@ -364,7 +368,7 @@ const ProfileTabs = () => {
                         fullWidth
                         placeholder="name@gmail.com"
                         disabled
-                        value={userInfo.email}
+                        value={user.email}
                       />
                     </Box>
                     <Box>
@@ -376,7 +380,7 @@ const ProfileTabs = () => {
                         onChange={(event) => setStreet(event.target.value)}
                         inputProps={{ maxLength: MAX_STREET_LENGTH }}
                       />
-                      {street && street.length == MAX_STREET_LENGTH && (
+                      {street && street.length === MAX_STREET_LENGTH && (
                         <Typography variant="subtitle2" color="red">
                           Exceed maximum length of street address!
                         </Typography>

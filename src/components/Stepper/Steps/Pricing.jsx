@@ -57,6 +57,7 @@ const Pricing = () => {
               thousandSeparator={true}
               onChange={handleInputChange}
               size="small"
+              suffix=" (VND/day)"
               placeholder="1.000.000 VND / day"
               isAllowed={(value) => {
                 const { floatValue, formattedValue } = value;
@@ -70,6 +71,7 @@ const Pricing = () => {
               value={data.deposit}
               onChange={handleInputChange}
               size="small"
+              suffix=" (VND)"
               placeholder="5.000.000 VND"
               isAllowed={(value) => {
                 const { floatValue, formattedValue } = value;

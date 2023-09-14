@@ -25,7 +25,8 @@ const StyledMenuItem = styled(MenuItem)`
 export default function UserMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const role = localStorage.getItem("userRole");
+  const userData = localStorage.getItem("userData");
+  const role = JSON.parse(userData).role;
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };

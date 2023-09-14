@@ -20,69 +20,45 @@ import { Add, Commute, Home, NavigateNext } from "@mui/icons-material";
 import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   carSelectedAll,
-  carsAdded,
 } from "../../../components/ReduxToolkit/CarAdapter";
-import axiosInstance from "../../../shared/configs/axiosConfig";
 
 const MyCars = (props) => {
   const { loading = false } = props;
   const [rateValue, setRateValue] = useState(4.5);
   const [openAddCar, setOpenAddCar] = useState(false);
-  const [carArray, setCarArray] = useState([]);
-  const [apiCalled, setApiCalled] = useState(false);
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (!apiCalled) {
-      const token = localStorage.getItem("jwtToken");
-      axiosInstance
-        .get("/owner/cars", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          if (response.data.isSuccess === true) {
-            console.log(response.data.cars);
-            setCarArray(response.data.cars);
-            dispatch(carsAdded(response.data.cars));
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        })
-        .finally(() => {
-          setApiCalled(true);
-        });
-    }
-  }, [apiCalled, dispatch]);
-
+  const cars = useSelector(carSelectedAll).payload.cars;
+  const carArray = Object.values(cars.entities);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+  const totalCars = carArray.length;
+  const totalPages = Math.ceil(totalCars / itemsPerPage);
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const carsOnCurrentPage = carArray.slice(startIndex, endIndex);
   const handleClickOpenAddCar = () => {
     setOpenAddCar(true);
   };
-
   const navigate = useNavigate();
   const handleCarClick = (carId) => {
     navigate(`/editcardetails/${carId}`);
   };
-
   const handleClose = () => {
     setOpenAddCar(false);
     setOpenConfirmDeposit(false);
     setOpenConfirmPayment(false);
   };
-
   const [openConfirmDeposit, setOpenConfirmDeposit] = useState(false);
   const [openConfirmPayment, setOpenConfirmPayment] = useState(false);
 
   const handleClickOpenConfirmDeposit = () => {
     setOpenConfirmDeposit(true);
   };
-
   const handleClickOpenConfirmPayment = () => {
     setOpenConfirmPayment(true);
   };
@@ -149,7 +125,7 @@ const MyCars = (props) => {
               <Typography variant="h6">LIST CARS:</Typography>
             </Stack>
             <Grid container columnSpacing={4} rowSpacing={5}>
-              {(loading ? Array.from(new Array(6)) : carArray).map((car) => (
+              {(loading ? Array.from(new Array(6)) : carsOnCurrentPage).map((car) => (
                 <Grid item xs={4} key={car.id}>
                   {car ? (
                     <Box
@@ -311,7 +287,9 @@ const MyCars = (props) => {
             </Grid>
             <Pagination
               sx={{ display: "flex", justifyContent: "end", mt: 10 }}
-              count={10}
+              count={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
               variant="outlined"
               showFirstButton
               showLastButton

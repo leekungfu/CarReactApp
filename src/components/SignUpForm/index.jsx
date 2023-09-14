@@ -103,11 +103,20 @@ const SignUpForm = (props) => {
         formData.append("role", role);
         const response = await axiosInstance.post("/signup", formData);
         const data = await response.data.member;
-        localStorage.setItem("jwtToken", response.data.token);
-        localStorage.setItem("userRole", response.data.member.role);
-        dispatch(setData(data));
-        
+
         if (response.data.isSuccess === true) {
+          localStorage.setItem("jwtToken", response.data.token);
+          dispatch(setData(data));
+          const basicInfo = {
+            fullName: data.fullName,
+            email: data.email,
+            phone: data.phone,
+            role: data.role,
+            nationalID: data.nationalID,
+            street: data.street,
+          };
+          localStorage.setItem("userData", JSON.stringify(basicInfo));
+
           if (role === "CUSTOMER") {
             window.location.href = "/homecustomer";
           } else {

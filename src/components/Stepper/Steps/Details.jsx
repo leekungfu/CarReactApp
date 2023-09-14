@@ -84,6 +84,7 @@ const Details = () => {
             }}
             name="mileage"
             fullWidth
+            suffix=" (km)"
             placeholder="Total Kilometers - Max: 100.000 km"
             value={data.mileage}
             onChange={handleDataChange}
@@ -102,6 +103,7 @@ const Details = () => {
             }}
             name="fuelConsumption"
             fullWidth
+            suffix=" (liter/100km)"
             placeholder="Fuel Consumption (liter/100km)"
             value={data.fuelConsumption}
             onChange={handleDataChange}

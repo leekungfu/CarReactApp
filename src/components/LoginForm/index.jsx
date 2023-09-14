@@ -61,9 +61,16 @@ function LoginForm(props) {
       const response = await axiosInstance.post("/login", formData);
 
       if (response.data.isSuccess === true) {
-        dispatch(setData(response.data.member));
         localStorage.setItem("jwtToken", response.data.token);
-        localStorage.setItem("userRole", response.data.member.role);
+        const basicInfo = {
+          fullName: response.data.member.fullName,
+          email: response.data.member.email,
+          phone: response.data.member.phone,
+          role: response.data.member.role,
+          nationalID: response.data.member.nationalID,
+          street: response.data.member.street,
+        };
+        localStorage.setItem("userData", JSON.stringify(basicInfo));
         createSnack(response.data.message, { severity: "success" });
         if (response.data.member.role === "CUSTOMER") {
           window.location.href = "/homecustomer";

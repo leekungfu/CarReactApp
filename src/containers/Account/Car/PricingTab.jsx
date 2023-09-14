@@ -27,7 +27,7 @@ const PricingTab = (props) => {
   const token = localStorage.getItem("jwtToken");
 
   const [fieldsState, setFieldsState] = useState({
-    basePrice: carInfo.price,
+    basePrice: carInfo.basePrice,
     deposit: carInfo.deposit,
     terms: carInfo.terms,
   });
@@ -67,11 +67,11 @@ const PricingTab = (props) => {
     const carData = {
       basePrice:
         typeof fieldsState.basePrice === "string"
-          ? fieldsState.basePrice.replace(/,|\./g, "")
+          ? parseInt(fieldsState.basePrice.replace(/,|\./g, ""))
           : fieldsState.basePrice,
       deposit:
         typeof fieldsState.deposit === "string"
-          ? fieldsState.deposit.replace(/,|\./g, "")
+          ? parseInt(fieldsState.deposit.replace(/,|\./g, ""))
           : fieldsState.deposit,
       terms: fieldsState.terms,
     };
@@ -99,13 +99,11 @@ const PricingTab = (props) => {
     );
     if (response.data.isSuccess === true) {
       console.log("Update pricing successfully");
-      dispatch(carUpdated(response.data.car));
+      dispatch(
+        carUpdated({ id: response.data.car.id, changes: response.data.car })
+      );
     }
   };
-
-  useEffect(() => {
-    console.log("Deposit: ", fieldsState.deposit);
-  }, [fieldsState])
 
   const MAX_BASE_PRICE = 10000000;
   const MAX_DEPOSIT = 1000000000;
@@ -132,6 +130,7 @@ const PricingTab = (props) => {
               thousandSeparator={true}
               onChange={handleInputChange}
               size="small"
+              suffix=" (VND/day)"
               placeholder="1.000.000 VND / day"
               isAllowed={(value) => {
                 const { floatValue, formattedValue } = value;
@@ -145,11 +144,13 @@ const PricingTab = (props) => {
               value={fieldsState.deposit}
               onChange={handleInputChange}
               size="small"
+              suffix=" (VND)"
               placeholder="5.000.000 VND"
               isAllowed={(value) => {
                 const { floatValue, formattedValue } = value;
                 return floatValue < MAX_DEPOSIT || formattedValue === "";
               }}
+              
             />
           </Stack>
         </Grid>

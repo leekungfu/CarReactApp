@@ -1,6 +1,4 @@
 import {
-  Card,
-  CardContent,
   Box,
   Tabs,
   Tab,
@@ -19,7 +17,7 @@ import {
   TableBody,
   TableHead,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import styled from "styled-components";
 import CustomTabPanels from "../../../components/CustomTabPanels/CustomTabPanels";
@@ -31,23 +29,18 @@ import {
   More,
   NavigateNext,
 } from "@mui/icons-material";
-import Details from "../../../components/Stepper/Steps/Details";
-import Pricing from "../../../components/Stepper/Steps/Pricing";
-import Preview from "../../../components/Stepper/Steps/Preview";
 import { Link, useParams } from "react-router-dom";
-import AutoPlaySwipePreview from "../../../components/Stepper/AutoPlaySwipePreview";
 import { useSelector } from "react-redux";
 import {
   carSelected,
-  carUpdated,
 } from "../../../components/ReduxToolkit/CarAdapter";
 import AutoPreview from "./AutoPreview";
 import DetailsTab from "./DetailsTab";
 import PricingTab from "./PricingTab";
 
-const StyledTypography = styled(Typography)`
-  font-weight: bold !important;
-`;
+// const StyledTypography = styled(Typography)`
+//   font-weight: bold !important;
+// `;
 
 function a11yProps(index) {
   return {
@@ -59,14 +52,15 @@ function a11yProps(index) {
 const EditCarDetails = () => {
   const [tab, setTab] = useState(0);
   const { carId } = useParams();
+  const car = useSelector((state) => carSelected(state, carId)).payload.cars;
+  const [carInfo, setCarInfo] = useState(car.entities[carId]);
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
 
-  const car = useSelector((state) => carSelected(state, carId)).payload.cars;
-  console.log("Car: ", car);
-  const carInfo = car.entities[carId];
-  console.log("Car info: ", carInfo);
+  useEffect(() => {
+    setCarInfo(car.entities[carId]);
+  }, [car, carId]);
 
   return (
     <div>
@@ -124,36 +118,36 @@ const EditCarDetails = () => {
         </Breadcrumbs>
       </Container>
       <Container maxWidth="lg" sx={{ mb: 10 }}>
-        <StyledTypography variant="h6" sx={{ mb: 3 }}>
+        <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold" }}>
           Edit car details
-        </StyledTypography>
+        </Typography>
         <Grid container>
           <Grid item xs={6}>
             <AutoPreview carId={carId} />
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="h6">
+            <Typography variant="h6" fontWeight="bold">
               {carInfo.brand} {carInfo.model} {carInfo.productionYear}{" "}
             </Typography>
             <Stack direction="row" spacing={1}>
-              <StyledTypography variant="subtitle1">Rating:</StyledTypography>
+              <Typography variant="subtitle1">Rating:</Typography>
               <Rating defaultValue={3.5} precision={0.5} readOnly />
             </Stack>
-            <StyledTypography variant="subtitle1">
-              Number of rides: 4
-            </StyledTypography>
-            <StyledTypography variant="subtitle1">
-              Price: {carInfo.basePrice}
-            </StyledTypography>
-            <StyledTypography variant="subtitle1">
-              Location: {carInfo.ward} {carInfo.district} {carInfo.province}
-            </StyledTypography>
-            <StyledTypography variant="subtitle1">
+            <Typography variant="subtitle1">
+              Number of rides: <span style={{ fontWeight: "bold" }}>4</span>
+            </Typography>
+            <Typography variant="subtitle1">
+              Price: <span style={{ fontWeight: "bold" }}>{carInfo.basePrice}</span>
+            </Typography>
+            <Typography variant="subtitle1">
+              Location: <span style={{ fontWeight: "bold" }}>{carInfo.ward} {carInfo.district} {carInfo.province}</span>
+            </Typography>
+            <Typography variant="subtitle1">
               Status:{" "}
               <span style={{ color: "#38b000", fontWeight: "bold" }}>
                 {carInfo.status}
               </span>
-            </StyledTypography>
+            </Typography>
             {car.status === "Booked" ? (
               <Button
                 sx={{
@@ -214,40 +208,40 @@ const EditCarDetails = () => {
           <Grid container>
             <Grid item xs={6}>
               <Stack spacing={2}>
-                <StyledTypography variant="subtitle1">
-                  Plate number: {carInfo.plateNumber}
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  Brand name: {carInfo.brand}
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  Production year: {carInfo.productionYear}
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  Transmission type: {carInfo.transmissionType}
-                </StyledTypography>
+                <Typography variant="subtitle1">
+                  Plate number: <span style={{ fontWeight: "bold" }}>{carInfo.plateNumber}</span>
+                </Typography>
+                <Typography variant="subtitle1">
+                  Brand name: <span style={{ fontWeight: "bold" }}>{carInfo.brand}</span>
+                </Typography>
+                <Typography variant="subtitle1">
+                  Production year: <span style={{ fontWeight: "bold" }}>{carInfo.productionYear}</span>
+                </Typography>
+                <Typography variant="subtitle1">
+                  Transmission type: <span style={{ fontWeight: "bold" }}>{carInfo.transmissionType}</span>
+                </Typography>
               </Stack>
             </Grid>
             <Grid item xs={6}>
               <Stack spacing={2}>
-                <StyledTypography variant="subtitle1">
-                  Color: {carInfo.color}
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  Model: {carInfo.model}
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  No. of seats: {carInfo.numberOfSeat}
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  Fuel type: {carInfo.fuelType}
-                </StyledTypography>
+                <Typography variant="subtitle1">
+                  Color: <span style={{ fontWeight: "bold" }}>{carInfo.color}</span>
+                </Typography>
+                <Typography variant="subtitle1">
+                  Model: <span style={{ fontWeight: "bold" }}>{carInfo.model}</span>
+                </Typography>
+                <Typography variant="subtitle1">
+                  No. of seats: <span style={{ fontWeight: "bold" }}>{carInfo.numberOfSeat}</span>
+                </Typography>
+                <Typography variant="subtitle1">
+                  Fuel type: <span style={{ fontWeight: "bold" }}>{carInfo.fuelType}</span>
+                </Typography>
               </Stack>
             </Grid>
             <Grid item xs={12}>
-              <StyledTypography sx={{ pt: 2 }} variant="subtitle1">
+              <Typography sx={{ pt: 2 }} variant="subtitle1">
                 Documents:
-              </StyledTypography>
+              </Typography>
               <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }}>
                   <TableHead>

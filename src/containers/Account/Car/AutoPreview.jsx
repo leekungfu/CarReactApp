@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
@@ -18,35 +18,35 @@ SwiperCore.use([Navigation, Autoplay]);
 function AutoPreview(props) {
   const { carId } = props;
   const car = useSelector((state) => carSelected(state, carId)).payload.cars;
-  const carInfo = car.entities[carId];
+  const [carInfo, setCarInfo] = useState(car.entities[carId]);
   let swiperInstance;
+  useEffect(() => {
+    setCarInfo(car.entities[carId]);
+  }, [car, carId]);
+
   const images = [
     {
       label: "Front Image",
       imgPath: `data:image/jpeg;base64, ${
-        carInfo.files.find((item) => item.name === "frontImage")
-          .data
+        carInfo.files.find((item) => item.name === "frontImage").data
       }`,
     },
     {
       label: "Right Image",
       imgPath: `data:image/jpeg;base64, ${
-        carInfo.files.find((item) => item.name === "rightImage")
-          .data
+        carInfo.files.find((item) => item.name === "rightImage").data
       }`,
     },
     {
       label: "Left Image",
       imgPath: `data:image/jpeg;base64, ${
-        carInfo.files.find((item) => item.name === "leftImage")
-          .data
+        carInfo.files.find((item) => item.name === "leftImage").data
       }`,
     },
     {
       label: "Back Image",
       imgPath: `data:image/jpeg;base64, ${
-        carInfo.files.find((item) => item.name === "backImage")
-          .data
+        carInfo.files.find((item) => item.name === "backImage").data
       }`,
     },
   ];

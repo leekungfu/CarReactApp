@@ -54,7 +54,7 @@ const AddCarStepper = (props) => {
         numberOfSeat: basicData.numberOfSeat,
         transmissionType: basicData.transmissionType,
         fuelType: basicData.fuelType,
-        mileage: parseFloat(detailsData.mileage.replace(/[^0-9.]/g, "")),
+        mileage: parseInt(detailsData.mileage.replace(/[^0-9.]/g, "")),
         fuelConsumption: parseFloat(
           detailsData.fuelConsumption.replace(/[^0-9.]/g, "")
         ),

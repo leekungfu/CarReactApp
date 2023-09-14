@@ -102,13 +102,14 @@ const DetailsTab = (props) => {
 
   const handleClickSave = async () => {
     const carData = {
-      mileage: typeof fieldsState.mileage === "string"
-      ? fieldsState.mileage.replace(/,|\./g, "")
-      : fieldsState.mileage,
+      mileage:
+        typeof fieldsState.mileage === "string"
+          ? parseInt(fieldsState.mileage.replace(/,|\./g, ""))
+          : fieldsState.mileage,
       fuelConsumption:
-      typeof fieldsState.fuelConsumption === "string"
-      ? fieldsState.fuelConsumption.replace(/,|\./g, "")
-       : fieldsState.fuelConsumption ,
+        typeof fieldsState.fuelConsumption === "string"
+          ? parseFloat(fieldsState.fuelConsumption.replace(/[^0-9.]/g, ""))
+          : fieldsState.fuelConsumption,
       province: fieldsState.province,
       district: fieldsState.district,
       ward: fieldsState.ward,
@@ -149,7 +150,9 @@ const DetailsTab = (props) => {
     );
     if (response.data.isSuccess === true) {
       console.log("Update successfully");
-      dispatch(carUpdated(response.data.car));
+      dispatch(
+        carUpdated({ id: response.data.car.id, changes: response.data.car })
+      );
     }
   };
 
@@ -178,6 +181,7 @@ const DetailsTab = (props) => {
             }}
             name="mileage"
             fullWidth
+            suffix=" (km)"
             placeholder="Total Kilometers - Max: 100.000 km"
             value={fieldsState.mileage}
             onChange={handleDataChange}
@@ -196,6 +200,7 @@ const DetailsTab = (props) => {
             }}
             name="fuelConsumption"
             fullWidth
+            suffix=" (liter/100km)"
             placeholder="Fuel Consumption (liter/100km)"
             value={fieldsState.fuelConsumption}
             onChange={handleDataChange}

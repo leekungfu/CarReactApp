@@ -31,6 +31,8 @@ import { DateRangePicker } from "rsuite";
 import { useTheme } from "@mui/material/styles";
 import subVn from "sub-vn";
 import { Link } from "react-router-dom";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { useSnackbar } from "../../components/Hooks/useSnackBar";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -52,103 +54,45 @@ function getStyles(name, items, theme) {
   };
 }
 
-const data = [
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.000 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.000 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.000 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.000 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.000 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.000 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-];
-
 const HomeCustomer = (props) => {
   const theme = useTheme();
-  const grid = useRef(null);
   const { loading = false } = props;
+  const { createSnack } = useSnackbar();
   const [rateValue, setRateValue] = useState(4.5);
-  const [openAddCar, setOpenAddCar] = useState(false);
-  const [openViewDetails, setOpenViewDetails] = useState(false);
-
   const [selectedProvince, setSelectedProvince] = useState(null);
   const provinces = subVn.getProvinces();
   const provinceArray = provinces.map((province) => province.name);
-
   const handleProvinceChange = (event) => {
     setSelectedProvince(event.target.value);
   };
 
-  const handleClickOpenAddCar = () => {
-    setOpenAddCar(true);
-  };
-
-  const handleClickOpenViewDetails = () => {
-    setOpenViewDetails(true);
-  };
-
-  const handleClose = () => {
-    setOpenAddCar(false);
-    setOpenViewDetails(false);
-    setOpenConfirmDeposit(false);
-    setOpenConfirmPayment(false);
-  };
-
-  const [openConfirmDeposit, setOpenConfirmDeposit] = useState(false);
-  const [openConfirmPayment, setOpenConfirmPayment] = useState(false);
-
-  const handleClickOpenConfirmDeposit = () => {
-    setOpenConfirmDeposit(true);
-  };
-
-  const handleClickOpenConfirmPayment = () => {
-    setOpenConfirmPayment(true);
+  const fromTime = new Date();
+  fromTime.setHours(0, 0, 0, 0);
+  const toTime = new Date();
+  toTime.setHours(23, 59, 59, 999);
+  const [startTime, setStartTime] = useState(fromTime);
+  const [endTime, setEndTime] = useState(toTime);
+  const [cars, setCars] = useState([]);
+  const token = localStorage.getItem("jwtToken");
+  const handleClickSearch = async () => {
+    const response = await axiosInstance.get("/customer/searchCar", {
+      params: {
+        selectedProvince,
+        startTime,
+        endTime,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
+    });
+    if (response.data.isSuccess === true) {
+      setCars(response.data.cars);
+      console.log("Cars: ", response.data.cars);
+      createSnack(response.data.message, { severity: "success" });
+    }
+    else {
+      createSnack(response.data.message, { severity: "error" });
+    }
   };
 
   return (
@@ -195,10 +139,11 @@ const HomeCustomer = (props) => {
               <Grid item xs={4}>
                 <DateRangePicker
                   format={"yyyy-MM-dd HH:mm:ss"}
-                  defaultCalendarValue={[
-                    new Date("2022-02-01 00:00:00"),
-                    new Date("2022-05-01 23:59:59"),
-                  ]}
+                  value={[new Date(startTime), new Date(endTime)]}
+                  onChange={(values) => {
+                    setStartTime(values[0].toJSON());
+                    setEndTime(values[1].toJSON());
+                  }}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -214,7 +159,7 @@ const HomeCustomer = (props) => {
                     },
                   }}
                   variant="outlined"
-                  onClick={() => grid.current.reload()}
+                  onClick={handleClickSearch}
                   endIcon={<Search />}
                 >
                   Search
@@ -235,7 +180,7 @@ const HomeCustomer = (props) => {
               <Typography variant="h6">LIST CAR:</Typography>
             </Stack>
             <Grid container columnSpacing={4} rowSpacing={5}>
-              {(loading ? Array.from(new Array(4)) : data).map(
+              {(loading ? Array.from(new Array(4)) : cars).map(
                 (item, index) => (
                   <Grid item xs={4} key={index}>
                     {item ? (
