@@ -30,9 +30,13 @@ import { useEffect, useRef, useState } from "react";
 import { DateRangePicker } from "rsuite";
 import { useTheme } from "@mui/material/styles";
 import subVn from "sub-vn";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../../components/Hooks/useSnackBar";
+import { useDispatch } from "react-redux";
+import { setData } from "../../components/ReduxToolkit/slice";
+import { RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../shared/configs/constants";
+import moment from "moment-timezone";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -58,12 +62,19 @@ const HomeCustomer = (props) => {
   const theme = useTheme();
   const { loading = false } = props;
   const { createSnack } = useSnackbar();
+  const navigate = useNavigate();
   const [rateValue, setRateValue] = useState(4.5);
   const [selectedProvince, setSelectedProvince] = useState(null);
   const provinces = subVn.getProvinces();
   const provinceArray = provinces.map((province) => province.name);
   const handleProvinceChange = (event) => {
     setSelectedProvince(event.target.value);
+  };
+  const handleClickViewDetails = (carId) => {
+    navigate(`/viewcardetails/${carId}`);
+  };
+  const handleClickRentNow = (carId) => {
+    navigate(`/rentnow/${carId}`);
   };
 
   const fromTime = new Date();
@@ -79,21 +90,42 @@ const HomeCustomer = (props) => {
       params: {
         selectedProvince,
         startTime,
-        endTime,
       },
       headers: {
         Authorization: `Bearer ${token}`,
-      }
+      },
     });
     if (response.data.isSuccess === true) {
       setCars(response.data.cars);
       console.log("Cars: ", response.data.cars);
       createSnack(response.data.message, { severity: "success" });
-    }
-    else {
+    } else {
       createSnack(response.data.message, { severity: "error" });
     }
   };
+  const dispatch = useDispatch();
+  const [apiCalled, setApiCalled] = useState(false);
+  useEffect(() => {
+    if (!apiCalled) {
+      const token = localStorage.getItem("jwtToken");
+      axiosInstance
+        .get("/currentUser", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          dispatch(setData(response.data));
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        })
+        .finally(() => {
+          setApiCalled(true);
+        });
+    }
+  }, [apiCalled, dispatch]);
 
   return (
     <Box>
@@ -138,11 +170,11 @@ const HomeCustomer = (props) => {
               </Grid>
               <Grid item xs={4}>
                 <DateRangePicker
-                  format={"yyyy-MM-dd HH:mm:ss"}
+                  format={RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT}
                   value={[new Date(startTime), new Date(endTime)]}
                   onChange={(values) => {
-                    setStartTime(values[0].toJSON());
-                    setEndTime(values[1].toJSON());
+                    setStartTime(values[0]);
+                    setEndTime(values[1]);
                   }}
                 />
               </Grid>
@@ -194,7 +226,11 @@ const HomeCustomer = (props) => {
                         <img
                           style={{ width: "100%", height: 210 }}
                           alt={item.title}
-                          src={item.src}
+                          src={`data:image/jpeg;base64, ${
+                            item.files.find(
+                              (item) => item.name === "frontImage"
+                            ).data
+                          }`}
                         />
                       </Box>
                     ) : (
@@ -209,7 +245,7 @@ const HomeCustomer = (props) => {
                       <Grid container>
                         <Grid item xs={12}>
                           <Typography gutterBottom variant="subtitle1">
-                            {item.name}
+                            {item.brand} {item.model} {item.productionYear}
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
@@ -265,44 +301,40 @@ const HomeCustomer = (props) => {
                             variant="body2"
                             color="text.secondary"
                           >
-                            Location: {item.location}
+                            Location: {item.ward} {item.district}{" "}
+                            {item.province}
                           </Typography>
                           <Stack direction="row" spacing={3}>
-                            <Link to="/viewcardetails">
-                              <Button
-                                fullWidth
-                                sx={{
+                            <Button
+                              sx={{
+                                color: "white",
+                                borderColor: "#fca311",
+                                "&:hover": {
+                                  borderColor: "#fca311",
+                                },
+                              }}
+                              variant="outlined"
+                              onClick={() => handleClickViewDetails(item.id)}
+                            >
+                              View details
+                            </Button>
+                            <Button
+                              sx={{
+                                color: "#fca311",
+                                borderColor: "#fca311",
+                                bgcolor: "white",
+                                "&:hover": {
                                   color: "white",
+                                  bgcolor: "#fca311",
                                   borderColor: "#fca311",
-                                  "&:hover": {
-                                    borderColor: "#fca311",
-                                  },
-                                }}
-                                variant="outlined"
-                              >
-                                View details
-                              </Button>
-                            </Link>
-                            <Link to="/rentnow">
-                              <Button
-                                fullWidth
-                                sx={{
-                                  color: "#fca311",
-                                  borderColor: "#fca311",
-                                  bgcolor: "white",
-                                  "&:hover": {
-                                    color: "white",
-                                    bgcolor: "#fca311",
-                                    borderColor: "#fca311",
-                                  },
-                                }}
-                                variant="outlined"
-                                // onClick={handleClickOpenConfirmPayment}
-                                endIcon={<ArrowForward />}
-                              >
-                                Rent now
-                              </Button>
-                            </Link>
+                                },
+                              }}
+                              variant="outlined"
+                              endIcon={<ArrowForward />}
+                              onClick={() => handleClickRentNow(item.id)}
+                            >
+                              Rent now
+                            </Button>
                           </Stack>
                         </Grid>
                       </Grid>

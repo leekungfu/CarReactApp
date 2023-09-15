@@ -57,7 +57,7 @@ const MyFeedBack = () => {
                 fontWeight="bold"
                 sx={{ display: "flex", alignItems: "center" }}
               >
-                My Wallet
+                My Feedback
               </Typography>
             </Stack>
           </Breadcrumbs>

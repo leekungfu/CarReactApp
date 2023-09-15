@@ -2,7 +2,8 @@ import React from "react";
 import { Box, Typography } from "@mui/material";
 import { Circle } from "@mui/icons-material";
 
-const BookingSummary = () => {
+const BookingSummary = (props) => {
+  const { car } = props;
   return (
     <div>
       <Box sx={{ mt: 5 }}>
@@ -31,7 +32,7 @@ const BookingSummary = () => {
           >
             <Circle fontSize="inherit" />
             <Typography variant="subtitle1" sx={{ pl: 1 }}>
-              Price per day: 1.000.000 VND
+              Price per day: {Number(car.price).toLocaleString()} (VND/day)
             </Typography>
           </Box>
           <Box
@@ -43,7 +44,7 @@ const BookingSummary = () => {
           >
             <Circle fontSize="inherit" />
             <Typography variant="subtitle1" sx={{ pl: 1 }}>
-              Total: 15.000.000 VND
+              Total: {Number(car.price * 15).toLocaleString()} (VND)
             </Typography>
           </Box>
           <Box
@@ -55,7 +56,7 @@ const BookingSummary = () => {
           >
             <Circle fontSize="inherit" />
             <Typography variant="subtitle1" sx={{ pl: 1 }}>
-              Deposit: 5.000.000 VND
+              Deposit: {Number(car.deposit).toLocaleString()} (VND)
             </Typography>
           </Box>
         </Box>

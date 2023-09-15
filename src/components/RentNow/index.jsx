@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import BreadcrumbsMenu from "../BreadcrumbsMenu";
 import {
@@ -14,6 +14,8 @@ import {
   Paper,
   Breadcrumbs,
   Stack,
+  Grid,
+  Rating,
 } from "@mui/material";
 import {
   Circle,
@@ -26,34 +28,62 @@ import {
   Payment,
   StickyNote2,
 } from "@mui/icons-material";
-import Basic from "../Stepper/Steps/Basic";
-import Details from "../Stepper/Steps/Details";
-import Pricing from "../Stepper/Steps/Pricing";
 import BookingInformation from "./BookingSteps/BookingInformation";
-import Preview from "../Stepper/Steps/Preview";
 import BookingSummary from "./BookingSteps/BookingSummary";
 import Payments from "./BookingSteps/Payments";
 import Finish from "./BookingSteps/Finish";
 import { Fragment } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import AutoPreviewViewDetails from "../../containers/Account/Car/AutoPreviewViewDetails";
 
 const RentNow = () => {
+  const { carId } = useParams();
   const icons = {
     1: <StickyNote2 />,
     2: <Payment />,
     3: <DoneAll />,
   };
   const steps = ["Booking Information", "Payment", "Finish"];
-
   const [activeStep, setActiveStep] = useState(0);
-
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
-
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+  const [car, setCar] = useState({});
+  const { createSnack } = useSnackbar();
+  const token = localStorage.getItem("jwtToken");
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (carId) {
+          const response = await axiosInstance.get(
+            `/customer/getCar/${carId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (response.data.isSuccess === true) {
+            setCar(response.data.car);
+            createSnack(response.data.message, { severity: "success" });
+          } else {
+            createSnack(response.data.message, { severity: "error" });
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        createSnack("Error fetching data", { severity: "error" });
+      }
+    };
+
+    fetchData();
+  }, [carId, token, createSnack]);
 
   return (
     <div>
@@ -172,8 +202,38 @@ const RentNow = () => {
                   );
                 })}
               </Stepper>
-              <Preview />
-              <BookingSummary />
+              <Grid container>
+                <Grid item xs={6}>
+                  <AutoPreviewViewDetails carId={car.id} />
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="h6">
+                    {car.brand} {car.model} {car.productionYear}
+                  </Typography>
+                  <Stack direction="row" spacing={1}>
+                    <Typography variant="subtitle1">
+                      Rating: {car.rating}
+                    </Typography>
+                    <Rating defaultValue={3.5} precision={0.5} readOnly />
+                  </Stack>
+                  <Typography variant="subtitle1">
+                    Number of rides: 0
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    Price: {car.price}
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    Location: {car.ward}, {car.district}, {car.province}
+                  </Typography>
+                  <Typography variant="subtitle1">
+                    Status:{" "}
+                    <span style={{ color: "#38b000", fontWeight: "bold" }}>
+                      {car.status}
+                    </span>
+                  </Typography>
+                </Grid>
+              </Grid>
+              <BookingSummary car={car} />
               <Paper elevation={0} sx={{ mt: 5 }}>
                 {activeStep === 0 && <BookingInformation />}
                 {activeStep === 1 && <Payments />}
@@ -238,7 +298,5 @@ const RentNow = () => {
     </div>
   );
 };
-
-RentNow.propTypes = {};
 
 export default RentNow;

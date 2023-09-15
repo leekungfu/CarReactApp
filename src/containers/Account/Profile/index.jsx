@@ -263,7 +263,7 @@ const ProfileTabs = () => {
             <Home sx={{ mr: 0.5 }} fontSize="inherit" />
             <Typography
               component={Link}
-              to="/homeowner"
+              to={user && user.role === "CUSTOMER" ? "/homecustomer" : "/homeowner"}
               variant="subtitle1"
               fontWeight="bold"
               sx={{
@@ -283,7 +283,7 @@ const ProfileTabs = () => {
               fontWeight="bold"
               sx={{ display: "flex", alignItems: "center" }}
             >
-              My Cars
+              My Profile
             </Typography>
           </Stack>
         </Breadcrumbs>

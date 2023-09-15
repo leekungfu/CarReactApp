@@ -14,13 +14,20 @@ import {
   FormControlLabel,
   Checkbox,
   Radio,
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from "@mui/material";
 import React from "react";
 import { useState } from "react";
 import styled from "styled-components";
 import CustomTabPanels from "../../../components/CustomTabPanels/CustomTabPanels";
 import {
-    Album,
+  Album,
   AttachMoney,
   Bluetooth,
   Camera,
@@ -38,9 +45,15 @@ import {
 import Details from "../../../components/Stepper/Steps/Details";
 import Pricing from "../../../components/Stepper/Steps/Pricing";
 import Preview from "../../../components/Stepper/Steps/Preview";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import AutoPlaySwipePreview from "../../../components/Stepper/AutoPlaySwipePreview";
 import BookingInformation from "../../../components/RentNow/BookingSteps/BookingInformation";
+import AutoPreviewBooking from "./AutoPreviewBooking";
+import { useSelector } from "react-redux";
+import {
+  carSelected,
+  carSelectedAll,
+} from "../../../components/ReduxToolkit/CarAdapter";
 
 const StyledTypography = styled(Typography)`
   font-weight: bold !important;
@@ -52,7 +65,7 @@ const data = {
   nor: 3,
   price: "1.000.000 VND",
   location: "Phường Ngọc Hà, Thành phố Hà Giang, Tỉnh Hà Giang",
-  status: "Availabel",
+  status: "Available",
 };
 
 function a11yProps(index) {
@@ -64,10 +77,27 @@ function a11yProps(index) {
 
 const BookingDetails = () => {
   const [tab, setTab] = useState(0);
-
+  const { carId } = useParams();
+  const cars = useSelector((state) => carSelected(state, carId)).payload.cars;
+  const car = cars.entities[carId];
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
+
+  const [checkboxState, setCheckboxState] = useState({
+    bluetooth: car.additionalFunctions.includes("bluetooth"),
+    gps: car.additionalFunctions.includes("gps"),
+    camera: car.additionalFunctions.includes("camera"),
+    sunRoof: car.additionalFunctions.includes("sunRoof"),
+    childLock: car.additionalFunctions.includes("childLock"),
+    childSeat: car.additionalFunctions.includes("childSeat"),
+    dvd: car.additionalFunctions.includes("dvd"),
+    usb: car.additionalFunctions.includes("usb"),
+    noSmoking: car.terms.includes("noSmoking"),
+    noPet: car.terms.includes("noPet"),
+    noFoodInCar: car.terms.includes("noFoodInCar"),
+    other: car.terms.includes("other"),
+  });
 
   return (
     <div>
@@ -130,39 +160,41 @@ const BookingDetails = () => {
         </StyledTypography>
         <Grid container>
           <Grid item xs={6}>
-            <AutoPlaySwipePreview />
+            <AutoPreviewBooking carId={carId} />
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="h6">{data.name}</Typography>
+            <StyledTypography variant="h6">
+              {car.brand} {car.model} {car.productionYear}
+            </StyledTypography>
 
-            <StyledTypography variant="subtitle1">From:</StyledTypography>
-            <StyledTypography variant="subtitle1">To:</StyledTypography>
+            <Typography variant="subtitle1">From:</Typography>
+            <Typography variant="subtitle1">To:</Typography>
 
-            <StyledTypography variant="subtitle1">
+            <Typography variant="subtitle1">
               Number of rides: {data.nor}
-            </StyledTypography>
-            <StyledTypography variant="subtitle1">
-              Base price: {data.price}
-            </StyledTypography>
-            <StyledTypography variant="subtitle1">
-              Total: {data.total}
-            </StyledTypography>
-            <StyledTypography variant="subtitle1">
-              Deposit: {data.deposit}
-            </StyledTypography>
-            <StyledTypography variant="subtitle1">
+            </Typography>
+            <Typography variant="subtitle1">
+              Base price: {Number(car.price).toLocaleString()} VND/day
+            </Typography>
+            <Typography variant="subtitle1">
+              Total: {Number(car.price).toLocaleString()} VND
+            </Typography>
+            <Typography variant="subtitle1">
+              Deposit: {Number(car.deposit).toLocaleString()} VND
+            </Typography>
+            <Typography variant="subtitle1">
               Booking No.{"     "}
               {data.bn}
-            </StyledTypography>
-            <StyledTypography variant="subtitle1">
+            </Typography>
+            <Typography variant="subtitle1">
               Booking status:{"     "}
               <span style={{ color: "#38b000", fontWeight: "bold" }}>
                 {data.status}
               </span>
-            </StyledTypography>
+            </Typography>
             <Stack direction="row" spacing={2}>
               <Button
-              fullWidth
+                fullWidth
                 sx={{
                   borderColor: "#fca311",
                   "&:hover": {
@@ -174,7 +206,7 @@ const BookingDetails = () => {
                 View details
               </Button>
               <Button
-              fullWidth
+                fullWidth
                 sx={{
                   borderColor: "#fca311",
                   "&:hover": {
@@ -186,17 +218,17 @@ const BookingDetails = () => {
                 Confirm Pick-up
               </Button>
               <Button
-              fullWidth
-              sx={{
-                borderColor: "#d00000",
-                backgroundColor: "#d00000 !important",
-                "&:hover": {
-                  color: "#fca311 !important",
-                  bgcolor: "white !important",
-                  borderColor: "#fca311",
-                },
-              }}
-              variant="outlined"
+                fullWidth
+                sx={{
+                  borderColor: "#d00000",
+                  backgroundColor: "#d00000 !important",
+                  "&:hover": {
+                    color: "#fca311 !important",
+                    bgcolor: "white !important",
+                    borderColor: "#fca311",
+                  },
+                }}
+                variant="outlined"
               >
                 Cancel Booking
               </Button>
@@ -226,7 +258,7 @@ const BookingDetails = () => {
           </Tabs>
         </Box>
         <CustomTabPanels value={tab} index={0}>
-          <BookingInformation />
+          <BookingInformation  />
           <Box sx={{ display: "flex", justifyContent: "center ", mt: 5 }}>
             <Button variant="outlined" sx={{ minWidth: "10%", mr: 5 }}>
               Discard
@@ -237,67 +269,88 @@ const BookingDetails = () => {
           </Box>
         </CustomTabPanels>
         <CustomTabPanels value={tab} index={1}>
-        <Grid container>
+          <Grid container>
             <Grid item xs={6}>
               <Stack spacing={2}>
-                <StyledTypography variant="subtitle1">
-                  Plate number:
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  Brand name:
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  Production year:
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  Transmission:
-                </StyledTypography>
+                <Typography variant="subtitle1">
+                  Plate Number: {car.plateNumber}
+                </Typography>
+                <Typography variant="subtitle1">
+                  Brand Name: {car.brand}
+                </Typography>
+                <Typography variant="subtitle1">
+                  Production Year: {car.productionYear}
+                </Typography>
+                <Typography variant="subtitle1">
+                  Transmission Type: {car.transmissionType}
+                </Typography>
               </Stack>
             </Grid>
             <Grid item xs={6}>
               <Stack spacing={2}>
-                <StyledTypography variant="subtitle1">Color:</StyledTypography>
-                <StyledTypography variant="subtitle1">Model:</StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  No. of seats:
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">Fuel:</StyledTypography>
+                <Typography variant="subtitle1">Color: {car.color}</Typography>
+                <Typography variant="subtitle1">Model: {car.model}</Typography>
+                <Typography variant="subtitle1">
+                  No. of seats: {car.numberOfSeat}
+                </Typography>
+                <Typography variant="subtitle1">Fuel Type: {car.fuelType}</Typography>
               </Stack>
             </Grid>
             <Grid item xs={12}>
-              <StyledTypography sx={{ pt: 2 }} variant="subtitle1">
+              <Typography sx={{ pt: 2 }} variant="subtitle1">
                 Documents:
-              </StyledTypography>
+              </Typography>
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ID</TableCell>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Note</TableCell>
+                      <TableCell>Link</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {car.files.map((item) => (
+                      <TableRow
+                        key={item.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell>{item.id}</TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{item.type}</TableCell>
+                        <TableCell>{item.url}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </Grid>
           </Grid>
           <Stack spacing={2} sx={{ mt: 2 }}>
-            <StyledTypography variant="subtitle1">Mileage:</StyledTypography>
-            <StyledTypography variant="subtitle1">
-              Fuel consumption: 18 liter/100 km
-            </StyledTypography>
-            <StyledTypography variant="subtitle1">Address:</StyledTypography>
+            <Typography variant="subtitle1">Mileage: {Number(car.mileage).toLocaleString()} (km)</Typography>
             <Typography variant="subtitle1">
+              Fuel consumption: {car.fuelConsumption} (liter/100km)
+            </Typography>
+            <Typography variant="subtitle1">Address: {car.ward} {car.district} {car.province}</Typography>
+            <Typography variant="subtitle1" color="#d00000" fontWeight="bold">
               Note: Full address will be available after you've paid the deposit
               to rent.
             </Typography>
-            <StyledTypography variant="subtitle1">
-              Description:
-            </StyledTypography>
             <Typography variant="subtitle1">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
+              Description: {car.description}
             </Typography>
-            <StyledTypography variant="subtitle1">
+            <Typography variant="subtitle1">
               Additional functions:
-            </StyledTypography>
+            </Typography>
           </Stack>
           <Grid container sx={{ pt: 2 }}>
             <Grid item xs={4}>
               <Stack>
                 <FormControlLabel
-                  control={<Checkbox />}
+                  control={<Checkbox checked={checkboxState.bluetooth} />}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -308,7 +361,7 @@ const BookingDetails = () => {
                   }
                 />
                 <FormControlLabel
-                  control={<Checkbox />}
+                  control={<Checkbox checked={checkboxState.gps}/>}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -319,7 +372,7 @@ const BookingDetails = () => {
                   }
                 />
                 <FormControlLabel
-                  control={<Checkbox />}
+                  control={<Checkbox checked={checkboxState.camera}/>}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -334,7 +387,7 @@ const BookingDetails = () => {
             <Grid item xs={4}>
               <Stack>
                 <FormControlLabel
-                  control={<Checkbox />}
+                  control={<Checkbox checked={checkboxState.sunRoof}/>}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -345,7 +398,7 @@ const BookingDetails = () => {
                   }
                 />
                 <FormControlLabel
-                  control={<Checkbox />}
+                  control={<Checkbox checked={checkboxState.childLock}/>}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -356,7 +409,7 @@ const BookingDetails = () => {
                   }
                 />
                 <FormControlLabel
-                  control={<Checkbox />}
+                  control={<Checkbox checked={checkboxState.childSeat}/>}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -371,7 +424,7 @@ const BookingDetails = () => {
             <Grid item xs={4}>
               <Stack>
                 <FormControlLabel
-                  control={<Checkbox />}
+                  control={<Checkbox checked={checkboxState.dvd}/>}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -382,7 +435,7 @@ const BookingDetails = () => {
                   }
                 />
                 <FormControlLabel
-                  control={<Checkbox />}
+                  control={<Checkbox checked={checkboxState.usb}/>}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -395,45 +448,53 @@ const BookingDetails = () => {
               </Stack>
             </Grid>
           </Grid>
-            <StyledTypography sx={{ mt: 2, mb: 2 }} variant="subtitle1">Term of use:</StyledTypography>
-          <Stack direction="row" spacing={5} >
+          <Typography sx={{ mt: 2, mb: 2 }} variant="subtitle1">
+            Term of use:
+          </Typography>
+          <Stack direction="row" spacing={5}>
             <Stack>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox checked={checkboxState.noSmoking}/>}
                 label={<Typography variant="subtitle1">No smoking</Typography>}
               />
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox checked={checkboxState.noPet}/>}
                 label={<Typography variant="subtitle1">No pet</Typography>}
               />
             </Stack>
             <Stack>
               <FormControlLabel
-                control={<Checkbox />}
-                label={<Typography variant="subtitle1">No food in car</Typography>}
+                control={<Checkbox checked={checkboxState.noFoodInCar}/>}
+                label={
+                  <Typography variant="subtitle1">No food in car</Typography>
+                }
               />
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox checked={checkboxState.other}/>}
                 label={<Typography variant="subtitle1">Other</Typography>}
               />
             </Stack>
           </Stack>
         </CustomTabPanels>
         <CustomTabPanels value={tab} index={2}>
-        <FormControlLabel
-          control={<Radio value="wallet" checked color="primary"/>}
-          label={<StyledTypography>My Wallet</StyledTypography>}
-        />
-        <Typography variant="subtitle1" sx={{ ml: 7, mb: 2 }}>
-          Current balance:{" "}
-          <span style={{ color: "#38b000", fontWeight: "bold" }}>
-            20.000.000 VND
-          </span>
-        </Typography>
-        <Typography variant="subtitle1">Please make sure to have suffcient balance when you return the car.</Typography>
-        <Link to="/wallet">
-            <Button variant="outlined" sx={{ mt: 2 }}>Go to wallet</Button>
-        </Link>
+          <FormControlLabel
+            control={<Radio value="wallet" checked color="primary" />}
+            label={<StyledTypography>My Wallet</StyledTypography>}
+          />
+          <Typography variant="subtitle1" sx={{ ml: 7, mb: 2 }}>
+            Current balance:{" "}
+            <span style={{ color: "#38b000", fontWeight: "bold" }}>
+              20.000.000 VND
+            </span>
+          </Typography>
+          <Typography variant="subtitle1">
+            Please make sure to have suffcient balance when you return the car.
+          </Typography>
+          <Link to="/wallet">
+            <Button variant="outlined" sx={{ mt: 2 }}>
+              Go to wallet
+            </Button>
+          </Link>
         </CustomTabPanels>
       </Container>
     </div>

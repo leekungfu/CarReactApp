@@ -57,10 +57,10 @@ function App() {
             <Route path="/wallet" element={<MyWallet />} />
             <Route path="/cars" element={<MyCars />} />
             <Route path="/feedback" element={<MyFeedBack />} />
-            <Route path="/rentnow" element={<RentNow />} />
+            <Route path="/rentnow/:carId" element={<RentNow />} />
             <Route path="/editcardetails/:carId" element={<EditCarDetails />} />
-            <Route path="/viewcardetails" element={<ViewCarDetails />} />
-            <Route path="/bookingdetails" element={<BookingDetails />} />
+            <Route path="/viewcardetails/:carId" element={<ViewCarDetails />} />
+            <Route path="/bookingdetails/:carId" element={<BookingDetails />} />
             <Route path="/reset" element={<ResetPass />} />
             <Route path="/confirmreset" element={<ConfirmReset />} />
           </Routes>
