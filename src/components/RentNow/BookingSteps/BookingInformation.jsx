@@ -66,8 +66,10 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const BookingInformation = () => {
-  const [date, setDate] = useState(dayjs("2000-01-01"));
-
+  const [dateRenter, setDateRenter] = useState(dayjs());
+  const [dateDriver, setDateDriver] = useState(dayjs());
+  const userData = localStorage.getItem("userData");
+  const user = JSON.parse(userData);
   return (
     <div>
       <Box sx={{ mt: 5 }}>
@@ -83,16 +85,18 @@ const BookingInformation = () => {
                   fullWidth
                   placeholder="Example: John Wick"
                   required
+                  value={user.fullName}
                 />
               </Box>
               <Box>
                 <InputLabel required>Phone Number</InputLabel>
-                <OutlinedInput fullWidth placeholder="(+84)" required />
+                <OutlinedInput value={user.phone} fullWidth placeholder="(+84)" required />
               </Box>
               <Box>
                 <InputLabel required>National ID</InputLabel>
                 <OutlinedInput
                   fullWidth
+                  value={user.nationalID}
                   placeholder="Example: 122318181"
                   required
                 />
@@ -105,21 +109,23 @@ const BookingInformation = () => {
                 <InputLabel required>Date of birth</InputLabel>
                 <DatePicker
                   sx={{ width: "100%" }}
-                  value={date}
-                  onChange={(date) => setDate(date)}
+                  format={"DD/MM/YYYY"}
+                  value={user.birthDay}
+                  onChange={(date) => setDateRenter(date)}
                 />
               </Box>
               <Box>
                 <InputLabel required>Email</InputLabel>
                 <OutlinedInput
                   fullWidth
+                  value={user.email}
                   placeholder="name@gmail.com"
                   disabled
                 />
               </Box>
               <Box>
                 <InputLabel required>Street</InputLabel>
-                <OutlinedInput fullWidth placeholder="Street" />
+                <OutlinedInput value={user.street} fullWidth placeholder="Street" />
               </Box>
             </Stack>
           </Grid>
@@ -173,8 +179,9 @@ const BookingInformation = () => {
                       <InputLabel required>Date of birth</InputLabel>
                       <DatePicker
                         sx={{ width: "100%" }}
-                        value={date}
-                        onChange={(date) => setDate(date)}
+                        format={"DD/MM/YYYY"}
+                        value={dateDriver}
+                        onChange={(date) => setDateDriver(date)}
                       />
                     </Box>
                     <Box>

@@ -69,6 +69,7 @@ function LoginForm(props) {
           role: response.data.member.role,
           nationalID: response.data.member.nationalID,
           street: response.data.member.street,
+          birthDay: response.data.member.birthDay,
         };
         localStorage.setItem("userData", JSON.stringify(basicInfo));
         createSnack(response.data.message, { severity: "success" });

@@ -114,6 +114,7 @@ const SignUpForm = (props) => {
             role: data.role,
             nationalID: data.nationalID,
             street: data.street,
+            birthDay: data.birthDay,
           };
           localStorage.setItem("userData", JSON.stringify(basicInfo));
 

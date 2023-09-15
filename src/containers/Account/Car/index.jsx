@@ -21,9 +21,7 @@ import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import {
-  carSelectedAll,
-} from "../../../components/ReduxToolkit/CarAdapter";
+import { carSelectedAll } from "../../../components/ReduxToolkit/CarAdapter";
 
 const MyCars = (props) => {
   const { loading = false } = props;
@@ -125,139 +123,97 @@ const MyCars = (props) => {
               <Typography variant="h6">LIST CARS:</Typography>
             </Stack>
             <Grid container columnSpacing={4} rowSpacing={5}>
-              {(loading ? Array.from(new Array(6)) : carsOnCurrentPage).map((car) => (
-                <Grid item xs={4} key={car.id}>
-                  {car ? (
-                    <Box
-                      sx={{
-                        border: "0.5px solid #ccc",
-                        borderRadius: "10px",
-                        overflow: "hidden",
-                      }}
-                    >
-                      <img
-                        style={{ width: "100%", height: 210 }}
-                        alt={`frontImage-${car.id}`}
-                        src={`data:image/jpeg;base64, ${
-                          car.files.find((item) => item.name === "frontImage")
-                            .data
-                        }`}
+              {(loading ? Array.from(new Array(6)) : carsOnCurrentPage).map(
+                (car) => (
+                  <Grid item xs={4} key={car.id}>
+                    {car ? (
+                      <Box
+                        sx={{
+                          border: "0.5px solid #ccc",
+                          borderRadius: "10px",
+                          overflow: "hidden",
+                        }}
+                      >
+                        <img
+                          style={{ width: "100%", height: 210 }}
+                          alt={`frontImage-${car.id}`}
+                          src={`data:image/jpeg;base64, ${
+                            car.files.find((item) => item.name === "frontImage")
+                              .data
+                          }`}
+                        />
+                      </Box>
+                    ) : (
+                      <Skeleton
+                        variant="rectangular"
+                        width={210}
+                        height={118}
                       />
-                    </Box>
-                  ) : (
-                    <Skeleton variant="rectangular" width={210} height={118} />
-                  )}
+                    )}
 
-                  {car ? (
-                    <Grid container>
-                      <Grid item xs={12}>
-                        <Typography gutterBottom variant="subtitle1">
-                          {car.brand} {car.model} {car.productionYear}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Stack spacing={1}>
-                          <Box sx={{ display: "flex" }}>
-                            <Typography
-                              display="block"
-                              variant="body2"
-                              color="text.secondary"
-                              sx={{ mr: 0.5 }}
-                            >
-                              Rating:
+                    {car ? (
+                      <Grid container>
+                        <Grid item xs={12}>
+                          <Typography gutterBottom variant="subtitle1">
+                            {car.brand} {car.model} {car.productionYear}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Stack spacing={1}>
+                            <Box sx={{ display: "flex" }}>
+                              <Typography
+                                display="block"
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ mr: 0.5 }}
+                              >
+                                Rating:
+                              </Typography>
+                              <Rating
+                                size="small"
+                                name="half-rating-read"
+                                defaultValue={car.rating}
+                                precision={0.5}
+                                readOnly
+                              />
+                            </Box>
+                            <Typography variant="body2" color="text.secondary">
+                              Price: {car.basePrice}
                             </Typography>
-                            <Rating
-                              size="small"
-                              name="half-rating-read"
-                              defaultValue={car.rating}
-                              precision={0.5}
-                              readOnly
-                            />
-                          </Box>
-                          <Typography variant="body2" color="text.secondary">
-                            Price: {car.basePrice}
-                          </Typography>
-                        </Stack>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Stack spacing={1}>
-                          <Typography variant="body2" color="text.secondary">
-                            No. of rides: {car.nor}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Status:{" "}
-                            <span
-                              style={{
-                                color:
-                                  car.status === "Booked"
-                                    ? "#15616d"
-                                    : car.status === "Stopped"
-                                    ? "#d00000"
-                                    : "#38b000",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {car.status}
-                            </span>
-                          </Typography>
-                        </Stack>
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Typography
-                          sx={{ pt: 1, pb: 1 }}
-                          variant="body2"
-                          color="text.secondary"
-                        >
-                          Location: {car.ward}, {car.district}, {car.province}
-                        </Typography>
-                        <Stack direction="row" spacing={3}>
-                          <Button
-                            sx={{
-                              minWidth: "50%",
-                              color: "white",
-                              borderColor: "#fca311",
-                              "&:hover": {
-                                borderColor: "#fca311",
-                              },
-                            }}
-                            variant="outlined"
-                            onClick={() => handleCarClick(car.id)}
+                          </Stack>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Stack spacing={1}>
+                            <Typography variant="body2" color="text.secondary">
+                              No. of rides: {car.nor}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              Status:{" "}
+                              <span
+                                style={{
+                                  color:
+                                    car.status === "Booked"
+                                      ? "#15616d"
+                                      : car.status === "Stopped"
+                                      ? "#d00000"
+                                      : "#38b000",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {car.status}
+                              </span>
+                            </Typography>
+                          </Stack>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Typography
+                            sx={{ pt: 1, pb: 1 }}
+                            variant="body2"
+                            color="text.secondary"
                           >
-                            View details
-                          </Button>
-                          {car.status === "Booked" ? (
-                            <Button
-                              sx={{
-                                minWidth: "50%",
-                                color: "white",
-                                borderColor: "#15616d",
-                                backgroundColor: "#15616d !important",
-                                "&:hover": {
-                                  borderColor: "#fca311",
-                                },
-                              }}
-                              variant="outlined"
-                              onClick={handleClickOpenConfirmPayment}
-                            >
-                              Confirm payment
-                            </Button>
-                          ) : car.status === "Stopped" ? (
-                            <Button
-                              disabled
-                              sx={{
-                                minWidth: "50%",
-                                color: "white",
-                                bgcolor: "white",
-                                borderColor: "#fca311",
-                                "&:hover": {
-                                  borderColor: "#fca311",
-                                },
-                              }}
-                              variant="outlined"
-                            >
-                              Confirm deposit
-                            </Button>
-                          ) : (
+                            Location: {car.ward}, {car.district}, {car.province}
+                          </Typography>
+                          <Stack direction="row" spacing={3}>
                             <Button
                               sx={{
                                 minWidth: "50%",
@@ -268,32 +224,82 @@ const MyCars = (props) => {
                                 },
                               }}
                               variant="outlined"
-                              onClick={handleClickOpenConfirmDeposit}
+                              onClick={() => handleCarClick(car.id)}
                             >
-                              Confirm deposit
+                              View details
                             </Button>
-                          )}
-                        </Stack>
+                            {car.status === "Booked" ? (
+                              <Button
+                                sx={{
+                                  minWidth: "50%",
+                                  color: "white",
+                                  borderColor: "#15616d",
+                                  backgroundColor: "#15616d !important",
+                                  "&:hover": {
+                                    borderColor: "#fca311",
+                                  },
+                                }}
+                                variant="outlined"
+                                onClick={handleClickOpenConfirmPayment}
+                              >
+                                Confirm payment
+                              </Button>
+                            ) : car.status === "Stopped" ? (
+                              <Button
+                                disabled
+                                sx={{
+                                  minWidth: "50%",
+                                  color: "white",
+                                  bgcolor: "white",
+                                  borderColor: "#fca311",
+                                  "&:hover": {
+                                    borderColor: "#fca311",
+                                  },
+                                }}
+                                variant="outlined"
+                              >
+                                Confirm deposit
+                              </Button>
+                            ) : (
+                              <Button
+                                sx={{
+                                  minWidth: "50%",
+                                  color: "white",
+                                  borderColor: "#fca311",
+                                  "&:hover": {
+                                    borderColor: "#fca311",
+                                  },
+                                }}
+                                variant="outlined"
+                                onClick={handleClickOpenConfirmDeposit}
+                              >
+                                Confirm deposit
+                              </Button>
+                            )}
+                          </Stack>
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  ) : (
-                    <Box sx={{ pt: 0.5 }}>
-                      <Skeleton />
-                      <Skeleton width="60%" />
-                    </Box>
-                  )}
-                </Grid>
-              ))}
+                    ) : (
+                      <Box sx={{ pt: 0.5 }}>
+                        <Skeleton />
+                        <Skeleton width="60%" />
+                      </Box>
+                    )}
+                  </Grid>
+                )
+              )}
             </Grid>
-            <Pagination
-              sx={{ display: "flex", justifyContent: "end", mt: 10 }}
-              count={totalPages}
-              page={currentPage}
-              onChange={handlePageChange}
-              variant="outlined"
-              showFirstButton
-              showLastButton
-            />
+            {carArray && carArray.length > 0 && (
+              <Pagination
+                sx={{ display: "flex", justifyContent: "end", mt: 10 }}
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                variant="outlined"
+                showFirstButton
+                showLastButton
+              />
+            )}
           </CardContent>
         </Card>
       </Container>

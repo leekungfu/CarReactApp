@@ -18,25 +18,17 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import {
-  ArrowForward,
-  ArrowForwardIosOutlined,
-  Label,
-  List,
-  Search,
-} from "@mui/icons-material";
-import styled from "styled-components";
-import { useEffect, useRef, useState } from "react";
+import { ArrowForward, List, Search } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 import { DateRangePicker } from "rsuite";
 import { useTheme } from "@mui/material/styles";
 import subVn from "sub-vn";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../../components/Hooks/useSnackBar";
 import { useDispatch } from "react-redux";
 import { setData } from "../../components/ReduxToolkit/slice";
 import { RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../shared/configs/constants";
-import moment from "moment-timezone";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -84,6 +76,18 @@ const HomeCustomer = (props) => {
   const [startTime, setStartTime] = useState(fromTime);
   const [endTime, setEndTime] = useState(toTime);
   const [cars, setCars] = useState([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+  const totalCars = cars.length;
+  const totalPages = Math.ceil(totalCars / itemsPerPage);
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const carsOnCurrentPage = cars.slice(startIndex, endIndex);
+
   const token = localStorage.getItem("jwtToken");
   const handleClickSearch = async () => {
     const response = await axiosInstance.get("/customer/searchCar", {
@@ -348,13 +352,16 @@ const HomeCustomer = (props) => {
                 )
               )}
             </Grid>
-            <Pagination
-              sx={{ display: "flex", justifyContent: "end", mt: 10 }}
-              count={10}
-              variant="outlined"
-              showFirstButton
-              showLastButton
-            />
+            {cars && cars.length > 0 && (
+              <Pagination
+                sx={{ display: "flex", justifyContent: "end", mt: 10 }}
+                count={totalPages}
+                page={currentPage}
+                variant="outlined"
+                showFirstButton
+                showLastButton
+              />
+            )}
           </CardContent>
         </Card>
       </Container>
