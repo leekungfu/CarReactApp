@@ -48,7 +48,7 @@ import validator from "validator";
 import { NumericFormat } from "react-number-format";
 import axiosInstance from "../../../shared/configs/axiosConfig";
 import { useDispatch, useSelector } from "react-redux";
-import { setData } from "../../../components/ReduxToolkit/slice";
+import { setData, setUserData } from "../../../components/ReduxToolkit/UserSlice";
 
 function a11yProps(index) {
   return {
@@ -61,7 +61,7 @@ const ProfileTabs = () => {
   const { createSnack } = useSnackbar();
   const dispatch = useDispatch();
   const token = localStorage.getItem("jwtToken");
-  const user = useSelector((state) => state.backendData);
+  const user = useSelector((state) => state.userData);
   console.log("user ", user);
   
   const [tab, setTab] = useState(0);
@@ -148,7 +148,7 @@ const ProfileTabs = () => {
         });
 
         if (response.data.isSuccess === true) {
-          dispatch(setData(response.data.member));
+          dispatch(setUserData(response.data.member));
           createSnack(response.data.message, { severity: "success" });
         } else {
           createSnack(response.data.message, { severity: "error" });

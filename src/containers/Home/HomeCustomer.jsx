@@ -27,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../../components/Hooks/useSnackBar";
 import { useDispatch } from "react-redux";
-import { setData } from "../../components/ReduxToolkit/slice";
+import { setUserData } from "../../components/ReduxToolkit/UserSlice";
 import { RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../shared/configs/constants";
 
 const ITEM_HEIGHT = 48;
@@ -120,7 +120,7 @@ const HomeCustomer = (props) => {
         })
         .then((response) => {
           console.log(response.data);
-          dispatch(setData(response.data));
+          dispatch(setUserData(response.data));
         })
         .catch((error) => {
           console.error("Error fetching data:", error);

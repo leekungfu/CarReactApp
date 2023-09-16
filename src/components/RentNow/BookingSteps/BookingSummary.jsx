@@ -3,7 +3,7 @@ import { Box, Typography } from "@mui/material";
 import { Circle } from "@mui/icons-material";
 
 const BookingSummary = (props) => {
-  const { car } = props;
+  const { car, totalTime } = props;
   return (
     <div>
       <Box sx={{ mt: 5 }}>
@@ -20,7 +20,7 @@ const BookingSummary = (props) => {
           >
             <Circle fontSize="inherit" />
             <Typography variant="subtitle1" sx={{ pl: 1 }}>
-              Reting days: 15
+              Reting days: {totalTime} (days)
             </Typography>
           </Box>
           <Box
@@ -44,7 +44,7 @@ const BookingSummary = (props) => {
           >
             <Circle fontSize="inherit" />
             <Typography variant="subtitle1" sx={{ pl: 1 }}>
-              Total: {Number(car.price * 15).toLocaleString()} (VND)
+              Total: {Number(car.price * totalTime).toLocaleString()} (VND)
             </Typography>
           </Box>
           <Box

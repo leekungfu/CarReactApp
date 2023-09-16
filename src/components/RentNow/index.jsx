@@ -37,6 +37,10 @@ import { Link, useParams } from "react-router-dom";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import AutoPreviewViewDetails from "../../containers/Account/Car/AutoPreviewViewDetails";
+import { RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../shared/configs/constants";
+import { DateRangePicker } from "rsuite";
+import { setUserData } from "../ReduxToolkit/UserSlice";
+import { useDispatch } from "react-redux";
 
 const RentNow = () => {
   const { carId } = useParams();
@@ -45,14 +49,27 @@ const RentNow = () => {
     2: <Payment />,
     3: <DoneAll />,
   };
+  const fromTime = new Date();
+  fromTime.setHours(0, 0, 0, 0);
+  const toTime = new Date();
+  toTime.setHours(23, 59, 59, 999);
+
   const steps = ["Booking Information", "Payment", "Finish"];
   const [activeStep, setActiveStep] = useState(0);
+  const [pickUpTime, setPickUpTime] = useState(fromTime);
+  const [returnTime, setReturnTime] = useState(toTime);
+
+  const timeDifference = returnTime - pickUpTime; // Khoảng thời gian tính bằng mili giây
+  const totalMillisecondsInDay = 24 * 60 * 60 * 1000; // Tổng số mili giây trong một ngày
+  const totalTime = Math.round(timeDifference / totalMillisecondsInDay); // Tổng số ngày
+
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+
   const [car, setCar] = useState({});
   const { createSnack } = useSnackbar();
   const token = localStorage.getItem("jwtToken");
@@ -84,6 +101,21 @@ const RentNow = () => {
 
     fetchData();
   }, [carId, token, createSnack]);
+
+
+  // const dispatch = useDispatch();
+  //   const response = axiosInstance.post("/personalInfo", formData, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   });
+
+  //   if (response.data.isSuccess === true) {
+  //     dispatch(setUserData(response.data.member));
+  //     createSnack(response.data.message, { severity: "success" });
+  //   } else {
+  //     createSnack(response.data.message, { severity: "error" });
+  //   }
 
   return (
     <div>
@@ -136,7 +168,7 @@ const RentNow = () => {
             >
               <Circle fontSize="inherit" />
               <Typography variant="subtitle1" sx={{ pl: 1 }}>
-                Location pick-up:
+                Location pick-up: {car.ward}, {car.district}, {car.province}
               </Typography>
             </Box>
             <Box
@@ -147,21 +179,17 @@ const RentNow = () => {
               }}
             >
               <Circle fontSize="inherit" />
-              <Typography variant="subtitle1" sx={{ pl: 1 }}>
-                Date time pick-up:
+              <Typography variant="subtitle1" sx={{ ml: 1, mr: 2 }}>
+                Pick-up & return time:
               </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                alignContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Circle fontSize="inherit" />
-              <Typography variant="subtitle1" sx={{ pl: 1 }}>
-                Date time return:
-              </Typography>
+              <DateRangePicker
+                format={RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT}
+                value={[new Date(pickUpTime), new Date(returnTime)]}
+                onChange={(values) => {
+                  setPickUpTime(values[0]);
+                  setReturnTime(values[1]);
+                }}
+              />
             </Box>
           </Box>
         </Container>
@@ -220,7 +248,7 @@ const RentNow = () => {
                     Number of rides: 0
                   </Typography>
                   <Typography variant="subtitle1">
-                    Price: {car.price}
+                    Price: {Number(car.price).toLocaleString()} (VND/day)
                   </Typography>
                   <Typography variant="subtitle1">
                     Location: {car.ward}, {car.district}, {car.province}
@@ -233,64 +261,42 @@ const RentNow = () => {
                   </Typography>
                 </Grid>
               </Grid>
-              <BookingSummary car={car} />
+              <BookingSummary car={car} totalTime={totalTime} />
               <Paper elevation={0} sx={{ mt: 5 }}>
                 {activeStep === 0 && <BookingInformation />}
-                {activeStep === 1 && <Payments />}
+                {activeStep === 1 && <Payments carId={car.id} pickUpTime={pickUpTime} returnTime={returnTime} deposit={car.deposit} />}
                 {activeStep === 2 && <Finish />}
               </Paper>
-              {activeStep === steps.length ? (
-                <Fragment>
-                  <Typography
-                    variant="h6"
-                    sx={{ display: "flex", justifyContent: "center" }}
-                  >
-                    All steps are completed!
-                  </Typography>
-                  <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                    <Box sx={{ flex: "1 1 auto" }} />
-                    <Button
-                      sx={{
-                        color: "white",
-                        border: "solid 1px",
-                      }}
-                      //   onClick={handleClose}
-                    >
-                      Back home
-                    </Button>
-                  </Box>
-                </Fragment>
-              ) : (
-                <Box
+
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  flexDirection: "row",
+                  pt: 2,
+                }}
+              >
+                <Button
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
                   sx={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    flexDirection: "row",
-                    pt: 2,
+                    border: "solid 1px",
+                    mr: 1,
+                    color: "white",
+                    width: activeStep === 1 ? "20%" : "20%",
                   }}
                 >
-                  <Button
-                    disabled={activeStep === 0}
-                    onClick={handleBack}
-                    sx={{
-                      border: "solid 1px",
-                      mr: 1,
-                      color: "white",
-                      width: activeStep === 1 ? "20%" : "20%",
-                    }}
-                  >
-                    {activeStep === steps.length - 1 ? "Go home" : "Back"}
-                  </Button>
-                  <Box sx={{ flex: "1 1 auto" }} />
-                  <Button
-                    onClick={handleNext}
-                    // visibility: activeStep === 1 ? "hidden" : "visible" ===> do another times
-                    sx={{ border: "solid 1px", color: "white", width: "20%" }}
-                  >
-                    {activeStep === steps.length - 1 ? "View booking" : "Next"}
-                  </Button>
-                </Box>
-              )}
+                  {activeStep === steps.length - 1 ? "Go home" : "Back"}
+                </Button>
+                <Box sx={{ flex: "1 1 auto" }} />
+                <Button
+                  onClick={handleNext}
+                  // visibility: activeStep === 1 ? "hidden" : "visible" ===> do another times
+                  sx={{ border: "solid 1px", color: "white", width: "20%" }}
+                >
+                  {activeStep === steps.length - 1 ? "View booking" : activeStep === steps.length - 2 ? "Finsh" : "Next"}
+                </Button>
+              </Box>
             </CardContent>
           </Card>
         </Container>

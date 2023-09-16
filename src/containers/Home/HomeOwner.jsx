@@ -5,16 +5,12 @@ import {
   CardContent,
   Container,
   Grid,
-  IconButton,
   Stack,
   Typography,
 } from "@mui/material";
-import NavMenuCustomer from "../../components/NavMenuUser";
 import {
-  Add,
   CarRental,
   CurrencyExchange,
-  CurrencyExchangeOutlined,
   HowToReg,
   List,
   MoneyOff,
@@ -24,13 +20,10 @@ import {
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 import AddCar from "../../components/Dialogs/AddCar";
-import NavMenuUser from "../../components/NavMenuUser";
-import Footer from "../../components/Footer";
-import { Fragment } from "react";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useDispatch } from "react-redux";
 import { carsAdded } from "../../components/ReduxToolkit/CarAdapter";
-import { setData } from "../../components/ReduxToolkit/slice";
+import { setUserData } from "../../components/ReduxToolkit/UserSlice";
 
 const StyledTypography = styled(Typography)`
   font-weight: 600;
@@ -87,7 +80,7 @@ const HomeOwner = () => {
         })
         .then((response) => {
           console.log(response.data);
-          dispatch(setData(response.data));
+          dispatch(setUserData(response.data));
         })
         .catch((error) => {
           console.error("Error fetching data:", error);

@@ -6,7 +6,7 @@ import NavMenuUser from "./NavMenuUser";
 import { useSelector } from "react-redux";
 
 function Layout({ children }) {
-  const reduxUserRole = useSelector((state) => state.backendData);
+  const reduxUserRole = useSelector((state) => state.userData);
   const userData = localStorage.getItem("userData");
   const userRole = JSON.parse(userData);
   const initialRole =

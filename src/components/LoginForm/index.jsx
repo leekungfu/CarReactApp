@@ -25,7 +25,6 @@ import SignUpForm from "../SignUpForm";
 import { useDispatch } from "react-redux";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import validator from "validator";
-import { setData } from "../ReduxToolkit/slice";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { carAdded, carsAdded } from "../ReduxToolkit/CarAdapter";
 

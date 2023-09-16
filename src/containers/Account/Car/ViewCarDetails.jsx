@@ -200,7 +200,7 @@ const ViewCarDetails = () => {
             </Typography>
             <Typography variant="subtitle1">Price: {car.price}</Typography>
             <Typography variant="subtitle1">
-              Location: {car.ward}, {car.district}, {car.province}
+              Location: *****, {car.district}, {car.province}
             </Typography>
             <Typography variant="subtitle1">
               Status:{" "}

@@ -28,6 +28,11 @@ import MuiAccordion from "@mui/material/Accordion";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import styled from "styled-components";
+import { DATE_PICKER_URI_FORMAT } from "../../../shared/configs/constants";
+import axiosInstance from "../../../shared/configs/axiosConfig";
+import { setUserData } from "../../ReduxToolkit/UserSlice";
+import { useSnackbar } from "../../Hooks/useSnackBar";
+import { useDispatch } from "react-redux";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -66,10 +71,64 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const BookingInformation = () => {
-  const [dateRenter, setDateRenter] = useState(dayjs());
+  const { createSnack } = useSnackbar();
+  
   const [dateDriver, setDateDriver] = useState(dayjs());
   const userData = localStorage.getItem("userData");
   const user = JSON.parse(userData);
+
+  const [userState, setUserState] = useState({
+    fullName: user.fullName,
+    birthDay: dayjs(user.birthDay),
+    phone: user.phone,
+    nationalID: user.nationalID,
+    street: user.street,
+    province: user.province,
+    district: user.district,
+    ward: user.ward,
+    drivingLicense: "",
+  });
+
+  const handleUserStateChange = (event) => {
+    const { name, value } = event.target;
+    setUserState((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  if (selectedOptions.length > 0) {
+    userState.province = selectedOptions[0].province;
+    userState.district = selectedOptions[0].district;
+    userState.ward = selectedOptions[0].ward;
+  }
+
+  const handleSelectedOptionsChange = (options) => {
+    setSelectedOptions(options);
+  };
+
+  const handleDrivingLicenseChange = (newValue) => {
+    setUserState((prevState) => ({
+      ...prevState,
+      drivingLicense: newValue,
+    }));
+  };
+
+  const formData = new FormData();
+  const dobFormated = dayjs(user.birthDay).format("DD/MM/YYYY");
+
+  formData.append("email", user.email);
+  formData.append("fullName", userState.fullName);
+  formData.append("birthDay", dobFormated);
+  formData.append("phone", userState.phone);
+  formData.append("nationalID", userState.nationalID);
+  formData.append("province", userState.province);
+  formData.append("district", userState.district);
+  formData.append("ward", userState.ward);
+  formData.append("street", userState.street);
+  formData.append("drivingLicense", userState.drivingLicense);
+
   return (
     <div>
       <Box sx={{ mt: 5 }}>
@@ -83,22 +142,33 @@ const BookingInformation = () => {
                 <InputLabel required>Full Name</InputLabel>
                 <OutlinedInput
                   fullWidth
+                  name="fullName"
                   placeholder="Example: John Wick"
                   required
-                  value={user.fullName}
+                  value={userState.fullName}
+                  onChange={handleUserStateChange}
                 />
               </Box>
               <Box>
                 <InputLabel required>Phone Number</InputLabel>
-                <OutlinedInput value={user.phone} fullWidth placeholder="(+84)" required />
+                <OutlinedInput
+                  name="phone"
+                  value={userState.phone}
+                  fullWidth
+                  placeholder="(+84)"
+                  required
+                  onChange={handleUserStateChange}
+                />
               </Box>
               <Box>
                 <InputLabel required>National ID</InputLabel>
                 <OutlinedInput
+                  name="nationalID"
                   fullWidth
-                  value={user.nationalID}
+                  value={userState.nationalID}
                   placeholder="Example: 122318181"
                   required
+                  onChange={handleUserStateChange}
                 />
               </Box>
             </Stack>
@@ -110,22 +180,33 @@ const BookingInformation = () => {
                 <DatePicker
                   sx={{ width: "100%" }}
                   format={"DD/MM/YYYY"}
-                  value={user.birthDay}
-                  onChange={(date) => setDateRenter(date)}
+                  value={userState.birthDay}
+                  onChange={(value) =>
+                    setUserState((prevState) => ({
+                      ...prevState,
+                      birthDay: value,
+                    }))
+                  }
                 />
               </Box>
               <Box>
                 <InputLabel required>Email</InputLabel>
                 <OutlinedInput
                   fullWidth
-                  value={user.email}
+                  value={userState.email}
                   placeholder="name@gmail.com"
                   disabled
                 />
               </Box>
               <Box>
                 <InputLabel required>Street</InputLabel>
-                <OutlinedInput value={user.street} fullWidth placeholder="Street" />
+                <OutlinedInput
+                  name="street"
+                  value={userState.street}
+                  fullWidth
+                  placeholder="Street"
+                  onChange={handleUserStateChange}
+                />
               </Box>
             </Stack>
           </Grid>
@@ -133,11 +214,13 @@ const BookingInformation = () => {
         <Stack spacing={2} sx={{ mt: 2 }}>
           <Box>
             <InputLabel required>Address</InputLabel>
-            <Provinces />
+            <Provinces onSelectedOptionsChange={handleSelectedOptionsChange} />
           </Box>
           <Box>
             <InputLabel required>Driving License</InputLabel>
-            <DrivingLicense />
+            <DrivingLicense
+              handleDrivingLicenseChange={handleDrivingLicenseChange}
+            />
           </Box>
         </Stack>
         <Box sx={{ mt: 5 }}>

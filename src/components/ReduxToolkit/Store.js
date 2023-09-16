@@ -1,5 +1,5 @@
 import { configureStore, getDefaultMiddleware  } from "@reduxjs/toolkit";
-import backendDataSlice from "./slice.js";
+import userDataSlice from "./UserSlice.js";
 import basicSlice from "./basicSlice.js";
 import storage from "redux-persist/lib/storage";
 import {
@@ -30,7 +30,7 @@ const store = configureStore({
     basic: persistedReducer,
     details: detailsSlice,
     pricing: pricingSlice,
-    backendData: backendDataSlice,
+    userData: userDataSlice,
     cars: carSlice,
   },
   middleware: [

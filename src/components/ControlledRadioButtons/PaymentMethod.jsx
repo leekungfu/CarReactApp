@@ -42,7 +42,7 @@ export default function PaymentMethod() {
           Our operator will contact you for further instruction.
         </Typography>
         <FormControlLabel
-          control={<Radio value="bankTransfer" color="primary" />}
+          control={<Radio value="bank_transfer" color="primary" />}
           label="Bank Transfer"
         />
         <Typography variant="subtitle1" sx={{ ml: 7 }}>

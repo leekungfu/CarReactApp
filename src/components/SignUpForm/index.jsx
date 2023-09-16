@@ -34,9 +34,9 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import validator from "validator";
 import { useSnackbar } from "../Hooks/useSnackBar";
-import { setData } from "../ReduxToolkit/slice";
 import { NumericFormat } from "react-number-format";
 import axiosInstance from "../../shared/configs/axiosConfig";
+import { setUserData } from "../ReduxToolkit/UserSlice";
 
 const SignUpForm = (props) => {
   const { open, onClose } = props;
@@ -106,7 +106,7 @@ const SignUpForm = (props) => {
 
         if (response.data.isSuccess === true) {
           localStorage.setItem("jwtToken", response.data.token);
-          dispatch(setData(data));
+          dispatch(setUserData(data));
           const basicInfo = {
             fullName: data.fullName,
             email: data.email,
