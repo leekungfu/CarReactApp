@@ -216,7 +216,7 @@ const HomeCustomer = (props) => {
               <Typography variant="h6">LIST CAR:</Typography>
             </Stack>
             <Grid container columnSpacing={4} rowSpacing={5}>
-              {(loading ? Array.from(new Array(4)) : cars).map(
+              {(loading ? Array.from(new Array(4)) : carsOnCurrentPage).map(
                 (item, index) => (
                   <Grid item xs={4} key={index}>
                     {item ? (
@@ -360,6 +360,7 @@ const HomeCustomer = (props) => {
                 variant="outlined"
                 showFirstButton
                 showLastButton
+                onChange={handlePageChange}
               />
             )}
           </CardContent>

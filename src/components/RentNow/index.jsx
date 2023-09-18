@@ -33,7 +33,7 @@ import BookingSummary from "./BookingSteps/BookingSummary";
 import Payments from "./BookingSteps/Payments";
 import Finish from "./BookingSteps/Finish";
 import { Fragment } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import AutoPreviewViewDetails from "../../containers/Account/Car/AutoPreviewViewDetails";
@@ -63,8 +63,12 @@ const RentNow = () => {
   const totalMillisecondsInDay = 24 * 60 * 60 * 1000; // Tổng số mili giây trong một ngày
   const totalTime = Math.round(timeDifference / totalMillisecondsInDay); // Tổng số ngày
 
+  const navigate = useNavigate();
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (activeStep === steps.length - 1) {
+      navigate("/booking")
+    }
   };
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -101,21 +105,6 @@ const RentNow = () => {
 
     fetchData();
   }, [carId, token, createSnack]);
-
-
-  // const dispatch = useDispatch();
-  //   const response = axiosInstance.post("/personalInfo", formData, {
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   });
-
-  //   if (response.data.isSuccess === true) {
-  //     dispatch(setUserData(response.data.member));
-  //     createSnack(response.data.message, { severity: "success" });
-  //   } else {
-  //     createSnack(response.data.message, { severity: "error" });
-  //   }
 
   return (
     <div>
@@ -264,7 +253,14 @@ const RentNow = () => {
               <BookingSummary car={car} totalTime={totalTime} />
               <Paper elevation={0} sx={{ mt: 5 }}>
                 {activeStep === 0 && <BookingInformation />}
-                {activeStep === 1 && <Payments carId={car.id} pickUpTime={pickUpTime} returnTime={returnTime} deposit={car.deposit} />}
+                {activeStep === 1 && (
+                  <Payments
+                    carId={car.id}
+                    pickUpTime={pickUpTime}
+                    returnTime={returnTime}
+                    deposit={car.deposit}
+                  />
+                )}
                 {activeStep === 2 && <Finish />}
               </Paper>
 
@@ -294,7 +290,11 @@ const RentNow = () => {
                   // visibility: activeStep === 1 ? "hidden" : "visible" ===> do another times
                   sx={{ border: "solid 1px", color: "white", width: "20%" }}
                 >
-                  {activeStep === steps.length - 1 ? "View booking" : activeStep === steps.length - 2 ? "Finsh" : "Next"}
+                  {activeStep === steps.length - 1
+                    ? "View booking"
+                    : activeStep === steps.length - 2
+                    ? "Finsh"
+                    : "Next"}
                 </Button>
               </Box>
             </CardContent>

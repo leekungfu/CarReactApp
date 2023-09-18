@@ -105,6 +105,7 @@ const SignUpForm = (props) => {
         const data = await response.data.member;
 
         if (response.data.isSuccess === true) {
+          createSnack(response.data.message, { severity: "success" });
           localStorage.setItem("jwtToken", response.data.token);
           dispatch(setUserData(data));
           const basicInfo = {

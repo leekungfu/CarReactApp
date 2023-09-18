@@ -72,14 +72,13 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 const BookingInformation = () => {
   const { createSnack } = useSnackbar();
-  
   const [dateDriver, setDateDriver] = useState(dayjs());
   const userData = localStorage.getItem("userData");
   const user = JSON.parse(userData);
+  const [birthDay, setBirthDay] = useState(dayjs(user.birthDay));
 
   const [userState, setUserState] = useState({
     fullName: user.fullName,
-    birthDay: dayjs(user.birthDay),
     phone: user.phone,
     nationalID: user.nationalID,
     street: user.street,
@@ -88,7 +87,6 @@ const BookingInformation = () => {
     ward: user.ward,
     drivingLicense: "",
   });
-
   const handleUserStateChange = (event) => {
     const { name, value } = event.target;
     setUserState((prevState) => ({
@@ -115,19 +113,40 @@ const BookingInformation = () => {
     }));
   };
 
-  const formData = new FormData();
-  const dobFormated = dayjs(user.birthDay).format("DD/MM/YYYY");
+  const dispatch = useDispatch();
+  const handleClickSave = async () => {
+    const token = localStorage.getItem("jwtToken");
+    const formData = new FormData();
+    const dobFormated = dayjs(birthDay).format(DATE_PICKER_URI_FORMAT);
+    console.log(user.birthDay);
+    formData.append("email", user.email);
+    formData.append("fullName", userState.fullName);
+    formData.append("birthDay", dobFormated);
+    formData.append("phone", userState.phone);
+    formData.append("nationalID", userState.nationalID);
+    formData.append("province", userState.province);
+    formData.append("district", userState.district);
+    formData.append("ward", userState.ward);
+    formData.append("street", userState.street);
+    formData.append("drivingLicense", userState.drivingLicense);
 
-  formData.append("email", user.email);
-  formData.append("fullName", userState.fullName);
-  formData.append("birthDay", dobFormated);
-  formData.append("phone", userState.phone);
-  formData.append("nationalID", userState.nationalID);
-  formData.append("province", userState.province);
-  formData.append("district", userState.district);
-  formData.append("ward", userState.ward);
-  formData.append("street", userState.street);
-  formData.append("drivingLicense", userState.drivingLicense);
+    const { data: response } = await axiosInstance.post(
+      "/personalInfo",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.isSuccess === true) {
+      dispatch(setUserData(response.member));
+      createSnack(response.message, { severity: "success" });
+    } else {
+      createSnack(response.message, { severity: "error" });
+    }
+  };
 
   return (
     <div>
@@ -180,20 +199,17 @@ const BookingInformation = () => {
                 <DatePicker
                   sx={{ width: "100%" }}
                   format={"DD/MM/YYYY"}
-                  value={userState.birthDay}
-                  onChange={(value) =>
-                    setUserState((prevState) => ({
-                      ...prevState,
-                      birthDay: value,
-                    }))
-                  }
+                  value={birthDay}
+                  onChange={(value) => {
+                    setBirthDay(value);
+                  }}
                 />
               </Box>
               <Box>
                 <InputLabel required>Email</InputLabel>
                 <OutlinedInput
                   fullWidth
-                  value={userState.email}
+                  value={user.email}
                   placeholder="name@gmail.com"
                   disabled
                 />
@@ -216,11 +232,21 @@ const BookingInformation = () => {
             <InputLabel required>Address</InputLabel>
             <Provinces onSelectedOptionsChange={handleSelectedOptionsChange} />
           </Box>
-          <Box>
-            <InputLabel required>Driving License</InputLabel>
-            <DrivingLicense
-              handleDrivingLicenseChange={handleDrivingLicenseChange}
-            />
+          <Box sx={{ display: "flex", flexDirection: "row" }}>
+            <Box>
+              <InputLabel required>Driving License</InputLabel>
+              <DrivingLicense
+                handleDrivingLicenseChange={handleDrivingLicenseChange}
+              />
+            </Box>
+            <Box sx={{ flex: "1 1 auto" }} />
+            <Button
+              variant="outlined"
+              sx={{ alignSelf: "end", minWidth: "20%" }}
+              onClick={handleClickSave}
+            >
+              Save
+            </Button>
           </Box>
         </Stack>
         <Box sx={{ mt: 5 }}>
@@ -285,11 +311,24 @@ const BookingInformation = () => {
               <Stack spacing={2} sx={{ mt: 2 }}>
                 <Box>
                   <InputLabel required>Address</InputLabel>
-                  <Provinces />
+                  <Provinces
+                    onSelectedOptionsChange={handleSelectedOptionsChange}
+                  />
                 </Box>
-                <Box>
-                  <InputLabel required>Driving License</InputLabel>
-                  <DrivingLicense />
+                <Box sx={{ display: "flex", flexDirection: "row" }}>
+                  <Box>
+                    <InputLabel required>Driving License</InputLabel>
+                    <DrivingLicense
+                      handleDrivingLicenseChange={handleDrivingLicenseChange}
+                    />
+                  </Box>
+                  <Box sx={{ flex: "1 1 auto" }} />
+                  <Button
+                    variant="outlined"
+                    sx={{ alignSelf: "end", minWidth: "20%" }}
+                  >
+                    Save
+                  </Button>
                 </Box>
               </Stack>
             </AccordionDetails>
