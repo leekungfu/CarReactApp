@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -27,15 +28,16 @@ function getStyles(name, years, theme) {
   };
 }
 
-const ProductionYearSelection = () => {
+const ProductionYearSelection = (props) => {
+  const { name, onProductionYearChange } = props;
   const theme = useTheme();
-  const [year, setYear] = useState([]);
+  const data = useSelector((state) => state.basic.data);
 
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
-    setYear(typeof value === "string" ? value.split(",") : value);
+    onProductionYearChange(typeof value === "string" ? value.split(",") : value);
   };
 
   return (
@@ -43,11 +45,11 @@ const ProductionYearSelection = () => {
       <FormControl>
         <Select
           displayEmpty
-          value={year}
+          value={data.productionYear}
           onChange={handleChange}
           input={<OutlinedInput size="small" />}
           renderValue={(selected) => {
-            if (selected.length === 0) {
+            if (!selected) {
               return <em>Production Year</em>;
             }
             return selected;

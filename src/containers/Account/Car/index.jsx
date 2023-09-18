@@ -13,108 +13,56 @@ import {
   Rating,
   Breadcrumbs,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import AddCar from "../../../components/Dialogs/AddCar";
 import { Add, Commute, Home, NavigateNext } from "@mui/icons-material";
-import NavMenuUser from "../../../components/NavMenuUser";
-import ViewDetails from "../../../components/Dialogs/ViewDetails";
 import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
-import { Link } from "react-router-dom";
-
-const data = [
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.00 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.00 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Booked",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.00 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.00 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Stopped",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.00 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Booked",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.00 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-];
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { carSelectedAll } from "../../../components/ReduxToolkit/CarAdapter";
 
 const MyCars = (props) => {
   const { loading = false } = props;
   const [rateValue, setRateValue] = useState(4.5);
   const [openAddCar, setOpenAddCar] = useState(false);
-  const [openViewDetails, setOpenViewDetails] = useState(false);
-
+  const cars = useSelector(carSelectedAll).payload.cars;
+  const carArray = Object.values(cars.entities);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+  const totalCars = carArray.length;
+  const totalPages = Math.ceil(totalCars / itemsPerPage);
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage);
+  };
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const carsOnCurrentPage = carArray.slice(startIndex, endIndex);
   const handleClickOpenAddCar = () => {
     setOpenAddCar(true);
   };
-
-  const handleClickOpenViewDetails = () => {
-    setOpenViewDetails(true);
+  const navigate = useNavigate();
+  const handleCarClick = (carId) => {
+    navigate(`/editcardetails/${carId}`);
   };
-
   const handleClose = () => {
     setOpenAddCar(false);
-    setOpenViewDetails(false);
     setOpenConfirmDeposit(false);
     setOpenConfirmPayment(false);
   };
-
   const [openConfirmDeposit, setOpenConfirmDeposit] = useState(false);
   const [openConfirmPayment, setOpenConfirmPayment] = useState(false);
 
   const handleClickOpenConfirmDeposit = () => {
     setOpenConfirmDeposit(true);
   };
-
   const handleClickOpenConfirmPayment = () => {
     setOpenConfirmPayment(true);
   };
 
   return (
     <div>
-      <NavMenuUser />
       <Container maxWidth="lg" sx={{ pt: 5 }}>
         <Container maxWidth="lg" sx={{ mt: 5 }}>
           <Breadcrumbs
@@ -175,10 +123,10 @@ const MyCars = (props) => {
               <Typography variant="h6">LIST CARS:</Typography>
             </Stack>
             <Grid container columnSpacing={4} rowSpacing={5}>
-              {(loading ? Array.from(new Array(4)) : data).map(
-                (item, index) => (
-                  <Grid item xs={4} key={index}>
-                    {item ? (
+              {(loading ? Array.from(new Array(6)) : carsOnCurrentPage).map(
+                (car) => (
+                  <Grid item xs={4} key={car.id}>
+                    {car ? (
                       <Box
                         sx={{
                           border: "0.5px solid #ccc",
@@ -188,8 +136,11 @@ const MyCars = (props) => {
                       >
                         <img
                           style={{ width: "100%", height: 210 }}
-                          alt={item.title}
-                          src={item.src}
+                          alt={`frontImage-${car.id}`}
+                          src={`data:image/jpeg;base64, ${
+                            car.files.find((item) => item.name === "frontImage")
+                              .data
+                          }`}
                         />
                       </Box>
                     ) : (
@@ -200,11 +151,11 @@ const MyCars = (props) => {
                       />
                     )}
 
-                    {item ? (
+                    {car ? (
                       <Grid container>
                         <Grid item xs={12}>
                           <Typography gutterBottom variant="subtitle1">
-                            {item.name}
+                            {car.brand} {car.model} {car.productionYear}
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
@@ -221,35 +172,35 @@ const MyCars = (props) => {
                               <Rating
                                 size="small"
                                 name="half-rating-read"
-                                defaultValue={item.rating}
+                                defaultValue={car.rating}
                                 precision={0.5}
                                 readOnly
                               />
                             </Box>
                             <Typography variant="body2" color="text.secondary">
-                              Price: {item.price}
+                              Price: {car.price}
                             </Typography>
                           </Stack>
                         </Grid>
                         <Grid item xs={6}>
                           <Stack spacing={1}>
                             <Typography variant="body2" color="text.secondary">
-                              No. of rides: {item.nor}
+                              No. of rides: {car.nor}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
                               Status:{" "}
                               <span
                                 style={{
                                   color:
-                                    item.status === "Booked"
+                                    car.status === "Booked"
                                       ? "#15616d"
-                                      : item.status === "Stopped"
+                                      : car.status === "Stopped"
                                       ? "#d00000"
                                       : "#38b000",
                                   fontWeight: "bold",
                                 }}
                               >
-                                {item.status}
+                                {car.status}
                               </span>
                             </Typography>
                           </Stack>
@@ -260,25 +211,24 @@ const MyCars = (props) => {
                             variant="body2"
                             color="text.secondary"
                           >
-                            Location: {item.location}
+                            Location: {car.ward}, {car.district}, {car.province}
                           </Typography>
                           <Stack direction="row" spacing={3}>
-                            <Link to="/editcardetails">
-                              <Button
-                                sx={{
-                                  minWidth: "50%",
-                                  color: "white",
+                            <Button
+                              sx={{
+                                minWidth: "50%",
+                                color: "white",
+                                borderColor: "#fca311",
+                                "&:hover": {
                                   borderColor: "#fca311",
-                                  "&:hover": {
-                                    borderColor: "#fca311",
-                                  },
-                                }}
-                                variant="outlined"
-                              >
-                                View details
-                              </Button>
-                            </Link>
-                            {item.status === "Booked" ? (
+                                },
+                              }}
+                              variant="outlined"
+                              onClick={() => handleCarClick(car.id)}
+                            >
+                              View details
+                            </Button>
+                            {car.status === "Booked" ? (
                               <Button
                                 sx={{
                                   minWidth: "50%",
@@ -294,7 +244,7 @@ const MyCars = (props) => {
                               >
                                 Confirm payment
                               </Button>
-                            ) : item.status === "Stopped" ? (
+                            ) : car.status === "Stopped" ? (
                               <Button
                                 disabled
                                 sx={{
@@ -339,13 +289,17 @@ const MyCars = (props) => {
                 )
               )}
             </Grid>
-            <Pagination
-              sx={{ display: "flex", justifyContent: "end", mt: 10 }}
-              count={10}
-              variant="outlined"
-              showFirstButton
-              showLastButton
-            />
+            {carArray && carArray.length > 0 && (
+              <Pagination
+                sx={{ display: "flex", justifyContent: "end", mt: 10 }}
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                variant="outlined"
+                showFirstButton
+                showLastButton
+              />
+            )}
           </CardContent>
         </Card>
       </Container>

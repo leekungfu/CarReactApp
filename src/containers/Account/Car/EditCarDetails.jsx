@@ -1,6 +1,4 @@
 import {
-  Card,
-  CardContent,
   Box,
   Tabs,
   Tab,
@@ -11,8 +9,15 @@ import {
   Container,
   Breadcrumbs,
   Rating,
+  TableContainer,
+  Paper,
+  Table,
+  TableRow,
+  TableCell,
+  TableBody,
+  TableHead,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import styled from "styled-components";
 import CustomTabPanels from "../../../components/CustomTabPanels/CustomTabPanels";
@@ -24,24 +29,18 @@ import {
   More,
   NavigateNext,
 } from "@mui/icons-material";
-import Details from "../../../components/Stepper/Steps/Details";
-import Pricing from "../../../components/Stepper/Steps/Pricing";
-import Preview from "../../../components/Stepper/Steps/Preview";
-import { Link } from "react-router-dom";
-import AutoPlaySwipePreview from "../../../components/Stepper/AutoPlaySwipePreview";
+import { Link, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import {
+  carSelected,
+} from "../../../components/ReduxToolkit/CarAdapter";
+import AutoPreview from "./AutoPreview";
+import DetailsTab from "./DetailsTab";
+import PricingTab from "./PricingTab";
 
-const StyledTypography = styled(Typography)`
-  font-weight: bold !important;
-`;
-
-const data = {
-  name: "Mercedes-Benz Pickup Truck 2008",
-  rating: 4.5,
-  nor: 3,
-  price: "1.000.000 VND",
-  location: "Phường Ngọc Hà, Thành phố Hà Giang, Tỉnh Hà Giang",
-  status: "Availabel",
-};
+// const StyledTypography = styled(Typography)`
+//   font-weight: bold !important;
+// `;
 
 function a11yProps(index) {
   return {
@@ -52,10 +51,16 @@ function a11yProps(index) {
 
 const EditCarDetails = () => {
   const [tab, setTab] = useState(0);
-
+  const { carId } = useParams();
+  const car = useSelector((state) => carSelected(state, carId)).payload.cars;
+  const [carInfo, setCarInfo] = useState(car.entities[carId]);
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
+
+  useEffect(() => {
+    setCarInfo(car.entities[carId]);
+  }, [car, carId]);
 
   return (
     <div>
@@ -113,35 +118,37 @@ const EditCarDetails = () => {
         </Breadcrumbs>
       </Container>
       <Container maxWidth="lg" sx={{ mb: 10 }}>
-        <StyledTypography variant="h6" sx={{ mb: 3 }}>
+        <Typography variant="h6" sx={{ mb: 3, fontWeight: "bold" }}>
           Edit car details
-        </StyledTypography>
+        </Typography>
         <Grid container>
           <Grid item xs={6}>
-            <AutoPlaySwipePreview />
+            <AutoPreview carId={carId} />
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="h6">{data.name}</Typography>
+            <Typography variant="h6" fontWeight="bold">
+              {carInfo.brand} {carInfo.model} {carInfo.productionYear}{" "}
+            </Typography>
             <Stack direction="row" spacing={1}>
-              <StyledTypography variant="subtitle1">Rating:</StyledTypography>
+              <Typography variant="subtitle1">Rating:</Typography>
               <Rating defaultValue={3.5} precision={0.5} readOnly />
             </Stack>
-            <StyledTypography variant="subtitle1">
-              Number of rides: {data.nor}
-            </StyledTypography>
-            <StyledTypography variant="subtitle1">
-              Price: {data.price}
-            </StyledTypography>
-            <StyledTypography variant="subtitle1">
-              Location: {data.location}
-            </StyledTypography>
-            <StyledTypography variant="subtitle1">
+            <Typography variant="subtitle1">
+              Number of rides: <span style={{ fontWeight: "bold" }}>4</span>
+            </Typography>
+            <Typography variant="subtitle1">
+              Price: <span style={{ fontWeight: "bold" }}>{carInfo.basePrice}</span>
+            </Typography>
+            <Typography variant="subtitle1">
+              Location: <span style={{ fontWeight: "bold" }}>{carInfo.ward} {carInfo.district} {carInfo.province}</span>
+            </Typography>
+            <Typography variant="subtitle1">
               Status:{" "}
               <span style={{ color: "#38b000", fontWeight: "bold" }}>
-                {data.status}
+                {carInfo.status}
               </span>
-            </StyledTypography>
-            {data.status === "Booked" ? (
+            </Typography>
+            {car.status === "Booked" ? (
               <Button
                 sx={{
                   mt: 3,
@@ -201,112 +208,75 @@ const EditCarDetails = () => {
           <Grid container>
             <Grid item xs={6}>
               <Stack spacing={2}>
-                <StyledTypography variant="subtitle1">
-                  Plate number:
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  Brand name:
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  Production year:
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  Transmission:
-                </StyledTypography>
+                <Typography variant="subtitle1">
+                  Plate number: <span style={{ fontWeight: "bold" }}>{carInfo.plateNumber}</span>
+                </Typography>
+                <Typography variant="subtitle1">
+                  Brand name: <span style={{ fontWeight: "bold" }}>{carInfo.brand}</span>
+                </Typography>
+                <Typography variant="subtitle1">
+                  Production year: <span style={{ fontWeight: "bold" }}>{carInfo.productionYear}</span>
+                </Typography>
+                <Typography variant="subtitle1">
+                  Transmission type: <span style={{ fontWeight: "bold" }}>{carInfo.transmissionType}</span>
+                </Typography>
               </Stack>
             </Grid>
             <Grid item xs={6}>
               <Stack spacing={2}>
-                <StyledTypography variant="subtitle1">Color:</StyledTypography>
-                <StyledTypography variant="subtitle1">Model:</StyledTypography>
-                <StyledTypography variant="subtitle1">
-                  No. of seats:
-                </StyledTypography>
-                <StyledTypography variant="subtitle1">Fuel:</StyledTypography>
+                <Typography variant="subtitle1">
+                  Color: <span style={{ fontWeight: "bold" }}>{carInfo.color}</span>
+                </Typography>
+                <Typography variant="subtitle1">
+                  Model: <span style={{ fontWeight: "bold" }}>{carInfo.model}</span>
+                </Typography>
+                <Typography variant="subtitle1">
+                  No. of seats: <span style={{ fontWeight: "bold" }}>{carInfo.numberOfSeat}</span>
+                </Typography>
+                <Typography variant="subtitle1">
+                  Fuel type: <span style={{ fontWeight: "bold" }}>{carInfo.fuelType}</span>
+                </Typography>
               </Stack>
             </Grid>
             <Grid item xs={12}>
-              <StyledTypography sx={{ pt: 2 }} variant="subtitle1">
+              <Typography sx={{ pt: 2 }} variant="subtitle1">
                 Documents:
-              </StyledTypography>
+              </Typography>
+              <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ID</TableCell>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Note</TableCell>
+                      <TableCell>Link</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {carInfo.files.map((item) => (
+                      <TableRow
+                        key={item.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell>{item.id}</TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{item.type}</TableCell>
+                        <TableCell>{item.url}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </Grid>
           </Grid>
         </CustomTabPanels>
         <CustomTabPanels value={tab} index={1}>
-          <Details />
-          <Stack
-            direction="row"
-            spacing={1.5}
-            justifyContent="center"
-            sx={{ mt: 5 }}
-          >
-            <Button
-              sx={{
-                border: "solid 1px",
-                color: "white",
-                borderColor: "#fca311",
-                "&:hover": {
-                  borderColor: "#fca311",
-                },
-                width: "16%",
-              }}
-              variant="outlined"
-            >
-              Discard
-            </Button>
-            <Button
-              sx={{
-                color: "white",
-                border: "solid 1px",
-                borderColor: "#fca311",
-                "&:hover": {
-                  borderColor: "#fca311",
-                },
-                width: "16%",
-              }}
-              variant="outlined"
-            >
-              Save
-            </Button>
-          </Stack>
+          <DetailsTab carId={carId} />
         </CustomTabPanels>
         <CustomTabPanels value={tab} index={2}>
-          <Pricing />
-          <Stack
-            direction="row"
-            spacing={3.5}
-            justifyContent="center"
-            sx={{ mt: 5 }}
-          >
-            <Button
-              sx={{
-                border: "solid 1px",
-                color: "white",
-                borderColor: "#fca311",
-                "&:hover": {
-                  borderColor: "#fca311",
-                },
-                width: "18%",
-              }}
-              variant="outlined"
-            >
-              Discard
-            </Button>
-            <Button
-              sx={{
-                color: "white",
-                border: "solid 1px",
-                borderColor: "#fca311",
-                "&:hover": {
-                  borderColor: "#fca311",
-                },
-                width: "18%",
-              }}
-              variant="outlined"
-            >
-              Save
-            </Button>
-          </Stack>
+          <PricingTab carId={carId} />
         </CustomTabPanels>
       </Container>
     </div>

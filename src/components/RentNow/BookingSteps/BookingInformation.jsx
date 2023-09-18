@@ -28,6 +28,11 @@ import MuiAccordion from "@mui/material/Accordion";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import styled from "styled-components";
+import { DATE_PICKER_URI_FORMAT } from "../../../shared/configs/constants";
+import axiosInstance from "../../../shared/configs/axiosConfig";
+import { setUserData } from "../../ReduxToolkit/UserSlice";
+import { useSnackbar } from "../../Hooks/useSnackBar";
+import { useDispatch } from "react-redux";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -66,7 +71,82 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 }));
 
 const BookingInformation = () => {
-  const [date, setDate] = useState(dayjs("2000-01-01"));
+  const { createSnack } = useSnackbar();
+  const [dateDriver, setDateDriver] = useState(dayjs());
+  const userData = localStorage.getItem("userData");
+  const user = JSON.parse(userData);
+  const [birthDay, setBirthDay] = useState(dayjs(user.birthDay));
+
+  const [userState, setUserState] = useState({
+    fullName: user.fullName,
+    phone: user.phone,
+    nationalID: user.nationalID,
+    street: user.street,
+    province: user.province,
+    district: user.district,
+    ward: user.ward,
+    drivingLicense: "",
+  });
+  const handleUserStateChange = (event) => {
+    const { name, value } = event.target;
+    setUserState((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const [selectedOptions, setSelectedOptions] = useState([]);
+  if (selectedOptions.length > 0) {
+    userState.province = selectedOptions[0].province;
+    userState.district = selectedOptions[0].district;
+    userState.ward = selectedOptions[0].ward;
+  }
+
+  const handleSelectedOptionsChange = (options) => {
+    setSelectedOptions(options);
+  };
+
+  const handleDrivingLicenseChange = (newValue) => {
+    setUserState((prevState) => ({
+      ...prevState,
+      drivingLicense: newValue,
+    }));
+  };
+
+  const dispatch = useDispatch();
+  const handleClickSave = async () => {
+    const token = localStorage.getItem("jwtToken");
+    const formData = new FormData();
+    const dobFormated = dayjs(birthDay).format(DATE_PICKER_URI_FORMAT);
+    console.log(user.birthDay);
+    formData.append("email", user.email);
+    formData.append("fullName", userState.fullName);
+    formData.append("birthDay", dobFormated);
+    formData.append("phone", userState.phone);
+    formData.append("nationalID", userState.nationalID);
+    formData.append("province", userState.province);
+    formData.append("district", userState.district);
+    formData.append("ward", userState.ward);
+    formData.append("street", userState.street);
+    formData.append("drivingLicense", userState.drivingLicense);
+
+    const { data: response } = await axiosInstance.post(
+      "/personalInfo",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.isSuccess === true) {
+      dispatch(setUserData(response.member));
+      createSnack(response.message, { severity: "success" });
+    } else {
+      createSnack(response.message, { severity: "error" });
+    }
+  };
 
   return (
     <div>
@@ -81,20 +161,33 @@ const BookingInformation = () => {
                 <InputLabel required>Full Name</InputLabel>
                 <OutlinedInput
                   fullWidth
+                  name="fullName"
                   placeholder="Example: John Wick"
                   required
+                  value={userState.fullName}
+                  onChange={handleUserStateChange}
                 />
               </Box>
               <Box>
                 <InputLabel required>Phone Number</InputLabel>
-                <OutlinedInput fullWidth placeholder="(+84)" required />
+                <OutlinedInput
+                  name="phone"
+                  value={userState.phone}
+                  fullWidth
+                  placeholder="(+84)"
+                  required
+                  onChange={handleUserStateChange}
+                />
               </Box>
               <Box>
                 <InputLabel required>National ID</InputLabel>
                 <OutlinedInput
+                  name="nationalID"
                   fullWidth
+                  value={userState.nationalID}
                   placeholder="Example: 122318181"
                   required
+                  onChange={handleUserStateChange}
                 />
               </Box>
             </Stack>
@@ -105,21 +198,31 @@ const BookingInformation = () => {
                 <InputLabel required>Date of birth</InputLabel>
                 <DatePicker
                   sx={{ width: "100%" }}
-                  value={date}
-                  onChange={(date) => setDate(date)}
+                  format={"DD/MM/YYYY"}
+                  value={birthDay}
+                  onChange={(value) => {
+                    setBirthDay(value);
+                  }}
                 />
               </Box>
               <Box>
                 <InputLabel required>Email</InputLabel>
                 <OutlinedInput
                   fullWidth
+                  value={user.email}
                   placeholder="name@gmail.com"
                   disabled
                 />
               </Box>
               <Box>
                 <InputLabel required>Street</InputLabel>
-                <OutlinedInput fullWidth placeholder="Street" />
+                <OutlinedInput
+                  name="street"
+                  value={userState.street}
+                  fullWidth
+                  placeholder="Street"
+                  onChange={handleUserStateChange}
+                />
               </Box>
             </Stack>
           </Grid>
@@ -127,11 +230,23 @@ const BookingInformation = () => {
         <Stack spacing={2} sx={{ mt: 2 }}>
           <Box>
             <InputLabel required>Address</InputLabel>
-            <Provinces />
+            <Provinces onSelectedOptionsChange={handleSelectedOptionsChange} />
           </Box>
-          <Box>
-            <InputLabel required>Driving License</InputLabel>
-            <DrivingLicense />
+          <Box sx={{ display: "flex", flexDirection: "row" }}>
+            <Box>
+              <InputLabel required>Driving License</InputLabel>
+              <DrivingLicense
+                handleDrivingLicenseChange={handleDrivingLicenseChange}
+              />
+            </Box>
+            <Box sx={{ flex: "1 1 auto" }} />
+            <Button
+              variant="outlined"
+              sx={{ alignSelf: "end", minWidth: "20%" }}
+              onClick={handleClickSave}
+            >
+              Save
+            </Button>
           </Box>
         </Stack>
         <Box sx={{ mt: 5 }}>
@@ -173,8 +288,9 @@ const BookingInformation = () => {
                       <InputLabel required>Date of birth</InputLabel>
                       <DatePicker
                         sx={{ width: "100%" }}
-                        value={date}
-                        onChange={(date) => setDate(date)}
+                        format={"DD/MM/YYYY"}
+                        value={dateDriver}
+                        onChange={(date) => setDateDriver(date)}
                       />
                     </Box>
                     <Box>
@@ -195,11 +311,24 @@ const BookingInformation = () => {
               <Stack spacing={2} sx={{ mt: 2 }}>
                 <Box>
                   <InputLabel required>Address</InputLabel>
-                  <Provinces />
+                  <Provinces
+                    onSelectedOptionsChange={handleSelectedOptionsChange}
+                  />
                 </Box>
-                <Box>
-                  <InputLabel required>Driving License</InputLabel>
-                  <DrivingLicense />
+                <Box sx={{ display: "flex", flexDirection: "row" }}>
+                  <Box>
+                    <InputLabel required>Driving License</InputLabel>
+                    <DrivingLicense
+                      handleDrivingLicenseChange={handleDrivingLicenseChange}
+                    />
+                  </Box>
+                  <Box sx={{ flex: "1 1 auto" }} />
+                  <Button
+                    variant="outlined"
+                    sx={{ alignSelf: "end", minWidth: "20%" }}
+                  >
+                    Save
+                  </Button>
                 </Box>
               </Stack>
             </AccordionDetails>

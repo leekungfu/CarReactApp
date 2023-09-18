@@ -7,14 +7,31 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import NotifyReset from "../../../components/Modals/NotifyReset";
 import { useState } from "react";
+import { useSnackbar } from "../../../components/Hooks/useSnackBar";
+import axiosInstance from "../../../shared/configs/axiosConfig";
 
 const ResetPass = () => {
   const [openNotifyReset, setOpenNotifyReset] = useState(false);
-  const handleClickOpenNotifyReset = () => {
-    setOpenNotifyReset(true);
+  const [email, setEmail] = useState("");
+  const { createSnack } = useSnackbar();
+  const handleClickOpenNotifyReset = async (e) => {
+    e.preventDefault();
+    if (email) {
+      const response = await axiosInstance.post("/forgot_password", null, {
+        params: {
+          email,
+        },
+      });
+      if (response.data.isSuccess === true) {
+        setOpenNotifyReset(true);
+      } else {
+        createSnack(response.data.message);
+      }
+    } else {
+      createSnack("Enter your correct email!", { severity: "warning" });
+    }
   };
 
   const handleCloseNotifyReset = () => {
@@ -36,6 +53,8 @@ const ResetPass = () => {
             sx={{ minWidth: "40%" }}
             placeholder="Enter email address"
             size="small"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
           />
           <Button
             sx={{ bgcolor: "white", color: "#fca311" }}

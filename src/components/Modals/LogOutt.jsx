@@ -2,6 +2,8 @@ import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import axiosInstance from "../../shared/configs/axiosConfig";
 
 const style = {
   position: "absolute",
@@ -17,15 +19,24 @@ const style = {
 
 const LogOutt = (props) => {
   const { open, onClose } = props;
-
+  const { createSnack } = useSnackbar();
   const handleClose = () => {
     onClose();
   };
 
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    navigate("/");
+  const token = localStorage.getItem("jwtToken");
+  const handleClick = async (event) => {
+    event.preventDefault();
+    const response = await axiosInstance.post("/logout", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.data.isSuccess === true) {
+      localStorage.clear();
+      window.location.href = "/";
+    }
+    createSnack("Failed!", { severity: "eror" });
   };
 
   return (

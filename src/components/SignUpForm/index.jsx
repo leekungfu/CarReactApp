@@ -31,30 +31,109 @@ import { useState } from "react";
 import ControlledRadioButtons from "../ControlledRadioButtons";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import validator from "validator";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import { NumericFormat } from "react-number-format";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { setUserData } from "../ReduxToolkit/UserSlice";
 
 const SignUpForm = (props) => {
   const { open, onClose } = props;
+  const { createSnack } = useSnackbar();
   const handleClose = () => onClose();
-
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword((show) => !show);
   const handleMouseDownConfirmPassword = (event) => {
     event.preventDefault();
   };
-
   const navigate = useNavigate();
-  const handleClickSignup = () => {
-    navigate("/homeowner");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [role, setRole] = useState("");
+  const [checkboxState, setCheckboxState] = useState(false);
+  const [validationMsg, setValidationMsg] = useState("");
+
+  const dispatch = useDispatch();
+
+  const handleCheckbox = (checked) => {
+    setCheckboxState(checked);
   };
 
-  
+  const validate = () => {
+    const msg = {};
+    if (validator.isEmpty(email)) {
+      msg.email = "Email is required.";
+    }
+    if (validator.isEmpty(password)) {
+      msg.password = "Password is required.";
+    }
+    if (validator.isEmpty(phone)) {
+      msg.phone = "Phone is required.";
+    }
+    if (validator.isEmpty(fullName)) {
+      msg.fullName = "Fullname is required.";
+    }
+    if (validator.isEmpty(confirmPassword)) {
+      msg.confirmPassword = "Confirm password is required.";
+    }
+    setValidationMsg(msg);
+    return Object.keys(msg).length === 0;
+  };
+
+  const handleClickSignup = async (event) => {
+    event.preventDefault();
+    const checkInputValue = validate();
+    try {
+      if (checkInputValue) {
+        const formData = new FormData();
+        formData.append("fullName", fullName);
+        formData.append("email", email);
+        formData.append("phone", phone);
+        formData.append("password", password);
+        formData.append("role", role);
+        const response = await axiosInstance.post("/signup", formData);
+        const data = await response.data.member;
+
+        if (response.data.isSuccess === true) {
+          createSnack(response.data.message, { severity: "success" });
+          localStorage.setItem("jwtToken", response.data.token);
+          dispatch(setUserData(data));
+          const basicInfo = {
+            fullName: data.fullName,
+            email: data.email,
+            phone: data.phone,
+            role: data.role,
+            nationalID: data.nationalID,
+            street: data.street,
+            birthDay: data.birthDay,
+          };
+          localStorage.setItem("userData", JSON.stringify(basicInfo));
+
+          if (role === "CUSTOMER") {
+            window.location.href = "/homecustomer";
+          } else {
+            window.location.href = "/homeowner";
+          }
+        } else {
+          createSnack(response.data.message, { severity: "error" });
+        }
+      } else {
+        createSnack("Fields are required and valid", { severity: "error" });
+      }
+    } catch (error) {
+      console.error("Error during sign up:", error);
+    }
+  };
 
   return (
     <div>
@@ -86,8 +165,15 @@ const SignUpForm = (props) => {
                         <Person />
                       </InputAdornment>
                     }
+                    value={fullName}
+                    onChange={(event) => setFullName(event.target.value)}
                   />
                 </FormControl>
+                {!fullName && (
+                  <Typography variant="subtitle2" color="red">
+                    {validationMsg.fullName}
+                  </Typography>
+                )}
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
                   variant="outlined"
@@ -101,14 +187,28 @@ const SignUpForm = (props) => {
                         <Email />
                       </InputAdornment>
                     }
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
                   />
                 </FormControl>
+                {!email && (
+                  <Typography variant="subtitle2" color="red">
+                    {validationMsg.email}
+                  </Typography>
+                )}
+                {email && !validator.isEmail(email) && (
+                  <Typography variant="subtitle2" color="red">
+                    Please enter valid email!
+                  </Typography>
+                )}
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
                   variant="outlined"
                   required
                 >
-                  <OutlinedInput
+                  <NumericFormat
+                    customInput={OutlinedInput}
+                    allowLeadingZeros
                     id="phone"
                     placeholder="Phone Number"
                     startAdornment={
@@ -116,8 +216,20 @@ const SignUpForm = (props) => {
                         <Phone />
                       </InputAdornment>
                     }
+                    value={phone}
+                    onChange={(event) => setPhone(event.target.value)}
                   />
                 </FormControl>
+                {!phone && (
+                  <Typography variant="subtitle2" color="red">
+                    {validationMsg.phone}
+                  </Typography>
+                )}
+                {phone && !validator.isMobilePhone(phone) && (
+                  <Typography variant="subtitle2" color="red">
+                    Please enter correct phone number!
+                  </Typography>
+                )}
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
                   variant="outlined"
@@ -144,15 +256,22 @@ const SignUpForm = (props) => {
                         </IconButton>
                       </InputAdornment>
                     }
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
                   />
                 </FormControl>
+                {!password && (
+                  <Typography variant="subtitle2" color="red">
+                    {validationMsg.password}
+                  </Typography>
+                )}
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
                   variant="outlined"
                   required
                 >
                   <OutlinedInput
-                    id="password"
+                    id="confirm-password"
                     placeholder="Confirm password"
                     type={showConfirmPassword ? "text" : "password"}
                     startAdornment={
@@ -176,10 +295,28 @@ const SignUpForm = (props) => {
                         </IconButton>
                       </InputAdornment>
                     }
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
                   />
                 </FormControl>
-                <ControlledRadioButtons />
+                {!confirmPassword && (
+                  <Typography variant="subtitle2" color="red">
+                    {validationMsg.confirmPassword}
+                  </Typography>
+                )}
+                {confirmPassword &&
+                  !validator.equals(password, confirmPassword) && (
+                    <Typography variant="subtitle2" color="red">
+                      Password don't match
+                    </Typography>
+                  )}
+                <ControlledRadioButtons
+                  role={role}
+                  setRole={setRole}
+                  onCheckboxChange={handleCheckbox}
+                />
                 <Button
+                  disabled={!checkboxState}
                   type="submit"
                   fullWidth
                   variant="outlined"

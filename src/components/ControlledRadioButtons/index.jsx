@@ -8,30 +8,40 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import PropTypes from "prop-types";
 
-export default function ControlledRadioButtons() {
-  const [value, setValue] = useState("");
+export default function ControlledRadioButtons(props) {
+  const { role, setRole, onCheckboxChange } = props;
 
   const handleChange = (event) => {
-    setValue(event.target.value);
+    setRole(event.target.value);
+  };
+
+  const [checkboxState, setCheckboxState] = useState(false);
+  const handleCheckboxChange = (event) => {
+    const checked = event.target.checked;
+    setCheckboxState(checked);
+    onCheckboxChange(checked); // Gọi hàm từ props của thành phần cha
   };
 
   return (
     <FormControl sx={{ mt: 1 }}>
-      <RadioGroup value={value} onChange={handleChange}>
+      <RadioGroup value={role} onChange={handleChange}>
         <FormControlLabel
-          control={<Radio name="role" value="customer" color="primary" />}
+          control={<Radio value="CUSTOMER" color="primary" />}
           label="I want to rent a car"
         />
         <FormControlLabel
-          control={<Radio name="role" value="owner" color="primary" />}
+          control={<Radio value="OWNER" color="primary" />}
           label="I am a car owner"
         />
         <FormControlLabel
-          control={<Checkbox />}
+          control={
+            <Checkbox checked={checkboxState} onChange={handleCheckboxChange} />
+          }
           label={
             <Typography noWrap>
-              I have read and agree with the {" "}
+              I have read and agree with the{" "}
               <Link href="#" color="#fca311" noWrap>
                 Terms & Conditions
               </Link>
@@ -42,3 +52,8 @@ export default function ControlledRadioButtons() {
     </FormControl>
   );
 }
+
+ControlledRadioButtons.propTypes = {
+  role: PropTypes.string.isRequired,
+  setRole: PropTypes.func.isRequired,
+};

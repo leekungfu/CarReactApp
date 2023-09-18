@@ -96,7 +96,6 @@ const MyWallet = (props) => {
 
   return (
     <div>
-      <NavMenuUser />
       <Container maxWidth="lg" sx={{ mt: 5, mb: 10 }}>
         <Container maxWidth="lg" sx={{ mt: 5 }}>
           <Breadcrumbs

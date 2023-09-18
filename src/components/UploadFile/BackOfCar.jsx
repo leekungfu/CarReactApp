@@ -2,12 +2,14 @@ import { CloudUpload } from "@mui/icons-material";
 import { Button, Input, InputLabel, Paper } from "@mui/material";
 import React, { useState } from "react";
 
-const BackOfCar = () => {
+const BackOfCar = (props) => {
+  const { onBackImageChange } = props;
   const [selectedImage, setSelectedImage] = useState(null);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     setSelectedImage(file);
+    onBackImageChange(file);
   };
 
   return (
@@ -20,7 +22,16 @@ const BackOfCar = () => {
         sx={{ display: "none" }}
       />
       <InputLabel htmlFor="backOfCar">
-        <Button variant="contained" component="span" sx={{ border: "solid 1px", color: "white", display: "flex", justifyContent: "flex-start" }}>
+        <Button
+          variant="contained"
+          component="span"
+          sx={{
+            border: "solid 1px",
+            color: "white",
+            display: "flex",
+            justifyContent: "flex-start",
+          }}
+        >
           <CloudUpload sx={{ mr: 1 }} />
           Upload image
         </Button>

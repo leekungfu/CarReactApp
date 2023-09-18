@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
+import { useSelector } from "react-redux";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -24,15 +25,16 @@ function getStyles(name, seats, theme) {
   };
 }
 
-const NumberOfSeatsSelection = () => {
+const NumberOfSeatsSelection = (props) => {
+  const { name, onNumberOfSeatChange } = props;
   const theme = useTheme();
-  const [seat, setSeat] = useState([]);
+  const data = useSelector((state) => state.basic.data);
 
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
-    setSeat(typeof value === "string" ? value.split(",") : value);
+    onNumberOfSeatChange(typeof value === "string" ? value.split(",") : value);
   };
 
   return (
@@ -40,7 +42,7 @@ const NumberOfSeatsSelection = () => {
       <FormControl>
         <Select
           displayEmpty
-          value={seat}
+          value={data.numberOfSeat}
           onChange={handleChange}
           input={<OutlinedInput size="small" />}
           renderValue={(selected) => {

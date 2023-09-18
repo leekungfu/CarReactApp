@@ -1,6 +1,6 @@
 import { isObject, isString, isEmpty, isFunction } from "lodash";
 import { useCallback } from "react";
-import request from "src/utils/request";
+import request from "../utils/request";
 
 const serialize = (obj) => {
   const str = [];

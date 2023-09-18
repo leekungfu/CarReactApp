@@ -14,6 +14,7 @@ import styled from "styled-components";
 import { Fragment, useState } from "react";
 import LogOut from "../Modals/LogOutt";
 import LogOutt from "../Modals/LogOutt";
+import { useSelector } from "react-redux";
 
 const StyledMenuItem = styled(MenuItem)`
   cursor: pointer;
@@ -24,7 +25,8 @@ const StyledMenuItem = styled(MenuItem)`
 export default function UserMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-
+  const userData = localStorage.getItem("userData");
+  const role = JSON.parse(userData).role;
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -95,17 +97,21 @@ export default function UserMenu() {
         <StyledMenuItem component={Link} to="/profile">
           <Typography variant="subtitle1">My Profile</Typography>
         </StyledMenuItem>
-        <StyledMenuItem component={Link} to="/cars">
-          <Typography variant="subtitle1">My Cars</Typography>
-        </StyledMenuItem>
+        {role === "OWNER" && (
+          <Box>
+            <StyledMenuItem component={Link} to="/cars">
+              <Typography variant="subtitle1">My Cars</Typography>
+            </StyledMenuItem>
+            <StyledMenuItem component={Link} to="/feedback">
+              <Typography variant="subtitle1">My Feedback</Typography>
+            </StyledMenuItem>
+          </Box>
+        )}
         <StyledMenuItem component={Link} to="/booking">
           <Typography variant="subtitle1">My Booking</Typography>
         </StyledMenuItem>
         <StyledMenuItem component={Link} to="/wallet">
           <Typography variant="subtitle1">My Wallet</Typography>
-        </StyledMenuItem>
-        <StyledMenuItem component={Link} to="/feedback">
-          <Typography variant="subtitle1">My Feedback</Typography>
         </StyledMenuItem>
         <Divider />
         <StyledMenuItem component={Link} onClick={handleClickOpenLogout}>

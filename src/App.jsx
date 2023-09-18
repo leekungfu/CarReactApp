@@ -1,6 +1,6 @@
 import "./App.css";
 import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
-import { Layout } from "./components/Layout";
+
 import HomeGuest from "./containers/Home/HomeGuest";
 import HomeCustomer from "./containers/Home/HomeCustomer";
 
@@ -24,10 +24,14 @@ import MyWallet from "./containers/Account/Wallet";
 import MyFeedBack from "./containers/Account/FeedBack";
 import ResetPass from "./containers/Account/Reset/ResetPass";
 import ConfirmReset from "./containers/Account/Reset/ConfirmReset";
+import Layout from "./components/Layout";
+import { SnackProvider } from "./components/Hooks/useSnackBar";
+
 
 const ProviderPack = createPack(
   (props) => <ThemeProvider theme={DefaultTheme} {...props} />,
   (props) => <StyledThemeProvider theme={DefaultTheme} {...props} />,
+  (props) => <SnackProvider {...props} />,
   (props) => (
     <LocalizationProvider
       dateAdapter={AdapterDayjs}
@@ -46,17 +50,17 @@ function App() {
           <Routes>
             <Route index={true} element={<HomeGuest />} />
             <Route path="/homecustomer" element={<HomeCustomer />} />
-            <Route path="/homeowner" element={<HomeOwner/>} />
-            <Route path="/addcar" element={<AddCar/>} />
-            <Route path="/profile" element={<ProfileTabs/>} />
+            <Route path="/homeowner" element={<HomeOwner />} />
+            <Route path="/addcar" element={<AddCar />} />
+            <Route path="/profile" element={<ProfileTabs />} />
             <Route path="/booking" element={<MyBookings />} />
             <Route path="/wallet" element={<MyWallet />} />
             <Route path="/cars" element={<MyCars />} />
             <Route path="/feedback" element={<MyFeedBack />} />
-            <Route path="/rentnow" element={<RentNow />} />
-            <Route path="/editcardetails" element={<EditCarDetails />} />
-            <Route path="/viewcardetails" element={<ViewCarDetails />} />
-            <Route path="/bookingdetails" element={<BookingDetails />} />
+            <Route path="/rentnow/:carId" element={<RentNow />} />
+            <Route path="/editcardetails/:carId" element={<EditCarDetails />} />
+            <Route path="/viewcardetails/:carId" element={<ViewCarDetails />} />
+            <Route path="/bookingdetails/:carId" element={<BookingDetails />} />
             <Route path="/reset" element={<ResetPass />} />
             <Route path="/confirmreset" element={<ConfirmReset />} />
           </Routes>

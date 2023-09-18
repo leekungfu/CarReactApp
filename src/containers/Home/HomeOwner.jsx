@@ -5,16 +5,12 @@ import {
   CardContent,
   Container,
   Grid,
-  IconButton,
   Stack,
   Typography,
 } from "@mui/material";
-import NavMenuCustomer from "../../components/NavMenuUser";
 import {
-  Add,
   CarRental,
   CurrencyExchange,
-  CurrencyExchangeOutlined,
   HowToReg,
   List,
   MoneyOff,
@@ -22,11 +18,12 @@ import {
   SwipeRight,
 } from "@mui/icons-material";
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddCar from "../../components/Dialogs/AddCar";
-import NavMenuUser from "../../components/NavMenuUser";
-import Footer from "../../components/Footer";
-import { Fragment } from "react";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { useDispatch } from "react-redux";
+import { carsAdded } from "../../components/ReduxToolkit/CarAdapter";
+import { setUserData } from "../../components/ReduxToolkit/UserSlice";
 
 const StyledTypography = styled(Typography)`
   font-weight: 600;
@@ -42,10 +39,60 @@ const HomeOwner = () => {
   const handleClose = () => {
     setOpen(false);
   };
+  const dispatch = useDispatch();
+
+  const [carArray, setCarArray] = useState([]);
+  const key = carArray.length;
+  const [apiCalled, setApiCalled] = useState(false);
+  useEffect(() => {
+    if (!apiCalled) {
+      const token = localStorage.getItem("jwtToken");
+      axiosInstance
+        .get("/owner/cars", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          if (response.data.isSuccess === true) {
+            console.log(response.data.cars);
+            setCarArray(response.data.cars);
+            dispatch(carsAdded(response.data.cars));
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        })
+        .finally(() => {
+          setApiCalled(true);
+        });
+    }
+  }, [apiCalled, dispatch, key]);
+
+  useEffect(() => {
+    if (!apiCalled) {
+      const token = localStorage.getItem("jwtToken");
+      axiosInstance
+        .get("/currentUser", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          dispatch(setUserData(response.data));
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        })
+        .finally(() => {
+          setApiCalled(true);
+        });
+    }
+  }, [apiCalled, dispatch]);
 
   return (
     <div>
-      <NavMenuUser />
       <Container maxWidth="lg">
         <Card elevation={0}>
           <CardContent>

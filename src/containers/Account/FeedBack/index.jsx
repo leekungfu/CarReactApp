@@ -27,7 +27,6 @@ const MyFeedBack = () => {
 
   return (
     <div>
-      <NavMenuUser />
       <Container maxWidth="lg" sx={{ pt: 5 }}>
         <Container maxWidth="lg" sx={{ mt: 5 }}>
           <Breadcrumbs
@@ -58,7 +57,7 @@ const MyFeedBack = () => {
                 fontWeight="bold"
                 sx={{ display: "flex", alignItems: "center" }}
               >
-                My Wallet
+                My Feedback
               </Typography>
             </Stack>
           </Breadcrumbs>

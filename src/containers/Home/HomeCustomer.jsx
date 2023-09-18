@@ -18,28 +18,17 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import NavMenuCustomer from "../../components/NavMenuUser";
-import {
-  ArrowForward,
-  ArrowForwardIosOutlined,
-  Label,
-  List,
-  Search,
-} from "@mui/icons-material";
-import styled from "styled-components";
-import { useRef, useState } from "react";
-import dayjs from "dayjs";
-import TextField from "@mui/material/TextField";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../shared/configs/constants";
+import { ArrowForward, List, Search } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 import { DateRangePicker } from "rsuite";
 import { useTheme } from "@mui/material/styles";
-import NavMenuUser from "../../components/NavMenuUser";
-import ViewDetails from "../../components/Dialogs/ViewDetails";
 import subVn from "sub-vn";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { useSnackbar } from "../../components/Hooks/useSnackBar";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../../components/ReduxToolkit/UserSlice";
+import { RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../shared/configs/constants";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -61,108 +50,89 @@ function getStyles(name, items, theme) {
   };
 }
 
-const data = [
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.000 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.000 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.000 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.000 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.000 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    rating: 4.5,
-    nor: 4,
-    price: "1.500.000 VND/day",
-    location: "Alley 193 Trung Kinh - Cau Giay - Ha Noi",
-    status: "Availabel",
-  },
-];
-
 const HomeCustomer = (props) => {
   const theme = useTheme();
-  const grid = useRef(null);
   const { loading = false } = props;
+  const { createSnack } = useSnackbar();
+  const navigate = useNavigate();
   const [rateValue, setRateValue] = useState(4.5);
-  const [openAddCar, setOpenAddCar] = useState(false);
-  const [openViewDetails, setOpenViewDetails] = useState(false);
-
   const [selectedProvince, setSelectedProvince] = useState(null);
   const provinces = subVn.getProvinces();
   const provinceArray = provinces.map((province) => province.name);
-
   const handleProvinceChange = (event) => {
     setSelectedProvince(event.target.value);
   };
-
-  const handleClickOpenAddCar = () => {
-    setOpenAddCar(true);
+  const handleClickViewDetails = (carId) => {
+    navigate(`/viewcardetails/${carId}`);
+  };
+  const handleClickRentNow = (carId) => {
+    navigate(`/rentnow/${carId}`);
   };
 
-  const handleClickOpenViewDetails = () => {
-    setOpenViewDetails(true);
-  };
+  const fromTime = new Date();
+  fromTime.setHours(0, 0, 0, 0);
+  const toTime = new Date();
+  toTime.setHours(23, 59, 59, 999);
+  const [startTime, setStartTime] = useState(fromTime);
+  const [endTime, setEndTime] = useState(toTime);
+  const [cars, setCars] = useState([]);
 
-  const handleClose = () => {
-    setOpenAddCar(false);
-    setOpenViewDetails(false);
-    setOpenConfirmDeposit(false);
-    setOpenConfirmPayment(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+  const totalCars = cars.length;
+  const totalPages = Math.ceil(totalCars / itemsPerPage);
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage);
   };
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const carsOnCurrentPage = cars.slice(startIndex, endIndex);
 
-  const [openConfirmDeposit, setOpenConfirmDeposit] = useState(false);
-  const [openConfirmPayment, setOpenConfirmPayment] = useState(false);
-
-  const handleClickOpenConfirmDeposit = () => {
-    setOpenConfirmDeposit(true);
+  const token = localStorage.getItem("jwtToken");
+  const handleClickSearch = async () => {
+    const response = await axiosInstance.get("/customer/searchCar", {
+      params: {
+        selectedProvince,
+        startTime,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.data.isSuccess === true) {
+      setCars(response.data.cars);
+      console.log("Cars: ", response.data.cars);
+      createSnack(response.data.message, { severity: "success" });
+    } else {
+      createSnack(response.data.message, { severity: "error" });
+    }
   };
-
-  const handleClickOpenConfirmPayment = () => {
-    setOpenConfirmPayment(true);
-  };
+  const dispatch = useDispatch();
+  const [apiCalled, setApiCalled] = useState(false);
+  useEffect(() => {
+    if (!apiCalled) {
+      const token = localStorage.getItem("jwtToken");
+      axiosInstance
+        .get("/currentUser", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          dispatch(setUserData(response.data));
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        })
+        .finally(() => {
+          setApiCalled(true);
+        });
+    }
+  }, [apiCalled, dispatch]);
 
   return (
     <Box>
-      <NavMenuUser />
       <Container maxWidth="lg">
         <Card elevation={0}>
           <CardContent>
@@ -204,11 +174,12 @@ const HomeCustomer = (props) => {
               </Grid>
               <Grid item xs={4}>
                 <DateRangePicker
-                  format={"yyyy-MM-dd HH:mm:ss"}
-                  defaultCalendarValue={[
-                    new Date("2022-02-01 00:00:00"),
-                    new Date("2022-05-01 23:59:59"),
-                  ]}
+                  format={RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT}
+                  value={[new Date(startTime), new Date(endTime)]}
+                  onChange={(values) => {
+                    setStartTime(values[0]);
+                    setEndTime(values[1]);
+                  }}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -224,7 +195,7 @@ const HomeCustomer = (props) => {
                     },
                   }}
                   variant="outlined"
-                  onClick={() => grid.current.reload()}
+                  onClick={handleClickSearch}
                   endIcon={<Search />}
                 >
                   Search
@@ -245,7 +216,7 @@ const HomeCustomer = (props) => {
               <Typography variant="h6">LIST CAR:</Typography>
             </Stack>
             <Grid container columnSpacing={4} rowSpacing={5}>
-              {(loading ? Array.from(new Array(4)) : data).map(
+              {(loading ? Array.from(new Array(4)) : carsOnCurrentPage).map(
                 (item, index) => (
                   <Grid item xs={4} key={index}>
                     {item ? (
@@ -259,7 +230,11 @@ const HomeCustomer = (props) => {
                         <img
                           style={{ width: "100%", height: 210 }}
                           alt={item.title}
-                          src={item.src}
+                          src={`data:image/jpeg;base64, ${
+                            item.files.find(
+                              (item) => item.name === "frontImage"
+                            ).data
+                          }`}
                         />
                       </Box>
                     ) : (
@@ -274,7 +249,7 @@ const HomeCustomer = (props) => {
                       <Grid container>
                         <Grid item xs={12}>
                           <Typography gutterBottom variant="subtitle1">
-                            {item.name}
+                            {item.brand} {item.model} {item.productionYear}
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
@@ -330,44 +305,40 @@ const HomeCustomer = (props) => {
                             variant="body2"
                             color="text.secondary"
                           >
-                            Location: {item.location}
+                            Location: {item.ward} {item.district}{" "}
+                            {item.province}
                           </Typography>
                           <Stack direction="row" spacing={3}>
-                            <Link to="/viewcardetails">
-                              <Button
-                                fullWidth
-                                sx={{
+                            <Button
+                              sx={{
+                                color: "white",
+                                borderColor: "#fca311",
+                                "&:hover": {
+                                  borderColor: "#fca311",
+                                },
+                              }}
+                              variant="outlined"
+                              onClick={() => handleClickViewDetails(item.id)}
+                            >
+                              View details
+                            </Button>
+                            <Button
+                              sx={{
+                                color: "#fca311",
+                                borderColor: "#fca311",
+                                bgcolor: "white",
+                                "&:hover": {
                                   color: "white",
+                                  bgcolor: "#fca311",
                                   borderColor: "#fca311",
-                                  "&:hover": {
-                                    borderColor: "#fca311",
-                                  },
-                                }}
-                                variant="outlined"
-                              >
-                                View details
-                              </Button>
-                            </Link>
-                            <Link to="/rentnow">
-                              <Button
-                                fullWidth
-                                sx={{
-                                  color: "#fca311",
-                                  borderColor: "#fca311",
-                                  bgcolor: "white",
-                                  "&:hover": {
-                                    color: "white",
-                                    bgcolor: "#fca311",
-                                    borderColor: "#fca311",
-                                  },
-                                }}
-                                variant="outlined"
-                                // onClick={handleClickOpenConfirmPayment}
-                                endIcon={<ArrowForward />}
-                              >
-                                Rent now
-                              </Button>
-                            </Link>
+                                },
+                              }}
+                              variant="outlined"
+                              endIcon={<ArrowForward />}
+                              onClick={() => handleClickRentNow(item.id)}
+                            >
+                              Rent now
+                            </Button>
                           </Stack>
                         </Grid>
                       </Grid>
@@ -381,13 +352,17 @@ const HomeCustomer = (props) => {
                 )
               )}
             </Grid>
-            <Pagination
-              sx={{ display: "flex", justifyContent: "end", mt: 10 }}
-              count={10}
-              variant="outlined"
-              showFirstButton
-              showLastButton
-            />
+            {cars && cars.length > 0 && (
+              <Pagination
+                sx={{ display: "flex", justifyContent: "end", mt: 10 }}
+                count={totalPages}
+                page={currentPage}
+                variant="outlined"
+                showFirstButton
+                showLastButton
+                onChange={handlePageChange}
+              />
+            )}
           </CardContent>
         </Card>
       </Container>

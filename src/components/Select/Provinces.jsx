@@ -32,7 +32,7 @@ function getStyles(name, items, theme) {
   };
 }
 
-const Provinces = () => {
+const Provinces = (props) => {
   const theme = useTheme();
 
   const [districts, setDistricts] = useState([]);
@@ -92,7 +92,18 @@ const Provinces = () => {
   };
 
   const handleWardChange = (event) => {
-    setSelectedWard(event.target.value);
+    const newSelectedWard = event.target.value;
+    setSelectedWard(newSelectedWard);
+
+    const selectedOptionsArray = [
+      {
+        province: selectedProvince,
+        district: selectedDistrict,
+        ward: newSelectedWard,
+      },
+    ];
+
+    props.onSelectedOptionsChange(selectedOptionsArray);
   };
 
   return (

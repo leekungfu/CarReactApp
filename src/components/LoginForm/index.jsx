@@ -18,19 +18,75 @@ import {
   InputAdornment,
   Stack,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
 import SignUpForm from "../SignUpForm";
+import { useDispatch } from "react-redux";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import validator from "validator";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { carAdded, carsAdded } from "../ReduxToolkit/CarAdapter";
 
 function LoginForm(props) {
   const { open, onClose } = props;
+  const { createSnack } = useSnackbar();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [validationMsg, setValidationMsg] = useState("");
 
-  const navigate = useNavigate();
-  const handleClickLogin = () => {
-    navigate("/homecustomer");
+  const validate = () => {
+    const msg = {};
+    if (validator.isEmpty(email)) {
+      msg.email = "Email is required.";
+    }
+    if (validator.isEmpty(password)) {
+      msg.password = "Password is required.";
+    }
+    setValidationMsg(msg);
+    return Object.keys(msg).length === 0;
   };
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleClickLogin = async (event) => {
+    event.preventDefault();
+    const checkInputValid = validate();
+    if (checkInputValid) {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("password", password);
+      const response = await axiosInstance.post("/login", formData);
+
+      if (response.data.isSuccess === true) {
+        localStorage.setItem("jwtToken", response.data.token);
+        const basicInfo = {
+          fullName: response.data.member.fullName,
+          email: response.data.member.email,
+          phone: response.data.member.phone,
+          role: response.data.member.role,
+          nationalID: response.data.member.nationalID,
+          street: response.data.member.street,
+          birthDay: response.data.member.birthDay,
+        };
+        localStorage.setItem("userData", JSON.stringify(basicInfo));
+        createSnack(response.data.message, { severity: "success" });
+        if (response.data.member.role === "CUSTOMER") {
+          window.location.href = "/homecustomer";
+        } else if (response.data.member.role === "OWNER") {
+          window.location.href = "/homeowner";
+        }
+      } else {
+        createSnack(response.data.message, { severity: "error" });
+      }
+    } else {
+      createSnack("Email or password is invalid!", { severity: "info" });
+    }
+  };
+
   const handleClickForgot = () => {
+    handleClose();
     navigate("/reset");
   };
 
@@ -41,6 +97,9 @@ function LoginForm(props) {
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
+  const handleSubmit = (event) => {
     event.preventDefault();
   };
 
@@ -77,13 +136,25 @@ function LoginForm(props) {
                 >
                   <OutlinedInput
                     id="email"
+                    value={email}
                     placeholder="Email Address"
                     startAdornment={
                       <InputAdornment position="start">
                         <Email />
                       </InputAdornment>
                     }
+                    onChange={(event) => setEmail(event.target.value)}
                   />
+                  {!email && (
+                    <Typography variant="subtitle2" color="red">
+                      {validationMsg.email}
+                    </Typography>
+                  )}
+                  {email && !validator.isEmail(email) && (
+                    <Typography variant="subtitle2" color="red">
+                      Please enter a valid email!
+                    </Typography>
+                  )}
                 </FormControl>
                 <FormControl
                   sx={{ mt: 3, width: "100%" }}
@@ -92,6 +163,8 @@ function LoginForm(props) {
                 >
                   <OutlinedInput
                     id="password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
                     placeholder="Password"
                     type={showPassword ? "text" : "password"}
                     startAdornment={
@@ -112,6 +185,11 @@ function LoginForm(props) {
                       </InputAdornment>
                     }
                   />
+                  {!password && (
+                    <Typography variant="subtitle2" color="red">
+                      {validationMsg.password}
+                    </Typography>
+                  )}
                 </FormControl>
                 <FormControlLabel
                   sx={{ mt: 1 }}
@@ -132,6 +210,7 @@ function LoginForm(props) {
                     },
                   }}
                   onClick={handleClickLogin}
+                  onSubmit={handleSubmit}
                 >
                   Log in
                 </Button>
