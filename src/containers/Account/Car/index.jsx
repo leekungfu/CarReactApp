@@ -178,7 +178,7 @@ const MyCars = (props) => {
                               />
                             </Box>
                             <Typography variant="body2" color="text.secondary">
-                              Price: {car.basePrice}
+                              Price: {car.price}
                             </Typography>
                           </Stack>
                         </Grid>
