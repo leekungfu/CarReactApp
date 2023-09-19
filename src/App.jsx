@@ -60,7 +60,7 @@ function App() {
             <Route path="/rentnow/:carId" element={<RentNow />} />
             <Route path="/editcardetails/:carId" element={<EditCarDetails />} />
             <Route path="/viewcardetails/:carId" element={<ViewCarDetails />} />
-            <Route path="/bookingdetails/:carId" element={<BookingDetails />} />
+            <Route path="/bookingdetails/:bookingId" element={<BookingDetails />} />
             <Route path="/reset" element={<ResetPass />} />
             <Route path="/confirmreset" element={<ConfirmReset />} />
           </Routes>

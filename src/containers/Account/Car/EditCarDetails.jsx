@@ -31,12 +31,11 @@ import {
 } from "@mui/icons-material";
 import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import {
-  carSelected,
-} from "../../../components/ReduxToolkit/CarAdapter";
+import { carSelected } from "../../../components/ReduxToolkit/CarAdapter";
 import AutoPreview from "./AutoPreview";
 import DetailsTab from "./DetailsTab";
 import PricingTab from "./PricingTab";
+import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
 
 // const StyledTypography = styled(Typography)`
 //   font-weight: bold !important;
@@ -61,6 +60,13 @@ const EditCarDetails = () => {
   useEffect(() => {
     setCarInfo(car.entities[carId]);
   }, [car, carId]);
+  const [openConfirmPayment, setOpenConfirmPayment] = useState(false);
+  const handleClickOpenConfirmPayment = () => {
+    setOpenConfirmPayment(true);
+  };
+  const handleClose = () => {
+    setOpenConfirmPayment(false);
+  };
 
   return (
     <div>
@@ -137,30 +143,42 @@ const EditCarDetails = () => {
               Number of rides: <span style={{ fontWeight: "bold" }}>4</span>
             </Typography>
             <Typography variant="subtitle1">
-              Price: <span style={{ fontWeight: "bold" }}>{carInfo.basePrice}</span>
+              Price:{" "}
+              <span style={{ fontWeight: "bold" }}>
+                {Number(carInfo.price).toLocaleString()} (VND)
+              </span>
             </Typography>
             <Typography variant="subtitle1">
-              Location: <span style={{ fontWeight: "bold" }}>{carInfo.ward} {carInfo.district} {carInfo.province}</span>
+              Location:{" "}
+              <span style={{ fontWeight: "bold" }}>
+                {carInfo.ward}, {carInfo.district}, {carInfo.province}
+              </span>
             </Typography>
             <Typography variant="subtitle1">
               Status:{" "}
-              <span style={{ color: "#38b000", fontWeight: "bold" }}>
+              <span
+                style={{
+                  color: carInfo.status === "Available" ? "#38b000" : "#15616d",
+                  fontWeight: "bold",
+                }}
+              >
                 {carInfo.status}
               </span>
             </Typography>
-            {car.status === "Booked" ? (
+            {carInfo.status === "Booked" ? (
               <Button
                 sx={{
-                  mt: 3,
+                  mt: 1,
                   minWidth: "50%",
                   color: "white",
-                  bgcolor: "white",
-                  borderColor: "#fca311",
+                  borderColor: "#15616d",
+                  backgroundColor: "#15616d !important",
                   "&:hover": {
                     borderColor: "#fca311",
                   },
                 }}
                 variant="outlined"
+                onClick={handleClickOpenConfirmPayment}
               >
                 Confirm payment
               </Button>
@@ -209,32 +227,48 @@ const EditCarDetails = () => {
             <Grid item xs={6}>
               <Stack spacing={2}>
                 <Typography variant="subtitle1">
-                  Plate number: <span style={{ fontWeight: "bold" }}>{carInfo.plateNumber}</span>
+                  Plate number:{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {carInfo.plateNumber}
+                  </span>
                 </Typography>
                 <Typography variant="subtitle1">
-                  Brand name: <span style={{ fontWeight: "bold" }}>{carInfo.brand}</span>
+                  Brand name:{" "}
+                  <span style={{ fontWeight: "bold" }}>{carInfo.brand}</span>
                 </Typography>
                 <Typography variant="subtitle1">
-                  Production year: <span style={{ fontWeight: "bold" }}>{carInfo.productionYear}</span>
+                  Production year:{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {carInfo.productionYear}
+                  </span>
                 </Typography>
                 <Typography variant="subtitle1">
-                  Transmission type: <span style={{ fontWeight: "bold" }}>{carInfo.transmissionType}</span>
+                  Transmission type:{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {carInfo.transmissionType}
+                  </span>
                 </Typography>
               </Stack>
             </Grid>
             <Grid item xs={6}>
               <Stack spacing={2}>
                 <Typography variant="subtitle1">
-                  Color: <span style={{ fontWeight: "bold" }}>{carInfo.color}</span>
+                  Color:{" "}
+                  <span style={{ fontWeight: "bold" }}>{carInfo.color}</span>
                 </Typography>
                 <Typography variant="subtitle1">
-                  Model: <span style={{ fontWeight: "bold" }}>{carInfo.model}</span>
+                  Model:{" "}
+                  <span style={{ fontWeight: "bold" }}>{carInfo.model}</span>
                 </Typography>
                 <Typography variant="subtitle1">
-                  No. of seats: <span style={{ fontWeight: "bold" }}>{carInfo.numberOfSeat}</span>
+                  No. of seats:{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {carInfo.numberOfSeat}
+                  </span>
                 </Typography>
                 <Typography variant="subtitle1">
-                  Fuel type: <span style={{ fontWeight: "bold" }}>{carInfo.fuelType}</span>
+                  Fuel type:{" "}
+                  <span style={{ fontWeight: "bold" }}>{carInfo.fuelType}</span>
                 </Typography>
               </Stack>
             </Grid>
@@ -279,6 +313,7 @@ const EditCarDetails = () => {
           <PricingTab carId={carId} />
         </CustomTabPanels>
       </Container>
+      <ConfirmPayment open={openConfirmPayment} onClose={handleClose} />
     </div>
   );
 };

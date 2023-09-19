@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useDispatch } from "react-redux";
-import { setBookingData } from "../ReduxToolkit/BookingSlice";
+import { addBooking, setBookingData } from "../ReduxToolkit/BookingSlice";
 
 const style = {
   position: "absolute",
@@ -40,13 +40,7 @@ const ConfirmPaymentDeposit = (props) => {
     handleClose();
     if (response.isSuccess === true) {
       console.log("Booking: ", response);
-      const bookingData = {
-        bookingID: response.booking.id,
-        startDate: response.booking.startDate,
-        endDate: response.booking.endDate,
-        car: response.booking.car,
-      }
-      dispatch(setBookingData(bookingData));
+      // dispatch(addBooking(response.booking));
       createSnack(response.message, { severity: "success" });
     } else {
       createSnack(response.message, { severity: "error" });

@@ -107,9 +107,11 @@ export default function UserMenu() {
             </StyledMenuItem>
           </Box>
         )}
-        <StyledMenuItem component={Link} to="/booking">
-          <Typography variant="subtitle1">My Booking</Typography>
-        </StyledMenuItem>
+        {role === "CUSTOMER" && (
+          <StyledMenuItem component={Link} to="/booking">
+            <Typography variant="subtitle1">My Booking</Typography>
+          </StyledMenuItem>
+        )}
         <StyledMenuItem component={Link} to="/wallet">
           <Typography variant="subtitle1">My Wallet</Typography>
         </StyledMenuItem>

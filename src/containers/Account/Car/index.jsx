@@ -178,7 +178,7 @@ const MyCars = (props) => {
                               />
                             </Box>
                             <Typography variant="body2" color="text.secondary">
-                              Price: {car.price}
+                              Price: {car.basePrice ? car.basePrice : car.price}
                             </Typography>
                           </Stack>
                         </Grid>
@@ -228,7 +228,7 @@ const MyCars = (props) => {
                             >
                               View details
                             </Button>
-                            {car.status === "Booked" ? (
+                            {car.bookings && car.bookings.find((item) => item.bookingStatus === "Pending_payment") ? (
                               <Button
                                 sx={{
                                   minWidth: "50%",
@@ -244,7 +244,7 @@ const MyCars = (props) => {
                               >
                                 Confirm payment
                               </Button>
-                            ) : car.status === "Stopped" ? (
+                            ) : car.bookings.find((item) => item.bookingStatus === "Pending_deposit") ? (
                               <Button
                                 disabled
                                 sx={{
@@ -269,6 +269,7 @@ const MyCars = (props) => {
                                   "&:hover": {
                                     borderColor: "#fca311",
                                   },
+                                  visibility: "hidden"
                                 }}
                                 variant="outlined"
                                 onClick={handleClickOpenConfirmDeposit}

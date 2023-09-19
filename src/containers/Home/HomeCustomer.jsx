@@ -29,6 +29,7 @@ import { useSnackbar } from "../../components/Hooks/useSnackBar";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../components/ReduxToolkit/UserSlice";
 import { RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../shared/configs/constants";
+import { setBookingData } from "../../components/ReduxToolkit/BookingSlice";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

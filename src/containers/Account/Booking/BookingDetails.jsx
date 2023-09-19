@@ -22,7 +22,7 @@ import {
   TableCell,
   TableBody,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import styled from "styled-components";
 import CustomTabPanels from "../../../components/CustomTabPanels/CustomTabPanels";
@@ -45,7 +45,7 @@ import {
 import Details from "../../../components/Stepper/Steps/Details";
 import Pricing from "../../../components/Stepper/Steps/Pricing";
 import Preview from "../../../components/Stepper/Steps/Preview";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import AutoPlaySwipePreview from "../../../components/Stepper/AutoPlaySwipePreview";
 import BookingInformation from "../../../components/RentNow/BookingSteps/BookingInformation";
 import AutoPreviewBooking from "./AutoPreviewBooking";
@@ -54,6 +54,7 @@ import {
   carSelected,
   carSelectedAll,
 } from "../../../components/ReduxToolkit/CarAdapter";
+import axiosInstance from "../../../shared/configs/axiosConfig";
 
 const StyledTypography = styled(Typography)`
   font-weight: bold !important;
@@ -77,12 +78,37 @@ function a11yProps(index) {
 
 const BookingDetails = () => {
   const [tab, setTab] = useState(0);
-  const { carId } = useParams();
-  const cars = useSelector((state) => carSelected(state, carId)).payload.cars;
-  const car = cars.entities[carId];
+  const { bookingId } = useParams();
+  const [car, setCar] = useState(null);
+  const [user, setUser] = useState(null);
+  const [booking, setBooking] = useState(null);
+  const token = localStorage.getItem("jwtToken");
+  console.log(bookingId);
+  useEffect(() => {
+    if (bookingId) {
+      const data = axiosInstance
+        .get(`/customer/booking/${bookingId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          if (res.data.isSuccess === true) {
+            setCar(res.data.booking.car);
+            setUser(res.data.booking.member);
+            setBooking(res.data.booking);
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    }
+    console.log("User: ", user);
+    console.log("Car: ", car);
+
+  }, [bookingId, booking, token, car, user])
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
+  const navigate = useNavigate();
 
   const [checkboxState, setCheckboxState] = useState({
     bluetooth: car.additionalFunctions.includes("bluetooth"),
@@ -160,51 +186,39 @@ const BookingDetails = () => {
         </StyledTypography>
         <Grid container>
           <Grid item xs={6}>
-            <AutoPreviewBooking carId={carId} />
+            <AutoPreviewBooking bookingId={bookingId} />
           </Grid>
           <Grid item xs={6}>
             <StyledTypography variant="h6">
               {car.brand} {car.model} {car.productionYear}
             </StyledTypography>
-
-            <Typography variant="subtitle1">From:</Typography>
-            <Typography variant="subtitle1">To:</Typography>
-
+            <Typography variant="subtitle1">
+              From: {booking.startDate}
+            </Typography>
+            <Typography variant="subtitle1">To: {booking.endDate}</Typography>
             <Typography variant="subtitle1">
               Number of rides: {data.nor}
             </Typography>
             <Typography variant="subtitle1">
-              Base price: {Number(car.price).toLocaleString()} VND/day
+              Base price: {Number(car.price).toLocaleString()} (VND/day)
             </Typography>
             <Typography variant="subtitle1">
-              Total: {Number(car.price).toLocaleString()} VND
+              Total: {Number(car.price).toLocaleString()} (VND)
             </Typography>
             <Typography variant="subtitle1">
-              Deposit: {Number(car.deposit).toLocaleString()} VND
+              Deposit: {Number(car.deposit).toLocaleString()} (VND)
             </Typography>
             <Typography variant="subtitle1">
               Booking No.{"     "}
-              {data.bn}
+              {booking.id}
             </Typography>
             <Typography variant="subtitle1">
               Booking status:{"     "}
               <span style={{ color: "#38b000", fontWeight: "bold" }}>
-                {data.status}
+                {booking.bookingStatus ? booking.bookingStatus : "Loading..."}
               </span>
             </Typography>
             <Stack direction="row" spacing={2}>
-              <Button
-                fullWidth
-                sx={{
-                  borderColor: "#fca311",
-                  "&:hover": {
-                    borderColor: "#fca311",
-                  },
-                }}
-                variant="outlined"
-              >
-                View details
-              </Button>
               <Button
                 fullWidth
                 sx={{
@@ -258,9 +272,13 @@ const BookingDetails = () => {
           </Tabs>
         </Box>
         <CustomTabPanels value={tab} index={0}>
-          <BookingInformation  />
+          <BookingInformation />
           <Box sx={{ display: "flex", justifyContent: "center ", mt: 5 }}>
-            <Button variant="outlined" sx={{ minWidth: "10%", mr: 5 }}>
+            <Button
+              variant="outlined"
+              sx={{ minWidth: "10%", mr: 5 }}
+              onClick={() => navigate("/booking")}
+            >
               Discard
             </Button>
             <Button variant="outlined" sx={{ minWidth: "10%" }}>
@@ -293,7 +311,9 @@ const BookingDetails = () => {
                 <Typography variant="subtitle1">
                   No. of seats: {car.numberOfSeat}
                 </Typography>
-                <Typography variant="subtitle1">Fuel Type: {car.fuelType}</Typography>
+                <Typography variant="subtitle1">
+                  Fuel Type: {car.fuelType}
+                </Typography>
               </Stack>
             </Grid>
             <Grid item xs={12}>
@@ -330,11 +350,15 @@ const BookingDetails = () => {
             </Grid>
           </Grid>
           <Stack spacing={2} sx={{ mt: 2 }}>
-            <Typography variant="subtitle1">Mileage: {Number(car.mileage).toLocaleString()} (km)</Typography>
+            <Typography variant="subtitle1">
+              Mileage: {Number(car.mileage).toLocaleString()} (km)
+            </Typography>
             <Typography variant="subtitle1">
               Fuel consumption: {car.fuelConsumption} (liter/100km)
             </Typography>
-            <Typography variant="subtitle1">Address: {car.ward} {car.district} {car.province}</Typography>
+            <Typography variant="subtitle1">
+              Address: {car.ward} {car.district} {car.province}
+            </Typography>
             <Typography variant="subtitle1" color="#d00000" fontWeight="bold">
               Note: Full address will be available after you've paid the deposit
               to rent.
@@ -342,9 +366,7 @@ const BookingDetails = () => {
             <Typography variant="subtitle1">
               Description: {car.description}
             </Typography>
-            <Typography variant="subtitle1">
-              Additional functions:
-            </Typography>
+            <Typography variant="subtitle1">Additional functions:</Typography>
           </Stack>
           <Grid container sx={{ pt: 2 }}>
             <Grid item xs={4}>
@@ -361,7 +383,7 @@ const BookingDetails = () => {
                   }
                 />
                 <FormControlLabel
-                  control={<Checkbox checked={checkboxState.gps}/>}
+                  control={<Checkbox checked={checkboxState.gps} />}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -372,7 +394,7 @@ const BookingDetails = () => {
                   }
                 />
                 <FormControlLabel
-                  control={<Checkbox checked={checkboxState.camera}/>}
+                  control={<Checkbox checked={checkboxState.camera} />}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -387,7 +409,7 @@ const BookingDetails = () => {
             <Grid item xs={4}>
               <Stack>
                 <FormControlLabel
-                  control={<Checkbox checked={checkboxState.sunRoof}/>}
+                  control={<Checkbox checked={checkboxState.sunRoof} />}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -398,7 +420,7 @@ const BookingDetails = () => {
                   }
                 />
                 <FormControlLabel
-                  control={<Checkbox checked={checkboxState.childLock}/>}
+                  control={<Checkbox checked={checkboxState.childLock} />}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -409,7 +431,7 @@ const BookingDetails = () => {
                   }
                 />
                 <FormControlLabel
-                  control={<Checkbox checked={checkboxState.childSeat}/>}
+                  control={<Checkbox checked={checkboxState.childSeat} />}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -424,7 +446,7 @@ const BookingDetails = () => {
             <Grid item xs={4}>
               <Stack>
                 <FormControlLabel
-                  control={<Checkbox checked={checkboxState.dvd}/>}
+                  control={<Checkbox checked={checkboxState.dvd} />}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -435,7 +457,7 @@ const BookingDetails = () => {
                   }
                 />
                 <FormControlLabel
-                  control={<Checkbox checked={checkboxState.usb}/>}
+                  control={<Checkbox checked={checkboxState.usb} />}
                   label={
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       <Typography variant="subtitle1" sx={{ pr: 0.5 }}>
@@ -454,23 +476,23 @@ const BookingDetails = () => {
           <Stack direction="row" spacing={5}>
             <Stack>
               <FormControlLabel
-                control={<Checkbox checked={checkboxState.noSmoking}/>}
+                control={<Checkbox checked={checkboxState.noSmoking} />}
                 label={<Typography variant="subtitle1">No smoking</Typography>}
               />
               <FormControlLabel
-                control={<Checkbox checked={checkboxState.noPet}/>}
+                control={<Checkbox checked={checkboxState.noPet} />}
                 label={<Typography variant="subtitle1">No pet</Typography>}
               />
             </Stack>
             <Stack>
               <FormControlLabel
-                control={<Checkbox checked={checkboxState.noFoodInCar}/>}
+                control={<Checkbox checked={checkboxState.noFoodInCar} />}
                 label={
                   <Typography variant="subtitle1">No food in car</Typography>
                 }
               />
               <FormControlLabel
-                control={<Checkbox checked={checkboxState.other}/>}
+                control={<Checkbox checked={checkboxState.other} />}
                 label={<Typography variant="subtitle1">Other</Typography>}
               />
             </Stack>
@@ -484,7 +506,7 @@ const BookingDetails = () => {
           <Typography variant="subtitle1" sx={{ ml: 7, mb: 2 }}>
             Current balance:{" "}
             <span style={{ color: "#38b000", fontWeight: "bold" }}>
-              20.000.000 VND
+              {Number(user.wallet).toLocaleString()} (VND)
             </span>
           </Typography>
           <Typography variant="subtitle1">

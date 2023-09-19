@@ -39,7 +39,6 @@ export const addCarAndSendToServer =
         },
       });
 
-      // const { createSnack } = useSnackbar();
       if (response.data.isSuccess === true) {
         const carDBData = response.data.car;
         const files = response.data.files;
@@ -68,10 +67,8 @@ export const addCarAndSendToServer =
           files: files,
         };
         dispatch(carAdded(carEntityAdapter));
-        // createSnack("Add car successful!", { severity: "success" });
         console.log("Add car to database success!");
       } else {
-        // createSnack("Add car to database failed!", { severity: "error" });
         console.log("Add car to database failed!");
       }
     } catch (error) {

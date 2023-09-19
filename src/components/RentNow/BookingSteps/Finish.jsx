@@ -4,17 +4,18 @@ import { useSelector } from "react-redux";
 
 const Finish = () => {
   const bookingData = useSelector((state) => state.bookingData.data);
-  const startDate = bookingData.startDate;
-  const endDate = bookingData.endDate;
-  const [year, month, day, hours, minutes, seconds] = endDate;
-  const startDateConverted = new Date(year, month - 1, day, hours, minutes, seconds);
-  console.log(startDate);
+  // const startDate = bookingData.startDate;
+  // const endDate = bookingData.endDate;
+  // const [year, month, day, hours, minutes, seconds] = endDate;
+  // const startDateConverted = new Date(year, month - 1, day, hours, minutes, seconds);
+  // console.log(startDate);
   
 
   return (
     <div>
       <Typography variant="h6" fontWeight="bold">
-        You've successfully booked {bookingData.car.brand} {bookingData.car.model} {bookingData.car.productionYear} from {startDate} to {endDate}.
+        You've successfully booked {bookingData.car.brand} {bookingData.car.model} {bookingData.car.productionYear} from 
+        {/* {startDate} to {endDate}. */}
       </Typography>
       <Typography variant="h6" fontWeight="bold">
         Your booking number is: {bookingData.bookingID}

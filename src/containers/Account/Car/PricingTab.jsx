@@ -27,7 +27,7 @@ const PricingTab = (props) => {
   const token = localStorage.getItem("jwtToken");
 
   const [fieldsState, setFieldsState] = useState({
-    basePrice: carInfo.basePrice,
+    basePrice: carInfo.price,
     deposit: carInfo.deposit,
     terms: carInfo.terms,
   });

@@ -14,109 +14,63 @@ import {
   Breadcrumbs,
   Divider,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
-import { Link, useNavigate, useNavigation, useParams } from "react-router-dom";
-import AutoPlaySwipePreview from "../../../components/Stepper/AutoPlaySwipePreview";
+import { Link, useNavigate } from "react-router-dom";
 import ReturnCar from "../../../components/Modals/ReturnCar";
 import { Home, NavigateNext, SaveAs } from "@mui/icons-material";
 import AutoPreviewBooking from "./AutoPreviewBooking";
-import { useSelector } from "react-redux";
-import { carSelectedAll } from "../../../components/ReduxToolkit/CarAdapter";
-
-const data = [
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    from: "13/02/2022 - 12:00 PM",
-    to: "25/02/2022 - 12:00 PM",
-    nod: 12,
-    basePrice: "1.000.000 VND",
-    total: "12.000.000 VND",
-    deposit: "5.000.000 VND",
-    bookingNo: "43763",
-    status: "Confirmed",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    from: "13/02/2022 - 12:00 PM",
-    to: "25/02/2022 - 12:00 PM",
-    nod: 12,
-    basePrice: "1.000.000 VND",
-    total: "12.000.000 VND",
-    deposit: "5.000.000 VND",
-    bookingNo: "43763",
-    status: "In-Progress",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    from: "13/02/2022 - 12:00 PM",
-    to: "25/02/2022 - 12:00 PM",
-    nod: 12,
-    basePrice: "1.000.000 VND",
-    total: "12.000.000 VND",
-    deposit: "5.000.000 VND",
-    bookingNo: "43763",
-    status: "Cancelled",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    from: "13/02/2022 - 12:00 PM",
-    to: "25/02/2022 - 12:00 PM",
-    nod: 12,
-    basePrice: "1.000.000 VND",
-    total: "12.000.000 VND",
-    deposit: "5.000.000 VND",
-    bookingNo: "43763",
-    status: "Completed",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    from: "13/02/2022 - 12:00 PM",
-    to: "25/02/2022 - 12:00 PM",
-    nod: 12,
-    basePrice: "1.000.000 VND",
-    total: "12.000.000 VND",
-    deposit: "5.000.000 VND",
-    bookingNo: "43763",
-    status: "Pending payment",
-  },
-  {
-    src: "car-10.jpg",
-    name: "Mercedes-Benz AMG GT 2021",
-    from: "13/02/2022 - 12:00 PM",
-    to: "25/02/2022 - 12:00 PM",
-    nod: 12,
-    basePrice: "1.000.000 VND",
-    total: "12.000.000 VND",
-    deposit: "5.000.000 VND",
-    bookingNo: "43763",
-    status: "Pending deposit",
-  },
-];
+import { useDispatch } from "react-redux";
+import axiosInstance from "../../../shared/configs/axiosConfig";
+import {
+  setBookingData,
+  setBookings,
+} from "../../../components/ReduxToolkit/BookingSlice";
 
 const MyBookings = (props) => {
   const { loading = false } = props;
   const [rateValue, setRateValue] = useState(4.5);
+  const userData = localStorage.getItem("userData");
+  const user = JSON.parse(userData);
   const navigate = useNavigate();
-  const cars = useSelector(carSelectedAll).payload.cars;
-  const carArray = Object.values(cars.entities);
+  const dispatch = useDispatch();
+  const [bookings, setBookingss] = useState([]);
+  const [apiCalled, setApiCalled] = useState(false);
+
+  useEffect(() => {
+    if (!apiCalled) {
+      const token = localStorage.getItem("jwtToken");
+      axiosInstance
+        .get("/customer/bookings", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          console.log(response.data);
+          const data = response.data.bookings;
+          setBookingss(data);
+          // dispatch(setBookings(data));
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        })
+        .finally(() => {
+          setApiCalled(true);
+        });
+    }
+  }, [apiCalled, dispatch]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const totalCars = carArray.length;
-  const totalPages = Math.ceil(totalCars / itemsPerPage);
+  const totalBookings = bookings.length;
+  const totalPages = Math.ceil(totalBookings / itemsPerPage);
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const carsOnCurrentPage = carArray.slice(startIndex, endIndex);
+  const bookingsOnCurrentPage = bookings.slice(startIndex, endIndex);
   const handleClose = () => {
     setOpenConfirmDeposit(false);
     setOpenConfirmPayment(false);
@@ -134,10 +88,10 @@ const MyBookings = (props) => {
   const handleCloseReturnCar = () => {
     setOpenReturnCar(false);
   };
-  
-  const handleClickViewDetails = (carId) => {
-    navigate(`/bookingdetails/${carId}`);
-  }
+
+  const handleClickViewDetails = (bookingId) => {
+    navigate(`/bookingdetails/${bookingId}`);
+  };
 
   return (
     <div>
@@ -151,7 +105,11 @@ const MyBookings = (props) => {
               <Home sx={{ mr: 0.5 }} fontSize="inherit" />
               <Typography
                 component={Link}
-                to="/homeowner"
+                to={
+                  user && user.role === "CUSTOMER"
+                    ? "/homecustomer"
+                    : "/homeowner"
+                }
                 variant="subtitle1"
                 fontWeight="bold"
                 sx={{
@@ -184,41 +142,44 @@ const MyBookings = (props) => {
                 My bookings:
               </Typography>
             </Stack>
-            {(loading ? Array.from(new Array(4)) : carsOnCurrentPage).map(
+            {(loading ? Array.from(new Array(4)) : bookingsOnCurrentPage).map(
               (item, index) => (
                 <Grid container key={index}>
                   {item ? (
                     <Grid container sx={{ mb: 5 }}>
                       <Grid item xs={5}>
-                        <AutoPreviewBooking carId={item.id} />
+                        <AutoPreviewBooking bookingId={item.id} />
                       </Grid>
                       <Grid item xs={7}>
                         <Typography variant="h6" fontWeight="bold">
-                          {item.brand} {item.model} {item.productionYear}
+                          {item.car.brand} {item.car.model}{" "}
+                          {item.car.productionYear}
                         </Typography>
                         <Typography variant="subtitle1">
-                          From: 13/02/2022 - 12:00 PM
+                          From: {item.car.startDate}
                         </Typography>
                         <Typography variant="subtitle1">
-                          To: 23/02/2022 - 14:00 PM
+                          To: {item.car.endDate}
                         </Typography>
                         <Typography variant="subtitle1">
-                          Number of days
+                          Number of days:
                         </Typography>
                         <Typography variant="subtitle1">
-                          Base price: {Number(item.price).toLocaleString()} VND
+                          Base price: {Number(item.car.price).toLocaleString()}{" "}
+                          VND
                         </Typography>
                         <Typography variant="subtitle1">
-                          Total: {Number(item.price).toLocaleString()} VND
+                          Total: {Number(item.car.price).toLocaleString()} VND
                         </Typography>
                         <Typography variant="subtitle1">
-                          Deposit: {Number(item.deposit).toLocaleString()} VND
+                          Deposit: {Number(item.car.deposit).toLocaleString()}{" "}
+                          VND
                         </Typography>
                         <Typography variant="subtitle1">
-                          Booking No.:
+                          Booking No.: {item.id}
                         </Typography>
                         <Typography variant="subtitle1">
-                          Booking status::{" "}
+                          Booking status:{" "}
                           <span
                             style={{
                               color:
@@ -235,7 +196,9 @@ const MyBookings = (props) => {
                               fontWeight: "bold",
                             }}
                           >
-                            {item.status}
+                            {item.bookingStatus
+                              ? item.bookingStatus
+                              : "Loading..."}
                           </span>
                         </Typography>
                         <Grid item xs={12}>
