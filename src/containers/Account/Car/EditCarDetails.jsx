@@ -36,6 +36,7 @@ import AutoPreview from "./AutoPreview";
 import DetailsTab from "./DetailsTab";
 import PricingTab from "./PricingTab";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
+import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
 
 // const StyledTypography = styled(Typography)`
 //   font-weight: bold !important;
@@ -60,11 +61,17 @@ const EditCarDetails = () => {
   useEffect(() => {
     setCarInfo(car.entities[carId]);
   }, [car, carId]);
+  const [openConfirmDeposit, setOpenConfirmDeposit] = useState(false);
   const [openConfirmPayment, setOpenConfirmPayment] = useState(false);
+
+  const handleClickOpenConfirmDeposit = () => {
+    setOpenConfirmDeposit(true);
+  };
   const handleClickOpenConfirmPayment = () => {
     setOpenConfirmPayment(true);
   };
   const handleClose = () => {
+    setOpenConfirmDeposit(false);
     setOpenConfirmPayment(false);
   };
 
@@ -158,18 +165,24 @@ const EditCarDetails = () => {
               Status:{" "}
               <span
                 style={{
-                  color: carInfo.status === "Available" ? "#38b000" : "#15616d",
+                  color:
+                    carInfo.status === "Booked"
+                      ? "#15616d"
+                      : carInfo.status === "Stopped"
+                      ? "#d00000"
+                      : "#38b000",
                   fontWeight: "bold",
                 }}
               >
                 {carInfo.status}
               </span>
             </Typography>
-            {carInfo.status === "Booked" ? (
+            {carInfo.bookings.find(
+              (item) => item.bookingStatus === "Pending_payment"
+            ) ? (
               <Button
                 sx={{
-                  mt: 1,
-                  minWidth: "50%",
+                  // minWidth: "50%",
                   color: "white",
                   borderColor: "#15616d",
                   backgroundColor: "#15616d !important",
@@ -182,16 +195,33 @@ const EditCarDetails = () => {
               >
                 Confirm payment
               </Button>
+            ) : carInfo.bookings.find(
+                (item) => item.bookingStatus === "Pending_deposit"
+              ) ? (
+              <Button
+                sx={{
+                  // minWidth: "50%",
+                  color: "white",
+                  borderColor: "#fca311",
+                  "&:hover": {
+                    borderColor: "#fca311",
+                  },
+                }}
+                variant="outlined"
+                onClick={handleClickOpenConfirmDeposit}
+              >
+                Confirm deposit
+              </Button>
             ) : (
               <Button
                 sx={{
-                  mt: 3,
                   minWidth: "50%",
                   color: "white",
                   borderColor: "#fca311",
                   "&:hover": {
                     borderColor: "#fca311",
                   },
+                  visibility: "hidden",
                 }}
                 variant="outlined"
               >
@@ -314,6 +344,7 @@ const EditCarDetails = () => {
         </CustomTabPanels>
       </Container>
       <ConfirmPayment open={openConfirmPayment} onClose={handleClose} />
+      <ConfirmDeposit open={openConfirmDeposit} onClose={handleClose} />
     </div>
   );
 };

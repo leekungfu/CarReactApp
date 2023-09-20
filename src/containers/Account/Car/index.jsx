@@ -29,6 +29,7 @@ const MyCars = (props) => {
   const [openAddCar, setOpenAddCar] = useState(false);
   const cars = useSelector(carSelectedAll).payload.cars;
   const carArray = Object.values(cars.entities);
+  console.log("Cars: ", carArray);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
   const totalCars = carArray.length;
@@ -54,8 +55,8 @@ const MyCars = (props) => {
   const [openConfirmDeposit, setOpenConfirmDeposit] = useState(false);
   const [openConfirmPayment, setOpenConfirmPayment] = useState(false);
 
-  const handleClickOpenConfirmDeposit = () => {
-    setOpenConfirmDeposit(true);
+  const handleClickViewBooking = (carId) => {
+    navigate(`/viewbookedcar/${carId}`)
   };
   const handleClickOpenConfirmPayment = () => {
     setOpenConfirmPayment(true);
@@ -216,7 +217,7 @@ const MyCars = (props) => {
                           <Stack direction="row" spacing={3}>
                             <Button
                               sx={{
-                                minWidth: "50%",
+                                minWidth: "40%",
                                 color: "white",
                                 borderColor: "#fca311",
                                 "&:hover": {
@@ -228,10 +229,45 @@ const MyCars = (props) => {
                             >
                               View details
                             </Button>
-                            {car.bookings && car.bookings.find((item) => item.bookingStatus === "Pending_payment") ? (
+                            {car.bookings.length > 0 ? (
                               <Button
                                 sx={{
-                                  minWidth: "50%",
+                                  minWidth: "40%",
+                                  color: "white",
+                                  borderColor: "#15616d",
+                                  backgroundColor: "#15616d !important",
+                                  "&:hover": {
+                                    borderColor: "#fca311",
+                                  },
+                                }}
+                                variant="outlined"
+                                onClick={() => handleClickViewBooking(car.id)}
+                              >
+                                View booking
+                              </Button>
+                            ) : (
+                              <Button
+                                disabled
+                                sx={{
+                                  minWidth: "40%",
+                                  color: "white",
+                                  borderColor: "#15616d",
+                                  backgroundColor: "#15616d !important",
+                                  "&:hover": {
+                                    borderColor: "#fca311",
+                                  },
+                                }}
+                                variant="outlined"
+                              >
+                                View booking
+                              </Button>
+                            )}
+                            {/* {car.bookings.find(
+                              (item) => item.bookingStatus === "Pending_payment"
+                            ) ? (
+                              <Button
+                                sx={{
+                                  // minWidth: "50%",
                                   color: "white",
                                   borderColor: "#15616d",
                                   backgroundColor: "#15616d !important",
@@ -244,39 +280,42 @@ const MyCars = (props) => {
                               >
                                 Confirm payment
                               </Button>
-                            ) : car.bookings.find((item) => item.bookingStatus === "Pending_deposit") ? (
-                              <Button
-                                disabled
-                                sx={{
-                                  minWidth: "50%",
-                                  color: "white",
-                                  bgcolor: "white",
-                                  borderColor: "#fca311",
-                                  "&:hover": {
-                                    borderColor: "#fca311",
-                                  },
-                                }}
-                                variant="outlined"
-                              >
-                                Confirm deposit
-                              </Button>
-                            ) : (
+                            ) : car.bookings.find(
+                                (item) =>
+                                  item.bookingStatus === "Pending_deposit"
+                              ) ? (
                               <Button
                                 sx={{
-                                  minWidth: "50%",
+                                  // minWidth: "50%",
                                   color: "white",
                                   borderColor: "#fca311",
                                   "&:hover": {
                                     borderColor: "#fca311",
                                   },
-                                  visibility: "hidden"
                                 }}
                                 variant="outlined"
                                 onClick={handleClickOpenConfirmDeposit}
                               >
                                 Confirm deposit
                               </Button>
-                            )}
+                            ) : (
+                              <Button
+                                disabled
+                                sx={{
+                                  minWidth: "50%",
+                                  color: "white",
+                                  borderColor: "#fca311",
+                                  "&:hover": {
+                                    borderColor: "#fca311",
+                                  },
+                                  // visibility: "hidden",
+                                }}
+                                variant="outlined"
+                                // onClick={handleClickOpenConfirmDeposit}
+                              >
+                                Confirm deposit
+                              </Button>
+                            )} */}
                           </Stack>
                         </Grid>
                       </Grid>
@@ -286,6 +325,15 @@ const MyCars = (props) => {
                         <Skeleton width="60%" />
                       </Box>
                     )}
+                    <ConfirmPayment
+                      open={openConfirmPayment}
+                      onClose={handleClose}
+                      // bookingId={}
+                    />
+                    <ConfirmDeposit
+                      open={openConfirmDeposit}
+                      onClose={handleClose}
+                    />
                   </Grid>
                 )
               )}
@@ -304,8 +352,6 @@ const MyCars = (props) => {
           </CardContent>
         </Card>
       </Container>
-      <ConfirmPayment open={openConfirmPayment} onClose={handleClose} />
-      <ConfirmDeposit open={openConfirmDeposit} onClose={handleClose} />
     </div>
   );
 };

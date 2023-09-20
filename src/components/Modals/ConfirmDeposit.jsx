@@ -1,6 +1,10 @@
 import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
 import React from "react";
 import PropTypes from "prop-types";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import { useDispatch } from "react-redux";
+import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
 
 const style = {
   position: "absolute",
@@ -15,15 +19,41 @@ const style = {
 };
 
 const ConfirmDeposit = (props) => {
-  const { open, onClose } = props;
-
+  const { open, onClose, bookingId } = props;
+  const { createSnack } = useSnackbar();
+  const dispatch = useDispatch();
   const handleClose = () => {
     onClose();
+  };
+  const handleClickYes = async () => {
+    const token = localStorage.getItem("jwtToken");
+    const { data: response } = await axiosInstance.post(
+      `/owner/updateBookingStatus/${bookingId}`,
+      null,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    handleClose();
+    if (response.isSuccess === true) {
+      console.log("Data: ", response);
+      createSnack(response.message, { severity: "success" });
+      const newStatus = response.booking.bookingStatus;
+      dispatch(updateBookingStatus({ bookingId, newStatus }));
+    } else {
+      createSnack(response.message, { severity: "error" });
+    }
   };
 
   return (
     <div>
-      <Modal open={open} onClose={handleClose}>
+      <Modal
+        sx={{ backgroundColor: "rgb(0, 0, 0,.15)" }}
+        open={open}
+        onClose={handleClose}
+      >
         <Box sx={style}>
           <Typography variant="h6">Confirm deposit</Typography>
           <Divider />
@@ -50,7 +80,7 @@ const ConfirmDeposit = (props) => {
               sx={{
                 width: "20%",
               }}
-              onClick={handleClose}
+              onClick={handleClickYes}
               variant="outlined"
             >
               Yes

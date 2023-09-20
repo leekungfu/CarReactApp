@@ -55,9 +55,10 @@ const HomeOwner = () => {
         })
         .then((response) => {
           if (response.data.isSuccess === true) {
-            console.log(response.data.cars);
-            setCarArray(response.data.cars);
-            dispatch(carsAdded(response.data.cars));
+            console.log("Car: ",response.data);
+            setCarArray(response.data.member.cars);
+            dispatch(setUserData(response.data.member));
+            dispatch(carsAdded(response.data.member.cars));
           }
         })
         .catch((error) => {
@@ -69,27 +70,27 @@ const HomeOwner = () => {
     }
   }, [apiCalled, dispatch, key]);
 
-  useEffect(() => {
-    if (!apiCalled) {
-      const token = localStorage.getItem("jwtToken");
-      axiosInstance
-        .get("/currentUser", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          console.log(response.data);
-          dispatch(setUserData(response.data));
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        })
-        .finally(() => {
-          setApiCalled(true);
-        });
-    }
-  }, [apiCalled, dispatch]);
+  // useEffect(() => {
+  //   if (!apiCalled) {
+  //     const token = localStorage.getItem("jwtToken");
+  //     axiosInstance
+  //       .get("/currentUser", {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       })
+  //       .then((response) => {
+  //         console.log(response.data);
+  //         dispatch(setUserData(response.data));
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching data:", error);
+  //       })
+  //       .finally(() => {
+  //         setApiCalled(true);
+  //       });
+  //   }
+  // }, [apiCalled, dispatch]);
 
   return (
     <div>

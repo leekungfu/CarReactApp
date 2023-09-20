@@ -50,7 +50,7 @@ const MyBookings = (props) => {
           console.log(response.data);
           const data = response.data.bookings;
           setBookingss(data);
-          // dispatch(setBookings(data));
+          dispatch(setBookings(data));
         })
         .catch((error) => {
           console.error("Error fetching data:", error);

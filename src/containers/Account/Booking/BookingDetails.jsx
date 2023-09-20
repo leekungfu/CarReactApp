@@ -42,19 +42,11 @@ import {
   SolarPower,
   Usb,
 } from "@mui/icons-material";
-import Details from "../../../components/Stepper/Steps/Details";
-import Pricing from "../../../components/Stepper/Steps/Pricing";
-import Preview from "../../../components/Stepper/Steps/Preview";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import AutoPlaySwipePreview from "../../../components/Stepper/AutoPlaySwipePreview";
 import BookingInformation from "../../../components/RentNow/BookingSteps/BookingInformation";
 import AutoPreviewBooking from "./AutoPreviewBooking";
-import { useSelector } from "react-redux";
-import {
-  carSelected,
-  carSelectedAll,
-} from "../../../components/ReduxToolkit/CarAdapter";
 import axiosInstance from "../../../shared/configs/axiosConfig";
+import { useSelector } from "react-redux";
 
 const StyledTypography = styled(Typography)`
   font-weight: bold !important;
@@ -79,32 +71,37 @@ function a11yProps(index) {
 const BookingDetails = () => {
   const [tab, setTab] = useState(0);
   const { bookingId } = useParams();
-  const [car, setCar] = useState(null);
-  const [user, setUser] = useState(null);
-  const [booking, setBooking] = useState(null);
-  const token = localStorage.getItem("jwtToken");
-  console.log(bookingId);
-  useEffect(() => {
-    if (bookingId) {
-      const data = axiosInstance
-        .get(`/customer/booking/${bookingId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          if (res.data.isSuccess === true) {
-            setCar(res.data.booking.car);
-            setUser(res.data.booking.member);
-            setBooking(res.data.booking);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    }
-    console.log("User: ", user);
-    console.log("Car: ", car);
 
-  }, [bookingId, booking, token, car, user])
+  const bookings = useSelector((state) => state.bookingData.bookings);
+  const car = bookings && bookings.find((item) => item.id === parseInt(bookingId)).car;
+  const user = bookings && bookings.find((item) => item.id === parseInt(bookingId)).member;
+  const booking = bookings && bookings.find((item) => item.id === parseInt(bookingId));
+
+  // const [car, setCar] = useState(null);
+  // const [user, setUser] = useState(null);
+  // const [booking, setBooking] = useState(null);
+  // const token = localStorage.getItem("jwtToken");
+  // console.log(bookingId);
+  // useEffect(() => {
+  //   if (bookingId) {
+  //     const data = axiosInstance
+  //       .get(`/customer/booking/${bookingId}`, {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       })
+  //       .then((res) => {
+  //         if (res.data.isSuccess === true) {
+  //           setCar(res.data.booking.car);
+  //           setUser(res.data.booking.member);
+  //           setBooking(res.data.booking);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching data:", error);
+  //       });
+  //   }
+  //   console.log("User: ", user);
+  //   console.log("Car: ", car);
+  // }, [bookingId, booking, token, car, user]);
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };

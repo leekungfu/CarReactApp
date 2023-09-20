@@ -109,6 +109,13 @@ const DefaultTheme = createTheme({
         },
       },
     },
+    MuiModal: {
+      styleOverrides: {
+        backdrop: {
+          backgroundColor: "rgba(0, 0, 0, 0.15)"
+        }
+      }
+    }
   },
 });
 

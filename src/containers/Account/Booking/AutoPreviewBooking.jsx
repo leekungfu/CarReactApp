@@ -17,28 +17,33 @@ SwiperCore.use([Navigation, Autoplay]);
 
 function AutoPreviewBooking(props) {
   const { bookingId } = props;
-  console.log(typeof(bookingId));
-  const [car, setCar] = useState(null);
-  const token = localStorage.getItem("jwtToken");
-  useEffect(() => {
-    if (bookingId) {
-      const data = axiosInstance
-        .get(`/customer/booking/${bookingId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          if (res.data.isSuccess === true) {
-            setCar(res.data.booking.car);
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
-    }
-    console.log("Car: ", car);
-  }, [bookingId, token]);
+
+  const bookings = useSelector((state) => state.bookingData.bookings);
+  const car = bookings && bookings.find((item) => item.id === parseInt(bookingId)).car;
+  console.log("Booking: ", bookings);
+
+  // console.log(typeof(bookingId));
+  // const [car, setCar] = useState(null);
+  // const token = localStorage.getItem("jwtToken");
+  // useEffect(() => {
+  //   if (bookingId) {
+  //     const data = axiosInstance
+  //       .get(`/customer/booking/${bookingId}`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       })
+  //       .then((res) => {
+  //         if (res.data.isSuccess === true) {
+  //           setCar(res.data.booking.car);
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching data:", error);
+  //       });
+  //   }
+  //   console.log("Car: ", car);
+  // }, [bookingId, token]);
   let swiperInstance;
 
   let images = [];

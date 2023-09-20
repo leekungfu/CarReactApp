@@ -26,6 +26,7 @@ import ResetPass from "./containers/Account/Reset/ResetPass";
 import ConfirmReset from "./containers/Account/Reset/ConfirmReset";
 import Layout from "./components/Layout";
 import { SnackProvider } from "./components/Hooks/useSnackBar";
+import ViewBookedCar from "./containers/Account/Car/ViewBookedCar";
 
 
 const ProviderPack = createPack(
@@ -60,6 +61,7 @@ function App() {
             <Route path="/rentnow/:carId" element={<RentNow />} />
             <Route path="/editcardetails/:carId" element={<EditCarDetails />} />
             <Route path="/viewcardetails/:carId" element={<ViewCarDetails />} />
+            <Route path="/viewbookedcar/:carId" element={<ViewBookedCar />} />
             <Route path="/bookingdetails/:bookingId" element={<BookingDetails />} />
             <Route path="/reset" element={<ResetPass />} />
             <Route path="/confirmreset" element={<ConfirmReset />} />
