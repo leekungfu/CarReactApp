@@ -67,7 +67,7 @@ const RentNow = () => {
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {
-      navigate("/booking")
+      navigate("/booking");
     }
   };
   const handleBack = () => {
@@ -244,7 +244,17 @@ const RentNow = () => {
                   </Typography>
                   <Typography variant="subtitle1">
                     Status:{" "}
-                    <span style={{ color: "#38b000", fontWeight: "bold" }}>
+                    <span
+                      style={{
+                        color:
+                          car.status === "Booked"
+                            ? "#15616d"
+                            : car.status === "Stopped"
+                            ? "#d00000"
+                            : "#38b000",
+                        fontWeight: "bold",
+                      }}
+                    >
                       {car.status}
                     </span>
                   </Typography>

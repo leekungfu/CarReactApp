@@ -107,7 +107,7 @@ const SignUpForm = (props) => {
         if (response.data.isSuccess === true) {
           createSnack(response.data.message, { severity: "success" });
           localStorage.setItem("jwtToken", response.data.token);
-          dispatch(setUserData(data));
+          // dispatch(setUserData(data));
           const basicInfo = {
             fullName: data.fullName,
             email: data.email,
@@ -116,6 +116,7 @@ const SignUpForm = (props) => {
             nationalID: data.nationalID,
             street: data.street,
             birthDay: data.birthDay,
+            wallet: data.wallet,
           };
           localStorage.setItem("userData", JSON.stringify(basicInfo));
 

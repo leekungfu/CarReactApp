@@ -38,10 +38,6 @@ import PricingTab from "./PricingTab";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
 import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
 
-// const StyledTypography = styled(Typography)`
-//   font-weight: bold !important;
-// `;
-
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,

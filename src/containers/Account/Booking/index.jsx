@@ -28,6 +28,8 @@ import {
   setBookingData,
   setBookings,
 } from "../../../components/ReduxToolkit/BookingSlice";
+import moment from "moment";
+import { DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../../shared/configs/constants";
 
 const MyBookings = (props) => {
   const { loading = false } = props;
@@ -148,7 +150,7 @@ const MyBookings = (props) => {
                   {item ? (
                     <Grid container sx={{ mb: 5 }}>
                       <Grid item xs={5}>
-                        <AutoPreviewBooking bookingId={item.id} />
+                        <AutoPreviewBooking bookingId={item.bookingId} />
                       </Grid>
                       <Grid item xs={7}>
                         <Typography variant="h6" fontWeight="bold">
@@ -156,27 +158,27 @@ const MyBookings = (props) => {
                           {item.car.productionYear}
                         </Typography>
                         <Typography variant="subtitle1">
-                          From: {item.car.startDate}
+                          From: {moment(item.startDate).format(DATE_TIME_PICKER_DISPLAY_FORMAT)}
                         </Typography>
                         <Typography variant="subtitle1">
-                          To: {item.car.endDate}
+                          To: {moment(item.endDate).format(DATE_TIME_PICKER_DISPLAY_FORMAT)}
                         </Typography>
                         <Typography variant="subtitle1">
                           Number of days:
                         </Typography>
                         <Typography variant="subtitle1">
-                          Base price: {Number(item.car.price).toLocaleString()}{" "}
+                          Base price: {Number(item.car.basePrice).toLocaleString()}{" "}
                           VND
                         </Typography>
                         <Typography variant="subtitle1">
-                          Total: {Number(item.car.price).toLocaleString()} VND
+                          Total: {Number(item.car.basePrice).toLocaleString()} VND
                         </Typography>
                         <Typography variant="subtitle1">
                           Deposit: {Number(item.car.deposit).toLocaleString()}{" "}
                           VND
                         </Typography>
                         <Typography variant="subtitle1">
-                          Booking No.: {item.id}
+                          Booking No.: {item.bookingId}
                         </Typography>
                         <Typography variant="subtitle1">
                           Booking status:{" "}
@@ -213,7 +215,7 @@ const MyBookings = (props) => {
                                 },
                               }}
                               variant="outlined"
-                              onClick={() => handleClickViewDetails(item.id)}
+                              onClick={() => handleClickViewDetails(item.bookingId)}
                             >
                               View details
                             </Button>

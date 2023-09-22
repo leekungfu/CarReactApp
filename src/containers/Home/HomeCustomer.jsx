@@ -28,8 +28,9 @@ import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../../components/Hooks/useSnackBar";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../components/ReduxToolkit/UserSlice";
-import { RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../shared/configs/constants";
+import { DATE_TIME_PICKER_DISPLAY_FORMAT, RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT, SERVER_POSTING_DATE_TIME_FORMAT } from "../../shared/configs/constants";
 import { setBookingData } from "../../components/ReduxToolkit/BookingSlice";
+import moment from "moment";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -91,10 +92,11 @@ const HomeCustomer = (props) => {
 
   const token = localStorage.getItem("jwtToken");
   const handleClickSearch = async () => {
+    const startTimeFormatted = moment(startTime).format(SERVER_POSTING_DATE_TIME_FORMAT)
     const response = await axiosInstance.get("/customer/searchCar", {
       params: {
         selectedProvince,
-        startTime,
+        startTimeFormatted,
       },
       headers: {
         Authorization: `Bearer ${token}`,
@@ -214,7 +216,17 @@ const HomeCustomer = (props) => {
               spacing={1}
             >
               <List fontSize="large" />
-              <Typography variant="h6">LIST CAR:</Typography>
+              <Typography variant="h6">LIST OF CARS:{" "}
+              {cars && cars.length > 1 ? (
+                <span>
+                  There are <span style={{ fontWeight: "bold" }}>{cars.length}</span> cars available now.
+                </span>
+              ) : (
+                <span>
+                  There is <span style={{ fontWeight: "bold", color: "#fca311" }}>{cars.length === 0 ? "0" : cars.length}</span> car available now.
+                </span>
+              ) }
+              </Typography>
             </Stack>
             <Grid container columnSpacing={4} rowSpacing={5}>
               {(loading ? Array.from(new Array(4)) : carsOnCurrentPage).map(

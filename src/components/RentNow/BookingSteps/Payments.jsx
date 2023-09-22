@@ -21,7 +21,8 @@ import ConfirmPaymentDeposit from "../../Modals/ConfirmPaymentDeposit";
 
 const Payments = (props) => {
   const { carId, pickUpTime, returnTime, deposit } = props;
-  
+  const userData = localStorage.getItem("userData");
+  const user = JSON.parse(userData);
   const [paymentMethod, setPaymentMethod] = useState();
   const [openConfirmPaymentDeposit, setOpenConfirmPaymentDeposit] = useState(false);
   const pickUpTimeFormated = dayjs(pickUpTime).format(SERVER_RESPOND_DATE_TIME_FORMAT);
@@ -66,7 +67,7 @@ const Payments = (props) => {
             <Typography variant="subtitle1" sx={{ ml: 7 }}>
               Current balance:{" "}
               <span style={{ color: "#38b000", fontWeight: "bold" }}>
-                20.000.000 VND
+                {user.wallet} (VND)
               </span>
             </Typography>
             <FormControlLabel

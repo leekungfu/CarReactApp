@@ -5,6 +5,7 @@ import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import { useDispatch } from "react-redux";
 import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
+import styled from "styled-components";
 
 const style = {
   position: "absolute",
@@ -17,6 +18,12 @@ const style = {
   p: 3,
   textAlign: "center",
 };
+
+const StyledModal = styled(Modal)`
+  & .muimodal-backdrop: {
+    backgroundcolor: "rgba(0, 0, 0, 0.15)";
+  }
+`;
 
 const ConfirmDeposit = (props) => {
   const { open, onClose, bookingId } = props;
@@ -49,7 +56,7 @@ const ConfirmDeposit = (props) => {
 
   return (
     <div>
-      <Modal
+      <StyledModal
         sx={{ backgroundColor: "rgb(0, 0, 0,.15)" }}
         open={open}
         onClose={handleClose}
@@ -87,7 +94,7 @@ const ConfirmDeposit = (props) => {
             </Button>
           </Stack>
         </Box>
-      </Modal>
+      </StyledModal>
     </div>
   );
 };

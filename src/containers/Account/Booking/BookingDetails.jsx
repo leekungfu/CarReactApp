@@ -47,6 +47,8 @@ import BookingInformation from "../../../components/RentNow/BookingSteps/Booking
 import AutoPreviewBooking from "./AutoPreviewBooking";
 import axiosInstance from "../../../shared/configs/axiosConfig";
 import { useSelector } from "react-redux";
+import { DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../../shared/configs/constants";
+import moment from "moment";
 
 const StyledTypography = styled(Typography)`
   font-weight: bold !important;
@@ -73,9 +75,9 @@ const BookingDetails = () => {
   const { bookingId } = useParams();
 
   const bookings = useSelector((state) => state.bookingData.bookings);
-  const car = bookings && bookings.find((item) => item.id === parseInt(bookingId)).car;
-  const user = bookings && bookings.find((item) => item.id === parseInt(bookingId)).member;
-  const booking = bookings && bookings.find((item) => item.id === parseInt(bookingId));
+  const car = bookings.find((item) => item.bookingId === bookingId).car;
+  const user = bookings.find((item) => item.bookingId === bookingId).member;
+  const booking = bookings.find((item) => item.bookingId === bookingId);
 
   // const [car, setCar] = useState(null);
   // const [user, setUser] = useState(null);
@@ -190,24 +192,24 @@ const BookingDetails = () => {
               {car.brand} {car.model} {car.productionYear}
             </StyledTypography>
             <Typography variant="subtitle1">
-              From: {booking.startDate}
+              From: {moment(booking.startDate).format(DATE_TIME_PICKER_DISPLAY_FORMAT)}
             </Typography>
-            <Typography variant="subtitle1">To: {booking.endDate}</Typography>
+            <Typography variant="subtitle1">To: {moment(booking.endDate).format(DATE_TIME_PICKER_DISPLAY_FORMAT)}</Typography>
             <Typography variant="subtitle1">
               Number of rides: {data.nor}
             </Typography>
             <Typography variant="subtitle1">
-              Base price: {Number(car.price).toLocaleString()} (VND/day)
+              Base price: {Number(car.basePrice).toLocaleString()} (VND/day)
             </Typography>
             <Typography variant="subtitle1">
-              Total: {Number(car.price).toLocaleString()} (VND)
+              Total: {Number(car.basePrice).toLocaleString()} (VND)
             </Typography>
             <Typography variant="subtitle1">
               Deposit: {Number(car.deposit).toLocaleString()} (VND)
             </Typography>
             <Typography variant="subtitle1">
               Booking No.{"     "}
-              {booking.id}
+              {booking.bookingId}
             </Typography>
             <Typography variant="subtitle1">
               Booking status:{"     "}
@@ -503,7 +505,7 @@ const BookingDetails = () => {
           <Typography variant="subtitle1" sx={{ ml: 7, mb: 2 }}>
             Current balance:{" "}
             <span style={{ color: "#38b000", fontWeight: "bold" }}>
-              {Number(user.wallet).toLocaleString()} (VND)
+              {user.wallet !== null ? Number(user.wallet).toLocaleString() : "0"} (VND)
             </span>
           </Typography>
           <Typography variant="subtitle1">

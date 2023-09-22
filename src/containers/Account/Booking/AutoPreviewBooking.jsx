@@ -19,8 +19,8 @@ function AutoPreviewBooking(props) {
   const { bookingId } = props;
 
   const bookings = useSelector((state) => state.bookingData.bookings);
-  const car = bookings && bookings.find((item) => item.id === parseInt(bookingId)).car;
-  console.log("Booking: ", bookings);
+  const car = bookings.find((item) => item.bookingId === bookingId).car;
+  console.log("Booking: ", car);
 
   // console.log(typeof(bookingId));
   // const [car, setCar] = useState(null);
@@ -36,6 +36,7 @@ function AutoPreviewBooking(props) {
   //       .then((res) => {
   //         if (res.data.isSuccess === true) {
   //           setCar(res.data.booking.car);
+  //           console.log("Car res: ", res.data);
   //         }
   //       })
   //       .catch((error) => {
@@ -43,7 +44,7 @@ function AutoPreviewBooking(props) {
   //       });
   //   }
   //   console.log("Car: ", car);
-  // }, [bookingId, token]);
+  // }, [bookingId, token, car]);
   let swiperInstance;
 
   let images = [];

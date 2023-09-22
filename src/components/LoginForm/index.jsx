@@ -47,7 +47,6 @@ function LoginForm(props) {
     return Object.keys(msg).length === 0;
   };
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleClickLogin = async (event) => {
@@ -69,6 +68,7 @@ function LoginForm(props) {
           nationalID: response.data.member.nationalID,
           street: response.data.member.street,
           birthDay: response.data.member.birthDay,
+          wallet: response.data.member.wallet,
         };
         localStorage.setItem("userData", JSON.stringify(basicInfo));
         createSnack(response.data.message, { severity: "success" });

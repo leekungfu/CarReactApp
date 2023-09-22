@@ -26,7 +26,7 @@ export default function UserMenu() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const userData = localStorage.getItem("userData");
-  const role = JSON.parse(userData).role;
+  const user = JSON.parse(userData);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -47,7 +47,7 @@ export default function UserMenu() {
 
   return (
     <Fragment>
-      <Box>
+      <Box sx={{ display: "flex", alignItems: "center" }}>
         <Tooltip title="User Menu">
           <IconButton
             onClick={handleClick}
@@ -55,10 +55,17 @@ export default function UserMenu() {
             aria-controls={open ? "user-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
+            style={{
+              backgroundColor: "#f5f5f5", // Màu nền
+              color: "#fca311", // Màu chữ
+              borderRadius: 15, // Bo góc
+              marginRight: 10, // Khoảng cách với phần khác (nếu cần)
+            }}
           >
-            <Avatar sx={{ width: 32, height: 32 }}>
+            <Avatar sx={{ width: 32, height: 32, mr: 1 }}>
               <Person />
             </Avatar>
+            <Typography variant="subtitle1" fontWeight="bold" fontStyle="italic">Hello, {user.fullName}!</Typography>
           </IconButton>
         </Tooltip>
       </Box>
@@ -97,7 +104,7 @@ export default function UserMenu() {
         <StyledMenuItem component={Link} to="/profile">
           <Typography variant="subtitle1">My Profile</Typography>
         </StyledMenuItem>
-        {role === "OWNER" && (
+        {user.role === "OWNER" && (
           <Box>
             <StyledMenuItem component={Link} to="/cars">
               <Typography variant="subtitle1">My Cars</Typography>
@@ -107,7 +114,7 @@ export default function UserMenu() {
             </StyledMenuItem>
           </Box>
         )}
-        {role === "CUSTOMER" && (
+        {user.role === "CUSTOMER" && (
           <StyledMenuItem component={Link} to="/booking">
             <Typography variant="subtitle1">My Booking</Typography>
           </StyledMenuItem>

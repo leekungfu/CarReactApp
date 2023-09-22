@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useDispatch } from "react-redux";
-import { addBooking, setBookingData } from "../ReduxToolkit/BookingSlice";
+import styled from "styled-components";
 
 const style = {
   position: "absolute",
@@ -17,6 +17,12 @@ const style = {
   p: 3,
   textAlign: "center",
 };
+
+const StyledModal = styled(Modal)`
+  & .muimodal-backdrop: {
+    backgroundcolor: "rgba(0, 0, 0, 0.15)";
+  }
+`;
 
 const ConfirmPaymentDeposit = (props) => {
   const { open, onClose, formData, deposit } = props;
@@ -50,7 +56,7 @@ const ConfirmPaymentDeposit = (props) => {
 
   return (
     <div>
-      <Modal open={open} onClose={handleClose}>
+      <StyledModal open={open} onClose={handleClose}>
         <Box sx={style}>
           <Typography variant="h6">Confirm payment deposit</Typography>
           <Divider />
@@ -83,7 +89,7 @@ const ConfirmPaymentDeposit = (props) => {
             </Button>
           </Stack>
         </Box>
-      </Modal>
+      </StyledModal>
     </div>
   );
 };
