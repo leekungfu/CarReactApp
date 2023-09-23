@@ -16,6 +16,8 @@ import {
   TableCell,
   TableBody,
   TableHead,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { useState } from "react";
@@ -30,13 +32,18 @@ import {
   NavigateNext,
 } from "@mui/icons-material";
 import { Link, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { carSelected } from "../../../components/ReduxToolkit/CarAdapter";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  carSelected,
+  carUpdated,
+} from "../../../components/ReduxToolkit/CarAdapter";
 import AutoPreview from "./AutoPreview";
 import DetailsTab from "./DetailsTab";
 import PricingTab from "./PricingTab";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
 import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
+import axiosInstance from "../../../shared/configs/axiosConfig";
+import { useSnackbar } from "../../../components/Hooks/useSnackBar";
 
 function a11yProps(index) {
   return {
@@ -44,12 +51,21 @@ function a11yProps(index) {
     "aria-controls": `simple-tabpanel-${index}`,
   };
 }
+const CustomSelect = styled(Select)`
+  color: ${(props) =>
+    props.status === "Stopped" ? "#d00000 !important" : "#38b000 !important"};
+  font-weight: bold !important;
+  margin-left: 8px;
+`;
 
 const EditCarDetails = () => {
   const [tab, setTab] = useState(0);
   const { carId } = useParams();
+  const { createSnack } = useSnackbar();
   const car = useSelector((state) => carSelected(state, carId)).payload.cars;
   const [carInfo, setCarInfo] = useState(car.entities[carId]);
+  const [status, setStatus] = useState(carInfo.status);
+  const dispatch = useDispatch();
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
@@ -69,6 +85,29 @@ const EditCarDetails = () => {
   const handleClose = () => {
     setOpenConfirmDeposit(false);
     setOpenConfirmPayment(false);
+  };
+  const handleChangeStatus = async (event) => {
+    const newStatus = event.target.value;
+    setStatus(newStatus);
+    const token = localStorage.getItem("jwtToken");
+    const { data: response } = await axiosInstance.post(
+      `/owner/updateCarStatus/${carId}`,
+      null,
+      {
+        params: {
+          status: newStatus,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+      );
+      if (response.isSuccess === true) {
+      dispatch(carUpdated({ id: carId, changes: response.car }));
+      createSnack(response.message, { severity: "success" });
+    } else {
+      createSnack(response.message, { severity: "error" });
+    }
   };
 
   return (
@@ -159,19 +198,30 @@ const EditCarDetails = () => {
             </Typography>
             <Typography variant="subtitle1">
               Status:{" "}
-              <span
-                style={{
-                  color:
-                    carInfo.status === "Booked"
-                      ? "#15616d"
-                      : carInfo.status === "Stopped"
-                      ? "#d00000"
-                      : "#38b000",
-                  fontWeight: "bold",
-                }}
-              >
-                {carInfo.status}
-              </span>
+              {carInfo.status !== "Booked" ? (
+                <CustomSelect
+                  size="small"
+                  status={status}
+                  value={status}
+                  onChange={handleChangeStatus}
+                >
+                  <MenuItem value="Available" sx={{ color: "#38b000" }}>
+                    Available
+                  </MenuItem>
+                  <MenuItem value="Stopped" sx={{ color: "#d00000" }}>
+                    Stopped
+                  </MenuItem>
+                </CustomSelect>
+              ) : (
+                <span
+                  style={{
+                    color: "#15616d",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {carInfo.status}
+                </span>
+              )}
             </Typography>
             {carInfo.bookings.find(
               (item) => item.bookingStatus === "Pending_payment"

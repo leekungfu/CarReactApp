@@ -49,7 +49,7 @@ function App() {
       <Router>
         <Layout>
           <Routes>
-            <Route index={true} element={<HomeGuest />} />
+            <Route index={true} path="/" element={<HomeGuest />} />
             <Route path="/homecustomer" element={<HomeCustomer />} />
             <Route path="/homeowner" element={<HomeOwner />} />
             <Route path="/addcar" element={<AddCar />} />

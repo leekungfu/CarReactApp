@@ -13,37 +13,25 @@ import { useState, Fragment } from "react";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import LoginForm from "../LoginForm";
 import SignUpForm from "../SignUpForm";
+import { Link, useNavigate } from "react-router-dom";
 
-const pages = [
-  {
-    title: "HOME",
-    link: "#",
-  },
-  {
-    title: "ABOUT US",
-    link: "#",
-  },
-  {
-    title: "SIGN UP",
-    link: "#",
-  },
-  {
-    title: "LOG IN",
-    link: "#",
-  },
-];
+const pages = ["HOME", "ABOUT US", "SIGN UP", "LOG IN"];
 
 const NavBarGuest = () => {
   const [openLogin, setOpenLogin] = useState(false);
   const [openSignup, setOpenSignup] = useState(false);
-
+  const navigate = useNavigate();
   const handleClickOpen = (page) => {
-    if (page.title === "LOG IN") {
+    if (page === "LOG IN") {
       setOpenLogin(true);
     }
 
-    if (page.title === "SIGN UP") {
+    if (page === "SIGN UP") {
       setOpenSignup(true);
+    }
+
+    if (page === "HOME") {
+      navigate("/");
     }
   };
 
@@ -65,8 +53,14 @@ const NavBarGuest = () => {
                 fontFamily: "inherit",
                 fontWeight: 800,
                 letterSpacing: ".1rem",
-                textDecoration: "none",
+                textDecoration: "none !important",
+                color: "#000000 !important",
+                "&:hover": {
+                  color: "#fca311 !important",
+                },
               }}
+              component={Link}
+              to="/"
             >
               RENTAL A CAR <span style={{ color: "#fca311" }}>TODAY</span>
             </Typography>
@@ -94,7 +88,7 @@ const NavBarGuest = () => {
                   }}
                   onClick={() => handleClickOpen(page)}
                 >
-                  {page.title}
+                  {page}
                 </Button>
               ))}
             </Box>

@@ -39,6 +39,10 @@ import { useState } from "react";
 const StyledTypography = styled(Typography)`
   color: white;
   text-align: center;
+  cursor: pointer;
+  &:hover {
+    color: #fca311 !important;
+  }
 `;
 
 const HomeGuest = () => {
@@ -59,14 +63,40 @@ const HomeGuest = () => {
           <Container
             maxWidth="100%"
             sx={{
-              backgroundImage: 'url("../car-10.jpg")',
-              backgroundSize: "cover",
-              backgroundPosition: "center",
               width: "100%",
               height: "1000px",
+              position: "relative",
             }}
           >
-            <Container maxWidth="md">
+            <div
+              style={{
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                top: 0,
+                left: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                zIndex: 0,
+              }}
+            ></div>
+            <video
+              autoPlay
+              loop
+              muted
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                zIndex: -1,
+              }}
+            >
+              <source src="../SirAlex.mp4" type="video/mp4" />
+              Glory glory Manchester United!
+            </video>
+            <Container maxWidth="md" sx={{ zIndex: 2, position: "relative" }}>
               <Box
                 sx={{
                   pt: 50,
@@ -77,8 +107,10 @@ const HomeGuest = () => {
                 </StyledTypography>
                 <StyledTypography variant="h6">
                   Car is an essential vehicle in our life. It's created to
-                  reserve lots of our purpose. Well, you need to rent a car, or
-                  you have cars for rent - You're in the right place
+                  reserve lots of our purpose.
+                </StyledTypography>
+                <StyledTypography variant="h6">So, you need to rent a car, or
+                  you have cars for rent - You're in the right place.
                 </StyledTypography>
               </Box>
             </Container>

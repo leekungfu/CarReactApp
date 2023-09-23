@@ -22,7 +22,14 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useState } from "react";
-import { Commute, Home, NavigateNext } from "@mui/icons-material";
+import {
+  AccountBalance,
+  AttachMoney,
+  Commute,
+  Home,
+  NavigateNext,
+  Wallet,
+} from "@mui/icons-material";
 import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -30,6 +37,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { carSelectedAll } from "../../../components/ReduxToolkit/CarAdapter";
 import AutoPreview from "./AutoPreview";
 import { setBookings } from "../../../components/ReduxToolkit/BookingSlice";
+import moment from "moment/moment";
+import { DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../../shared/configs/constants";
 
 const style = {
   textAlign: "center",
@@ -42,7 +51,7 @@ const ViewBookedCar = () => {
   const car = cars.entities[carId];
   const dispatch = useDispatch();
   dispatch(setBookings(cars.entities[carId].bookings));
-  const bookings = useSelector((state) => state.bookingData.bookings)
+  const bookings = useSelector((state) => state.bookingData.bookings);
   console.log("Booking: ", bookings);
   const handleClose = () => {
     setOpenConfirmDeposit(false);
@@ -168,7 +177,7 @@ const ViewBookedCar = () => {
               </Grid>
             </Grid>
             <Grid container sx={{ mt: 5 }}>
-              <TableContainer component={Paper}>
+              <TableContainer component={Paper} elevation={5}>
                 <Table sx={{ minWidth: 650 }}>
                   <TableHead>
                     <TableRow>
@@ -193,13 +202,34 @@ const ViewBookedCar = () => {
                           <TableCell style={style}>{index + 1}</TableCell>
                           <TableCell style={style}>{item.id}</TableCell>
                           <TableCell style={style}>
-                            {item.startDate} - {item.endDate}
+                            {moment(item.startDate).format(
+                              DATE_TIME_PICKER_DISPLAY_FORMAT
+                            )}{" "}
+                            -{" "}
+                            {moment(item.endDate).format(
+                              DATE_TIME_PICKER_DISPLAY_FORMAT
+                            )}
                           </TableCell>
                           <TableCell style={style}>
-                            {item.info ? item.info : "Loading..."}
+                            {item.info ? item.info : "No information"}
                           </TableCell>
                           <TableCell style={style}>
-                            {item.paymentMethod}
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              {item.paymentMethod === "Cash" ? (
+                                <AttachMoney />
+                              ) : item.paymentMethod === "Wallet" ? (
+                                <Wallet />
+                              ) : (
+                                <AccountBalance />
+                              )}
+                              {item.paymentMethod}
+                            </Box>
                           </TableCell>
                           <TableCell style={style}>
                             {item.bookingStatus}

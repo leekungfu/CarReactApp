@@ -2,22 +2,30 @@ import {
   AppBar,
   Box,
   Button,
-  ButtonBase,
   Container,
-  CssBaseline,
-  IconButton,
   Toolbar,
   Typography,
 } from "@mui/material";
-import { useState, Fragment } from "react";
+import { Fragment } from "react";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
-import LoginForm from "../LoginForm";
-import SignUpForm from "../SignUpForm";
 import UserMenu from "../UserMenu";
+import { Link, useNavigate } from "react-router-dom";
 
 const pages = ["HOME", "ABOUT US", <UserMenu />];
 
 const NavBarCustomer = () => {
+  const navigate = useNavigate();
+  const user = localStorage.getItem("userData");
+  const handleClickPage = (page) => {
+    if (page === "HOME") {
+      if (user.role === "CUSTOMER") {
+        navigate("/homecustomer");
+      } else {
+        navigate("/homeowner");
+      }
+    }
+  };
+  
   return (
     <Fragment>
       <AppBar color="default" position="sticky">
@@ -30,14 +38,19 @@ const NavBarCustomer = () => {
                 fontFamily: "inherit",
                 fontWeight: 800,
                 letterSpacing: ".1rem",
-                color: "inherit",
-                textDecoration: "none",
+                textDecoration: "none !important",
+                color: "#000000 !important",
+                "&:hover": {
+                  color: "#fca311 !important",
+                },
               }}
+              component={Link}
+              to={user.role && user.role === "CUSTOMER" ? "/homecustomer" : "/homeowner"}
             >
-              RENTAL A CAR {" "}<span style={{ color: "#fca311" }}>TODAY</span>
+              RENTAL A CAR <span style={{ color: "#fca311" }}>TODAY</span>
             </Typography>
             <DirectionsCarIcon
-            fontSize="medium"
+              fontSize="medium"
               sx={{ display: { xs: "none", md: "flex" }, ml: 1 }}
             />
             <Box
@@ -48,7 +61,11 @@ const NavBarCustomer = () => {
               }}
             >
               {pages.map((page, index) => (
-                <Button key={index} sx={{ fontWeight: 700, bgcolor: "rgba(0,0,0,0)" }}>
+                <Button
+                  key={index}
+                  sx={{ fontWeight: 700, bgcolor: "rgba(0,0,0,0)" }}
+                  onClick={() => handleClickPage(page)}
+                >
                   {page}
                 </Button>
               ))}

@@ -7,14 +7,11 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
-import { Button } from "@mui/material";
 import { Logout, Person } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Fragment, useState } from "react";
-import LogOut from "../Modals/LogOutt";
 import LogOutt from "../Modals/LogOutt";
-import { useSelector } from "react-redux";
 
 const StyledMenuItem = styled(MenuItem)`
   cursor: pointer;
