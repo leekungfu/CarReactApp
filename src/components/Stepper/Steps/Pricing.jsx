@@ -52,8 +52,8 @@ const Pricing = () => {
           <Stack spacing={2}>
             <NumericFormat
               customInput={OutlinedInput}
-              name="basePrice"
-              value={data.basePrice}
+              name="price"
+              value={data.price}
               thousandSeparator={true}
               onChange={handleInputChange}
               size="small"

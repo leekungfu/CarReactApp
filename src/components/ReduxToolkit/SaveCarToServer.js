@@ -60,7 +60,7 @@ export const addCarAndSendToServer =
           street: carDBData.street,
           description: carDBData.description,
           additionalFunctions: carDBData.additionalFunctions,
-          basePrice: carDBData.price,
+          price: carDBData.price,
           deposit: carDBData.deposit,
           terms: carDBData.terms,
           status: carDBData.status,

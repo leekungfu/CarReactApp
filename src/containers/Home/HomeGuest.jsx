@@ -64,7 +64,7 @@ const HomeGuest = () => {
             maxWidth="100%"
             sx={{
               width: "100%",
-              height: "1000px",
+              height: "50vw",
               position: "relative",
             }}
           >

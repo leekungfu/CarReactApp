@@ -64,7 +64,7 @@ const AddCarStepper = (props) => {
         street: detailsData.street,
         description: detailsData.description,
         additionalFunctions: detailsData.additionalFunctions,
-        basePrice: parseInt(pricingData.basePrice.replace(/[^0-9]/g, "")),
+        price: parseInt(pricingData.price.replace(/[^0-9]/g, "")),
         deposit: parseInt(pricingData.deposit.replace(/[^0-9]/g, "")),
         terms: pricingData.terms,
         status: "Available",

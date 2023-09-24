@@ -199,10 +199,10 @@ const BookingDetails = () => {
               Number of rides: {data.nor}
             </Typography>
             <Typography variant="subtitle1">
-              Base price: {Number(car.basePrice).toLocaleString()} (VND/day)
+              Base price: {Number(car.price).toLocaleString()} (VND/day)
             </Typography>
             <Typography variant="subtitle1">
-              Total: {Number(car.basePrice).toLocaleString()} (VND)
+              Total: {Number(car.price).toLocaleString()} (VND)
             </Typography>
             <Typography variant="subtitle1">
               Deposit: {Number(car.deposit).toLocaleString()} (VND)

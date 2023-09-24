@@ -219,7 +219,7 @@ const HomeCustomer = (props) => {
               <Typography variant="h6">LIST OF CARS:{" "}
               {cars && cars.length > 1 ? (
                 <span>
-                  There are <span style={{ fontWeight: "bold" }}>{cars.length}</span> cars available now.
+                  There are <span style={{ fontWeight: "bold", color: "#fca311" }}>{cars.length}</span> cars available now.
                 </span>
               ) : (
                 <span>

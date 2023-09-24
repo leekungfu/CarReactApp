@@ -179,7 +179,7 @@ const MyCars = (props) => {
                               />
                             </Box>
                             <Typography variant="body2" color="text.secondary">
-                              Price: {car.basePrice ? car.basePrice : car.price}
+                              Price: {car.price ? car.price : car.price}
                             </Typography>
                           </Stack>
                         </Grid>
@@ -229,7 +229,7 @@ const MyCars = (props) => {
                             >
                               View details
                             </Button>
-                            {car.bookings.length > 0 ? (
+                            {car.bookings && car.bookings.length > 0 ? (
                               <Button
                                 sx={{
                                   minWidth: "40%",

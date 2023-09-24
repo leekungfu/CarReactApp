@@ -21,13 +21,17 @@ import { useNavigate } from "react-router-dom";
 const PricingTab = (props) => {
   const { carId } = props;
   const car = useSelector((state) => carSelected(state, carId)).payload.cars;
-  const carInfo = car.entities[carId];
+  const [carInfo, setCarInfo] = useState(car.entities[carId]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const token = localStorage.getItem("jwtToken");
 
+  useEffect(() => {
+    setCarInfo(car.entities[carId]);
+  }, [car, carId]);
+
   const [fieldsState, setFieldsState] = useState({
-    basePrice: carInfo.price,
+    price: carInfo.price,
     deposit: carInfo.deposit,
     terms: carInfo.terms,
   });
@@ -65,10 +69,10 @@ const PricingTab = (props) => {
 
   const handleClickSave = async () => {
     const carData = {
-      basePrice:
-        typeof fieldsState.basePrice === "string"
-          ? parseInt(fieldsState.basePrice.replace(/,|\./g, ""))
-          : fieldsState.basePrice,
+      price:
+        typeof fieldsState.price === "string"
+          ? parseInt(fieldsState.price.replace(/,|\./g, ""))
+          : fieldsState.price,
       deposit:
         typeof fieldsState.deposit === "string"
           ? parseInt(fieldsState.deposit.replace(/,|\./g, ""))
@@ -125,8 +129,8 @@ const PricingTab = (props) => {
           <Stack spacing={2}>
             <NumericFormat
               customInput={OutlinedInput}
-              name="basePrice"
-              value={fieldsState.basePrice}
+              name="price"
+              value={fieldsState.price}
               thousandSeparator={true}
               onChange={handleInputChange}
               size="small"
@@ -150,7 +154,6 @@ const PricingTab = (props) => {
                 const { floatValue, formattedValue } = value;
                 return floatValue < MAX_DEPOSIT || formattedValue === "";
               }}
-              
             />
           </Stack>
         </Grid>

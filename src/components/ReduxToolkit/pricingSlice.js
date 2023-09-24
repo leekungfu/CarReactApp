@@ -4,7 +4,7 @@ const pricingSlice = createSlice({
   name: "pricing",
   initialState: {
     data: {
-      basePrice: "",
+      price: "",
       deposit: "",
       terms: [],
     },

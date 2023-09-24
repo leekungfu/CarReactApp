@@ -3,7 +3,8 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 const Finish = () => {
-  const bookingData = useSelector((state) => state.bookingData.data);
+  const bookingData = useSelector((state) => state.bookingData.bookings);
+  console.log("Booking data: ", bookingData);
   // const startDate = bookingData.startDate;
   // const endDate = bookingData.endDate;
   // const [year, month, day, hours, minutes, seconds] = endDate;

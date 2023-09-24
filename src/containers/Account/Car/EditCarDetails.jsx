@@ -223,7 +223,7 @@ const EditCarDetails = () => {
                 </span>
               )}
             </Typography>
-            {carInfo.bookings.find(
+            {carInfo.bookings && carInfo.bookings.find(
               (item) => item.bookingStatus === "Pending_payment"
             ) ? (
               <Button
@@ -241,7 +241,7 @@ const EditCarDetails = () => {
               >
                 Confirm payment
               </Button>
-            ) : carInfo.bookings.find(
+            ) : carInfo.bookings && carInfo.bookings.find(
                 (item) => item.bookingStatus === "Pending_deposit"
               ) ? (
               <Button

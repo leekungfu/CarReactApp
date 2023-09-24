@@ -34,7 +34,7 @@ const Preview = (props) => {
             Number of rides: 0
           </StyleTypography>
           <StyleTypography variant="subtitle1">
-            Price: {pricingData.basePrice}
+            Price: {pricingData.price}
           </StyleTypography>
           <StyleTypography variant="subtitle1">
             Location: {detailsData.ward}, {detailsData.district},{" "}

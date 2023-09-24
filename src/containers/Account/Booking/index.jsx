@@ -167,11 +167,11 @@ const MyBookings = (props) => {
                           Number of days:
                         </Typography>
                         <Typography variant="subtitle1">
-                          Base price: {Number(item.car.basePrice).toLocaleString()}{" "}
+                          Base price: {Number(item.car.price).toLocaleString()}{" "}
                           VND
                         </Typography>
                         <Typography variant="subtitle1">
-                          Total: {Number(item.car.basePrice).toLocaleString()} VND
+                          Total: {Number(item.car.price).toLocaleString()} VND
                         </Typography>
                         <Typography variant="subtitle1">
                           Deposit: {Number(item.car.deposit).toLocaleString()}{" "}
