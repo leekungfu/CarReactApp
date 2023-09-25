@@ -8,9 +8,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Star } from "@mui/icons-material";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -42,14 +45,42 @@ function getLabelText(value) {
 }
 
 const Review = (props) => {
-  const { open, onClose } = props;
-
+  const { open, onClose, bookingId } = props;
+  const { createSnack } = useSnackbar();
+  const [ratingValue, setRatingValue] = useState(2.5);
+  const [feedbackValue, setFeedbackValue] = useState("");
+  const [hover, setHover] = useState(-1);
+  const navigate = useNavigate();
   const handleClose = () => {
     onClose();
   };
+  const handleClickSkipRating = () => {
+    navigate("/homecustomer");
+    handleClose();
+  }
 
-  const [value, setValue] = React.useState(2);
-  const [hover, setHover] = React.useState(-1);
+  const handleClickSendFeedback = async () => {
+    const token = localStorage.getItem("jwtToken");
+    const formData = new FormData();
+    formData.append("bookingId", bookingId);
+    formData.append("rating", parseFloat(ratingValue));
+    formData.append("content", feedbackValue);
+    const { data: response } = await axiosInstance.post(
+      "/customer/addFeedback",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response.isSuccess === true) {
+      handleClose();
+      createSnack(response.message, { severity: "success" });
+    } else {
+      createSnack(response.message, { severity: "error" });
+    }
+  };
 
   return (
     <div>
@@ -63,22 +94,30 @@ const Review = (props) => {
           <Box sx={{ mb: 1 }}>
             <Rating
               name="hover-feedback"
-              value={value}
+              value={ratingValue}
               precision={0.5}
               getLabelText={getLabelText}
               onChange={(event, newValue) => {
-                setValue(newValue);
+                setRatingValue(newValue);
               }}
               onChangeActive={(event, newHover) => {
                 setHover(newHover);
               }}
               emptyIcon={<Star style={{ opacity: 0.55 }} fontSize="inherit" />}
             />
-            {value !== null && (
-              <Box sx={{ ml: 2 }}>{labels[hover !== -1 ? hover : value]}</Box>
+            {ratingValue !== null && (
+              <Box sx={{ ml: 2 }}>
+                {labels[hover !== -1 ? hover : ratingValue]}
+              </Box>
             )}
           </Box>
-          <OutlinedInput multiline fullWidth placeholder="Say something..."/>
+          <OutlinedInput
+            value={feedbackValue}
+            onChange={(event) => setFeedbackValue(event.target.value)}
+            multiline
+            fullWidth
+            placeholder="Say something..."
+          />
           <Stack
             sx={{ mt: 2 }}
             direction="row"
@@ -89,7 +128,7 @@ const Review = (props) => {
               sx={{
                 minWidth: "30%",
               }}
-              onClick={handleClose}
+              onClick={handleClickSkipRating}
               variant="outlined"
             >
               Skip
@@ -98,7 +137,7 @@ const Review = (props) => {
               sx={{
                 minWidth: "30%",
               }}
-              onClick={handleClose}
+              onClick={handleClickSendFeedback}
               variant="outlined"
             >
               Send feedback

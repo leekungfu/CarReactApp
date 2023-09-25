@@ -15,7 +15,7 @@ import {
 import React, { useState } from "react";
 import axiosInstance from "../../../shared/configs/axiosConfig";
 import { useSnackbar } from "../../Hooks/useSnackBar";
-import dayjs from "dayjs";
+import moment from "moment";
 import { SERVER_RESPOND_DATE_TIME_FORMAT } from "../../../shared/configs/constants";
 import ConfirmPaymentDeposit from "../../Modals/ConfirmPaymentDeposit";
 
@@ -25,8 +25,8 @@ const Payments = (props) => {
   const user = JSON.parse(userData);
   const [paymentMethod, setPaymentMethod] = useState();
   const [openConfirmPaymentDeposit, setOpenConfirmPaymentDeposit] = useState(false);
-  const pickUpTimeFormated = dayjs(pickUpTime).format(SERVER_RESPOND_DATE_TIME_FORMAT);
-  const returnTimeFormated = dayjs(returnTime).format(SERVER_RESPOND_DATE_TIME_FORMAT);
+  const pickUpTimeFormated = moment(pickUpTime).format(SERVER_RESPOND_DATE_TIME_FORMAT);
+  const returnTimeFormated = moment(returnTime).format(SERVER_RESPOND_DATE_TIME_FORMAT);
 
   const formData = new FormData();
   formData.append("carId", carId);
@@ -78,7 +78,7 @@ const Payments = (props) => {
               Our operator will contact you for further instruction.
             </Typography>
             <FormControlLabel
-              control={<Radio value="Bank_transfer" color="primary" />}
+              control={<Radio value="Bank_Transfer" color="primary" />}
               label="Bank Transfer"
             />
             <Typography variant="subtitle1" sx={{ ml: 7 }}>

@@ -71,7 +71,7 @@ const ViewBookedCar = () => {
 
   return (
     <div>
-      <Container maxWidth="lg" sx={{ pt: 5 }}>
+      <Container maxWidth="lg" sx={{ mt: 5, mb: 5 }}>
         <Container maxWidth="lg" sx={{ mt: 5 }}>
           <Breadcrumbs
             separator={<NavigateNext fontSize="small" />}

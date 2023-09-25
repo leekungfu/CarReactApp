@@ -2,6 +2,11 @@ import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Review from "./Review";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import { useDispatch } from "react-redux";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
+import styled from "styled-components";
 
 const style = {
   position: "absolute",
@@ -14,36 +19,75 @@ const style = {
   p: 3,
   textAlign: "center",
 };
+const StyledModal = styled(Modal)`
+  .MuiBackdrop-root {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+  }
+`;
 
 const ReturnCar = (props) => {
-  const { open, onClose } = props;
-
+  const { open, onClose, booking, car } = props;
+  const bookingId = booking.bookingId;
   const handleClose = () => {
     onClose();
   };
 
   const [openReview, setOpenReview] = useState(false);
 
-  const handleClickOpenReview = () => {
-    setOpenReview(true);
-    handleClose();
-  };
-
   const handleCloseReview = () => {
     setOpenReview(false);
   };
+  const timeDifference = booking.startDate - booking.endDate + 1; // Khoảng thời gian tính bằng mili giây
+  const totalMillisecondsInDay = 24 * 60 * 60 * 1000; // Tổng số mili giây trong một ngày
+  const totalTime = Math.round(timeDifference / totalMillisecondsInDay); // Tổng số ngày
 
+  const { createSnack } = useSnackbar();
+  const dispatch = useDispatch();
+  const handleClickAgree = async () => {
+    const token = localStorage.getItem("jwtToken");
+    const { data: response } = await axiosInstance.post(
+      `/customer/updateBookingStatus/${bookingId}`,
+      null,
+      {
+        params: {
+          status: "Completed",
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    handleClose();
+    if (response.isSuccess === true) {
+      console.log("Data: ", response);
+      createSnack(response.message, { severity: "success" });
+      const newStatus = response.booking.bookingStatus;
+      dispatch(updateBookingStatus({ bookingId, newStatus }));
+      setOpenReview(true);
+    } else {
+      createSnack(response.message, { severity: "error" });
+    }
+  };
 
   return (
     <div>
-      <Modal open={open} onClose={handleClose}>
+      <StyledModal open={open} onClose={handleClose}>
         <Box sx={style}>
           <Typography variant="h6">Return car</Typography>
           <Divider />
-          <Typography sx={{ mt: 2 }} variant="body1">
-            Please confrm to return the car. The remaining amount of 1,500,000
-            VND will be deducted from your wallet.
-          </Typography>
+          {car && car.deposit > totalTime * car.price ? (
+            <Typography sx={{ mt: 2 }} variant="body1">
+              Please confirm to return the car. The remaining amount of{" "}
+              {Number(car.deposit).toLocaleString()} (VND) will be deducted from
+              your wallet.
+            </Typography>
+          ) : (
+            <Typography sx={{ mt: 2 }} variant="body1">
+              Please confirm to return the car. The exceeding amount of{" "}
+              {Number(car.deposit).toLocaleString()} (VND) will be returned to
+              your wallet.
+            </Typography>
+          )}
           <Stack
             sx={{ mt: 2 }}
             direction="row"
@@ -63,15 +107,19 @@ const ReturnCar = (props) => {
               sx={{
                 width: "20%",
               }}
-              onClick={handleClickOpenReview}
+              onClick={handleClickAgree}
               variant="outlined"
             >
               Yes
             </Button>
           </Stack>
         </Box>
-      </Modal>
-      <Review open={openReview} onClose={handleCloseReview} />
+      </StyledModal>
+      <Review
+        open={openReview}
+        onClose={handleCloseReview}
+        bookingId={bookingId}
+      />
     </div>
   );
 };

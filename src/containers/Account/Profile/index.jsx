@@ -48,7 +48,10 @@ import validator from "validator";
 import { NumericFormat } from "react-number-format";
 import axiosInstance from "../../../shared/configs/axiosConfig";
 import { useDispatch, useSelector } from "react-redux";
-import { setData, setUserData } from "../../../components/ReduxToolkit/UserSlice";
+import {
+  setData,
+  setUserData,
+} from "../../../components/ReduxToolkit/UserSlice";
 
 function a11yProps(index) {
   return {
@@ -63,7 +66,7 @@ const ProfileTabs = () => {
   const token = localStorage.getItem("jwtToken");
   const user = useSelector((state) => state.userData);
   console.log("user ", user);
-  
+
   const [tab, setTab] = useState(0);
   const [fullName, setFullName] = useState(user.fullName);
   const [phone, setPhone] = useState(user.phone);
@@ -73,7 +76,7 @@ const ProfileTabs = () => {
   const [drivingLicense, setDrivingLicense] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
@@ -254,283 +257,295 @@ const ProfileTabs = () => {
 
   return (
     <Fragment>
-      <Container maxWidth="lg" sx={{ mt: 5, mb: 5 }}>
-        <Breadcrumbs
-          separator={<NavigateNext fontSize="small" />}
-          aria-label="breadcrumb"
-        >
-          <Stack direction="row" alignItems="center">
-            <Home sx={{ mr: 0.5 }} fontSize="inherit" />
-            <Typography
-              component={Link}
-              to={user && user.role === "CUSTOMER" ? "/homecustomer" : "/homeowner"}
-              variant="subtitle1"
-              fontWeight="bold"
-              sx={{
-                color: "#7f7f7f !important",
-                "&:hover": {
-                  color: "#fca311 !important",
-                },
-              }}
-            >
-              Home
-            </Typography>
-          </Stack>
-          <Stack direction="row" alignItems="center">
-            <Commute sx={{ mr: 0.5 }} fontSize="inherit" />
-            <Typography
-              variant="subtitle1"
-              fontWeight="bold"
-              sx={{ display: "flex", alignItems: "center" }}
-            >
-              My Profile
-            </Typography>
-          </Stack>
-        </Breadcrumbs>
-      </Container>
       <Container maxWidth="lg">
-        <Card elevation={5} sx={{ mb: 10 }}>
-          <CardContent>
-            <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <Tabs value={tab} onChange={handleChange}>
-                <Tab
-                  sx={{ fontWeight: "bold" }}
-                  icon={<ManageAccounts />}
-                  label="Personal Information"
-                  {...a11yProps(0)}
-                />
-                <Tab
-                  sx={{ fontWeight: "bold" }}
-                  icon={<Key />}
-                  label="Security"
-                  {...a11yProps(1)}
-                />
-              </Tabs>
-            </Box>
-            <CustomTabPanels value={tab} index={0}>
-              <Grid container columnSpacing={5}>
-                <Grid item xs={6}>
-                  <Stack spacing={2}>
-                    <Box>
-                      <InputLabel required>Full Name</InputLabel>
-                      <OutlinedInput
-                        fullWidth
-                        value={fullName}
-                        required
-                        onChange={(event) => setFullName(event.target.value)}
-                        inputProps={{ maxLength: MAX_FULLNAME_LENGTH }}
-                      />
-                    </Box>
-                    <Box>
-                      <InputLabel required>Phone Number</InputLabel>
-                      <NumericFormat
-                        customInput={OutlinedInput}
-                        fullWidth
-                        value={phone}
-                        required
-                        onChange={(event) => setPhone(event.target.value)}
-                        inputProps={{ maxLength: MAX_PHONE_LENGTH }}
-                      />
-                      {phone && !validator.isMobilePhone(phone) && (
-                        <Typography variant="subtitle2" color="red">
-                          Please enter the correct phone number!
-                        </Typography>
-                      )}
-                    </Box>
-                    <Box>
-                      <InputLabel required>National ID</InputLabel>
-                      <NumericFormat
-                        customInput={OutlinedInput}
-                        fullWidth
-                        placeholder="Example: 024098010203"
-                        required
-                        value={nationalID}
-                        onChange={(event) => setNationalId(event.target.value)}
-                        inputProps={{ maxLength: MAX_NATIONALID_LENGTH }}
-                      />
-                    </Box>
-                  </Stack>
-                </Grid>
-                <Grid item xs={6}>
-                  <Stack spacing={2}>
-                    <Box>
-                      <InputLabel required>Date of birth</InputLabel>
-                      <DatePicker
-                        format={DATE_PICKER_DISPLAY_FORMAT}
-                        sx={{ width: "100%" }}
-                        value={birthDay}
-                        onChange={(newDate) => setBirthDay(newDate)}
-                      />
-                    </Box>
-                    <Box>
-                      <InputLabel required>Email</InputLabel>
-                      <OutlinedInput
-                        fullWidth
-                        placeholder="name@gmail.com"
-                        disabled
-                        value={user.email}
-                      />
-                    </Box>
-                    <Box>
-                      <InputLabel required>Street</InputLabel>
-                      <OutlinedInput
-                        fullWidth
-                        placeholder="Street"
-                        value={street}
-                        onChange={(event) => setStreet(event.target.value)}
-                        inputProps={{ maxLength: MAX_STREET_LENGTH }}
-                      />
-                      {street && street.length === MAX_STREET_LENGTH && (
-                        <Typography variant="subtitle2" color="red">
-                          Exceed maximum length of street address!
-                        </Typography>
-                      )}
-                    </Box>
-                  </Stack>
-                </Grid>
-              </Grid>
-              <Stack spacing={2} sx={{ mt: 2 }}>
-                <Box>
-                  <InputLabel required>Address</InputLabel>
-                  <Provinces
-                    onSelectedOptionsChange={handleSelectedOptionsChange}
+        <Container maxWidth="lg" sx={{ mt: 5, mb: 5 }}>
+          <Breadcrumbs
+            separator={<NavigateNext fontSize="small" />}
+            aria-label="breadcrumb"
+          >
+            <Stack direction="row" alignItems="center">
+              <Home sx={{ mr: 0.5 }} fontSize="inherit" />
+              <Typography
+                component={Link}
+                to={
+                  user && user.role === "CUSTOMER"
+                    ? "/homecustomer"
+                    : "/homeowner"
+                }
+                variant="subtitle1"
+                fontWeight="bold"
+                sx={{
+                  color: "#7f7f7f !important",
+                  "&:hover": {
+                    color: "#fca311 !important",
+                  },
+                }}
+              >
+                Home
+              </Typography>
+            </Stack>
+            <Stack direction="row" alignItems="center">
+              <Commute sx={{ mr: 0.5 }} fontSize="inherit" />
+              <Typography
+                variant="subtitle1"
+                fontWeight="bold"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                My Profile
+              </Typography>
+            </Stack>
+          </Breadcrumbs>
+        </Container>
+        <Container maxWidth="lg">
+          <Card elevation={5} sx={{ mb: 10 }}>
+            <CardContent>
+              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                <Tabs value={tab} onChange={handleChange}>
+                  <Tab
+                    sx={{ fontWeight: "bold" }}
+                    icon={<ManageAccounts />}
+                    label="Personal Information"
+                    {...a11yProps(0)}
                   />
-                </Box>
-                <Box>
-                  <InputLabel required>Driving License</InputLabel>
-                  <DrivingLicense
-                    handleDrivingLicenseChange={handleDrivingLicenseChange}
+                  <Tab
+                    sx={{ fontWeight: "bold" }}
+                    icon={<Key />}
+                    label="Security"
+                    {...a11yProps(1)}
                   />
-                </Box>
-                <Button
-                  variant="outlined"
-                  sx={{
-                    width: "fit-content",
-                    display: "flex",
-                    alignSelf: "end",
-                    flexGrow: 1,
-                    color: "white",
-                    borderColor: "#fca311",
-                    "&:hover": {
+                </Tabs>
+              </Box>
+              <CustomTabPanels value={tab} index={0}>
+                <Grid container columnSpacing={5}>
+                  <Grid item xs={6}>
+                    <Stack spacing={2}>
+                      <Box>
+                        <InputLabel required>Full Name</InputLabel>
+                        <OutlinedInput
+                          fullWidth
+                          value={fullName}
+                          required
+                          onChange={(event) => setFullName(event.target.value)}
+                          inputProps={{ maxLength: MAX_FULLNAME_LENGTH }}
+                        />
+                      </Box>
+                      <Box>
+                        <InputLabel required>Phone Number</InputLabel>
+                        <NumericFormat
+                          customInput={OutlinedInput}
+                          fullWidth
+                          value={phone}
+                          required
+                          onChange={(event) => setPhone(event.target.value)}
+                          inputProps={{ maxLength: MAX_PHONE_LENGTH }}
+                        />
+                        {phone && !validator.isMobilePhone(phone) && (
+                          <Typography variant="subtitle2" color="red">
+                            Please enter the correct phone number!
+                          </Typography>
+                        )}
+                      </Box>
+                      <Box>
+                        <InputLabel required>National ID</InputLabel>
+                        <NumericFormat
+                          customInput={OutlinedInput}
+                          fullWidth
+                          placeholder="Example: 024098010203"
+                          required
+                          value={nationalID}
+                          onChange={(event) =>
+                            setNationalId(event.target.value)
+                          }
+                          inputProps={{ maxLength: MAX_NATIONALID_LENGTH }}
+                        />
+                      </Box>
+                    </Stack>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Stack spacing={2}>
+                      <Box>
+                        <InputLabel required>Date of birth</InputLabel>
+                        <DatePicker
+                          format={DATE_PICKER_DISPLAY_FORMAT}
+                          sx={{ width: "100%" }}
+                          value={birthDay}
+                          onChange={(newDate) => setBirthDay(newDate)}
+                        />
+                      </Box>
+                      <Box>
+                        <InputLabel required>Email</InputLabel>
+                        <OutlinedInput
+                          fullWidth
+                          placeholder="name@gmail.com"
+                          disabled
+                          value={user.email}
+                        />
+                      </Box>
+                      <Box>
+                        <InputLabel required>Street</InputLabel>
+                        <OutlinedInput
+                          fullWidth
+                          placeholder="Street"
+                          value={street}
+                          onChange={(event) => setStreet(event.target.value)}
+                          inputProps={{ maxLength: MAX_STREET_LENGTH }}
+                        />
+                        {street && street.length === MAX_STREET_LENGTH && (
+                          <Typography variant="subtitle2" color="red">
+                            Exceed maximum length of street address!
+                          </Typography>
+                        )}
+                      </Box>
+                    </Stack>
+                  </Grid>
+                </Grid>
+                <Stack spacing={2} sx={{ mt: 2 }}>
+                  <Box>
+                    <InputLabel required>Address</InputLabel>
+                    <Provinces
+                      onSelectedOptionsChange={handleSelectedOptionsChange}
+                    />
+                  </Box>
+                  <Box>
+                    <InputLabel required>Driving License</InputLabel>
+                    <DrivingLicense
+                      handleDrivingLicenseChange={handleDrivingLicenseChange}
+                    />
+                  </Box>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "fit-content",
+                      display: "flex",
+                      alignSelf: "end",
+                      flexGrow: 1,
+                      color: "white",
                       borderColor: "#fca311",
-                    },
-                  }}
-                  onClick={handleClickSaveChange}
-                >
-                  Save Change
-                </Button>
-              </Stack>
-            </CustomTabPanels>
-            <CustomTabPanels value={tab} index={1}>
-              <Stack sx={{ mt: 2 }} spacing={3}>
-                <Box>
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    Set new password
-                  </Typography>
-                  <FormControl
-                    sx={{ width: "50%" }}
-                    variant="outlined"
-                    required
+                      "&:hover": {
+                        borderColor: "#fca311",
+                      },
+                    }}
+                    onClick={handleClickSaveChange}
                   >
-                    <OutlinedInput
-                      id="password"
-                      placeholder="Password"
-                      type={showPassword ? "text" : "password"}
-                      startAdornment={
-                        <InputAdornment position="start">
-                          <Lock />
-                        </InputAdornment>
-                      }
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                            edge="end"
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                      value={password}
-                      onChange={(event) => setPassword(event.target.value)}
-                    />
-                    {password && (
-                      <Typography
-                        variant="subtitle2"
-                        color={checkMessage.color}
-                      >
-                        {checkMessage.message.password}
-                      </Typography>
-                    )}
-                  </FormControl>
-                </Box>
-                <Box>
-                  <FormControl
-                    sx={{ width: "50%" }}
-                    variant="outlined"
-                    required
-                  >
-                    <OutlinedInput
-                      id="confirm-password"
-                      value={confirmPassword}
-                      onChange={(event) =>
-                        setConfirmPassword(event.target.value)
-                      }
-                      placeholder="Confirm password"
-                      type={showConfirmPassword ? "text" : "password"}
-                      startAdornment={
-                        <InputAdornment position="start">
-                          <Lock />
-                        </InputAdornment>
-                      }
-                      endAdornment={
-                        <InputAdornment position="end">
-                          <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleClickShowConfirmPassword}
-                            onMouseDown={handleMouseDownConfirmPassword}
-                            edge="end"
-                          >
-                            {showConfirmPassword ? (
-                              <VisibilityOff />
-                            ) : (
-                              <Visibility />
-                            )}
-                          </IconButton>
-                        </InputAdornment>
-                      }
-                    />
-                    {password &&
-                      confirmPassword &&
-                      !validator.equals(password, confirmPassword) && (
-                        <Typography variant="subtitle2" color="red">
-                          Password don't match
+                    Save Change
+                  </Button>
+                </Stack>
+              </CustomTabPanels>
+              <CustomTabPanels value={tab} index={1}>
+                <Stack sx={{ mt: 2 }} spacing={3}>
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight="bold">
+                      Set new password
+                    </Typography>
+                    <FormControl
+                      sx={{ width: "50%" }}
+                      variant="outlined"
+                      required
+                    >
+                      <OutlinedInput
+                        id="password"
+                        placeholder="Password"
+                        type={showPassword ? "text" : "password"}
+                        startAdornment={
+                          <InputAdornment position="start">
+                            <Lock />
+                          </InputAdornment>
+                        }
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={handleClickShowPassword}
+                              onMouseDown={handleMouseDownPassword}
+                              edge="end"
+                            >
+                              {showPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                        value={password}
+                        onChange={(event) => setPassword(event.target.value)}
+                      />
+                      {password && (
+                        <Typography
+                          variant="subtitle2"
+                          color={checkMessage.color}
+                        >
+                          {checkMessage.message.password}
                         </Typography>
                       )}
-                  </FormControl>
-                </Box>
-                <Button
-                  variant="outlined"
-                  sx={{
-                    width: "50%",
-                    color: "white",
-                    display: "flex",
-                    justifyContent: "center",
-                    borderColor: "#fca311",
-                    "&:hover": {
+                    </FormControl>
+                  </Box>
+                  <Box>
+                    <FormControl
+                      sx={{ width: "50%" }}
+                      variant="outlined"
+                      required
+                    >
+                      <OutlinedInput
+                        id="confirm-password"
+                        value={confirmPassword}
+                        onChange={(event) =>
+                          setConfirmPassword(event.target.value)
+                        }
+                        placeholder="Confirm password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        startAdornment={
+                          <InputAdornment position="start">
+                            <Lock />
+                          </InputAdornment>
+                        }
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onClick={handleClickShowConfirmPassword}
+                              onMouseDown={handleMouseDownConfirmPassword}
+                              edge="end"
+                            >
+                              {showConfirmPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                      />
+                      {password &&
+                        confirmPassword &&
+                        !validator.equals(password, confirmPassword) && (
+                          <Typography variant="subtitle2" color="red">
+                            Password don't match
+                          </Typography>
+                        )}
+                    </FormControl>
+                  </Box>
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      width: "50%",
+                      color: "white",
+                      display: "flex",
+                      justifyContent: "center",
                       borderColor: "#fca311",
-                    },
-                  }}
-                  onClick={handleClickSave}
-                >
-                  Save
-                </Button>
-              </Stack>
-            </CustomTabPanels>
-          </CardContent>
-        </Card>
+                      "&:hover": {
+                        borderColor: "#fca311",
+                      },
+                    }}
+                    onClick={handleClickSave}
+                  >
+                    Save
+                  </Button>
+                </Stack>
+              </CustomTabPanels>
+            </CardContent>
+          </Card>
+        </Container>
       </Container>
     </Fragment>
   );

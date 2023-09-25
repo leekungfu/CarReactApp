@@ -49,19 +49,13 @@ import axiosInstance from "../../../shared/configs/axiosConfig";
 import { useSelector } from "react-redux";
 import { DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../../shared/configs/constants";
 import moment from "moment";
+import ConfirmPickUp from "../../../components/Modals/ConfirmPickUp";
+import CancelBooking from "../../../components/Modals/CancelBooking";
+import ReturnCar from "../../../components/Modals/ReturnCar";
 
 const StyledTypography = styled(Typography)`
   font-weight: bold !important;
 `;
-
-const data = {
-  name: "Mercedes-Benz Pickup Truck 2008",
-  rating: 4.5,
-  nor: 3,
-  price: "1.000.000 VND",
-  location: "Phường Ngọc Hà, Thành phố Hà Giang, Tỉnh Hà Giang",
-  status: "Available",
-};
 
 function a11yProps(index) {
   return {
@@ -77,35 +71,32 @@ const BookingDetails = () => {
   const bookings = useSelector((state) => state.bookingData.bookings);
   const car = bookings.find((item) => item.bookingId === bookingId).car;
   const user = bookings.find((item) => item.bookingId === bookingId).member;
-  const booking = bookings.find((item) => item.bookingId === bookingId);
+  const bookingData = bookings.find((item) => item.bookingId === bookingId);
+  const [booking, setBooking] = useState(bookingData);
 
-  // const [car, setCar] = useState(null);
-  // const [user, setUser] = useState(null);
-  // const [booking, setBooking] = useState(null);
-  // const token = localStorage.getItem("jwtToken");
-  // console.log(bookingId);
-  // useEffect(() => {
-  //   if (bookingId) {
-  //     const data = axiosInstance
-  //       .get(`/customer/booking/${bookingId}`, {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       })
-  //       .then((res) => {
-  //         if (res.data.isSuccess === true) {
-  //           setCar(res.data.booking.car);
-  //           setUser(res.data.booking.member);
-  //           setBooking(res.data.booking);
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching data:", error);
-  //       });
-  //   }
-  //   console.log("User: ", user);
-  //   console.log("Car: ", car);
-  // }, [bookingId, booking, token, car, user]);
   const handleChange = (event, newValue) => {
     setTab(newValue);
+  };
+
+  useEffect(() => {
+    setBooking(bookingData);
+  }, [bookingData]);
+
+  const [openConfirmPickUp, setOpenConfirmPickUp] = useState(false);
+  const [openCancelBooking, setOpenCancelBooking] = useState(false);
+  const [openReturnCar, setOpenReturnCar] = useState(false);
+  const handleClickOpenConfirmPickUp = () => {
+    setOpenConfirmPickUp(true);
+  };
+  const handleClickOpenReturnCar = () => {
+    setOpenReturnCar(true);
+  };
+  const handleClickOpenCancelBooking = () => {
+    setOpenCancelBooking(true);
+  };
+  const handleClose = () => {
+    setOpenConfirmPickUp(false);
+    setOpenCancelBooking(false);
   };
   const navigate = useNavigate();
 
@@ -192,12 +183,16 @@ const BookingDetails = () => {
               {car.brand} {car.model} {car.productionYear}
             </StyledTypography>
             <Typography variant="subtitle1">
-              From: {moment(booking.startDate).format(DATE_TIME_PICKER_DISPLAY_FORMAT)}
+              From:{" "}
+              {moment(booking.startDate).format(
+                DATE_TIME_PICKER_DISPLAY_FORMAT
+              )}
             </Typography>
-            <Typography variant="subtitle1">To: {moment(booking.endDate).format(DATE_TIME_PICKER_DISPLAY_FORMAT)}</Typography>
             <Typography variant="subtitle1">
-              Number of rides: {data.nor}
+              To:{" "}
+              {moment(booking.endDate).format(DATE_TIME_PICKER_DISPLAY_FORMAT)}
             </Typography>
+            <Typography variant="subtitle1">Number of rides: 3</Typography>
             <Typography variant="subtitle1">
               Base price: {Number(car.price).toLocaleString()} (VND/day)
             </Typography>
@@ -213,39 +208,113 @@ const BookingDetails = () => {
             </Typography>
             <Typography variant="subtitle1">
               Booking status:{"     "}
-              <span style={{ color: "#38b000", fontWeight: "bold" }}>
+              <span
+                style={{
+                  color:
+                    booking.bookingStatus === "In_Progress"
+                      ? "#fca311"
+                      : booking.bookingStatus === "Pending_deposit" ||
+                        booking.bookingStatus === "Pending_payment"
+                      ? "#d00000"
+                      : booking.bookingStatus === "Completed"
+                      ? "#00b4d8"
+                      : booking.bookingStatus === "Cancelled"
+                      ? "#6d6875"
+                      : "#38b000",
+                  fontWeight: "bold",
+                }}
+              >
                 {booking.bookingStatus ? booking.bookingStatus : "Loading..."}
               </span>
             </Typography>
             <Stack direction="row" spacing={2}>
-              <Button
-                fullWidth
-                sx={{
-                  borderColor: "#fca311",
-                  "&:hover": {
+              {booking.bookingStatus === "Confirmed" ||
+              booking.bookingStatus === "Pending_deposit" ? (
+                <Stack direction="row" spacing={3}>
+                  <Button
+                    disabled={booking.bookingStatus !== "Confirmed"}
+                    sx={{
+                      minWidth: "30%",
+                      color: "white",
+                      borderColor: "#fca311",
+                      "&:hover": {
+                        borderColor: "#fca311",
+                      },
+                      visibility:
+                        booking.bookingStatus !== "Confirmed" &&
+                        booking.bookingStatus !== "Pending_deposit"
+                          ? "hidden"
+                          : "visible",
+                    }}
+                    variant="outlined"
+                    onClick={handleClickOpenConfirmPickUp}
+                  >
+                    Confirm Pick-up
+                  </Button>
+                  <Button
+                    disabled={
+                      booking.bookingStatus === "Completed" ||
+                      booking.bookingStatus === "Pending_payment"
+                    }
+                    sx={{
+                      minWidth: "30%",
+                      color: "white",
+                      borderColor: "#d00000",
+                      backgroundColor: "#d00000 !important",
+                      "&:hover": {
+                        color: "#fca311 !important",
+                        bgcolor: "white !important",
+                        borderColor: "#fca311",
+                      },
+                    }}
+                    variant="outlined"
+                    onClick={handleClickOpenCancelBooking}
+                  >
+                    Cancel booking
+                  </Button>
+                </Stack>
+              ) : booking.bookingStatus === "In_Progress" ? (
+                <Button
+                  sx={{
+                    width: "23%",
+                    color: "white",
                     borderColor: "#fca311",
-                  },
-                }}
-                variant="outlined"
-              >
-                Confirm Pick-up
-              </Button>
-              <Button
-                fullWidth
-                sx={{
-                  borderColor: "#d00000",
-                  backgroundColor: "#d00000 !important",
-                  "&:hover": {
-                    color: "#fca311 !important",
-                    bgcolor: "white !important",
-                    borderColor: "#fca311",
-                  },
-                }}
-                variant="outlined"
-              >
-                Cancel Booking
-              </Button>
+                    "&:hover": {
+                      borderColor: "#fca311",
+                    },
+                  }}
+                  variant="outlined"
+                  onClick={handleClickOpenReturnCar}
+                >
+                  Return car
+                </Button>
+              ) : (
+                <Button
+                  sx={{
+                    visibility: "hidden",
+                  }}
+                  variant="outlined"
+                >
+                  Return car
+                </Button>
+              )}
             </Stack>
+            <ReturnCar
+              open={openReturnCar}
+              onClose={handleClose}
+              booking={booking}
+              car={booking.car}
+            />
+            <ConfirmPickUp
+              open={openConfirmPickUp}
+              onClose={handleClose}
+              bookingId={booking.bookingId}
+            />
+            <CancelBooking
+              open={openCancelBooking}
+              onClose={handleClose}
+              bookingId={booking.bookingId}
+            />
           </Grid>
         </Grid>
         <Box sx={{ pt: 3, borderBottom: 1, borderColor: "divider" }}>
@@ -505,7 +574,10 @@ const BookingDetails = () => {
           <Typography variant="subtitle1" sx={{ ml: 7, mb: 2 }}>
             Current balance:{" "}
             <span style={{ color: "#38b000", fontWeight: "bold" }}>
-              {user.wallet !== null ? Number(user.wallet).toLocaleString() : "0"} (VND)
+              {user.wallet !== null
+                ? Number(user.wallet).toLocaleString()
+                : "0"}{" "}
+              (VND)
             </span>
           </Typography>
           <Typography variant="subtitle1">
@@ -518,6 +590,16 @@ const BookingDetails = () => {
           </Link>
         </CustomTabPanels>
       </Container>
+      <ConfirmPickUp
+        open={openConfirmPickUp}
+        onClose={handleClose}
+        bookingId={bookingId}
+      />
+      <CancelBooking
+        open={openCancelBooking}
+        onClose={handleClose}
+        bookingId={bookingId}
+      />
     </div>
   );
 };

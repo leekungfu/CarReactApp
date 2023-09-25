@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Box, Button } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
@@ -7,7 +7,6 @@ import { Navigation, Autoplay } from "swiper/modules";
 import { ArrowBack, ArrowForward } from "@mui/icons-material";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
-import axiosInstance from "../../../shared/configs/axiosConfig";
 
 const StyleButton = styled(Button)`
   background-color: white !important;
@@ -20,62 +19,35 @@ function AutoPreviewBooking(props) {
 
   const bookings = useSelector((state) => state.bookingData.bookings);
   const car = bookings.find((item) => item.bookingId === bookingId).car;
-  console.log("Booking: ", car);
 
-  // console.log(typeof(bookingId));
-  // const [car, setCar] = useState(null);
-  // const token = localStorage.getItem("jwtToken");
-  // useEffect(() => {
-  //   if (bookingId) {
-  //     const data = axiosInstance
-  //       .get(`/customer/booking/${bookingId}`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       })
-  //       .then((res) => {
-  //         if (res.data.isSuccess === true) {
-  //           setCar(res.data.booking.car);
-  //           console.log("Car res: ", res.data);
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching data:", error);
-  //       });
-  //   }
-  //   console.log("Car: ", car);
-  // }, [bookingId, token, car]);
   let swiperInstance;
 
-  let images = [];
-  if (car && car.files) {
-    images = [
-      {
-        label: "Front Image",
-        imgPath: `data:image/jpeg;base64, ${
-          car.files.find((item) => item.name === "frontImage")?.data || ""
-        }`,
-      },
-      {
-        label: "Right Image",
-        imgPath: `data:image/jpeg;base64, ${
-          car.files.find((item) => item.name === "rightImage")?.data || ""
-        }`,
-      },
-      {
-        label: "Left Image",
-        imgPath: `data:image/jpeg;base64, ${
-          car.files.find((item) => item.name === "leftImage")?.data || ""
-        }`,
-      },
-      {
-        label: "Back Image",
-        imgPath: `data:image/jpeg;base64, ${
-          car.files.find((item) => item.name === "backImage")?.data || ""
-        }`,
-      },
-    ];
-  }
+  const images = [
+    {
+      label: "Front Image",
+      imgPath: `data:image/jpeg;base64, ${
+        car.files.find((item) => item.name === "frontImage")?.data || ""
+      }`,
+    },
+    {
+      label: "Right Image",
+      imgPath: `data:image/jpeg;base64, ${
+        car.files.find((item) => item.name === "rightImage")?.data || ""
+      }`,
+    },
+    {
+      label: "Left Image",
+      imgPath: `data:image/jpeg;base64, ${
+        car.files.find((item) => item.name === "leftImage")?.data || ""
+      }`,
+    },
+    {
+      label: "Back Image",
+      imgPath: `data:image/jpeg;base64, ${
+        car.files.find((item) => item.name === "backImage")?.data || ""
+      }`,
+    },
+  ];
 
   return (
     <Swiper

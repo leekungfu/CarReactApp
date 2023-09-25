@@ -17,6 +17,7 @@ import pricingSlice from "./pricingSlice.js";
 import carSlice from "./CarAdapter.js";
 import thunkMiddleware from "redux-thunk";
 import BookingSlice from "./BookingSlice.js";
+import BookingResult from "./BookingResult.js";
 
 const persistConfig = {
   key: "root",
@@ -34,6 +35,7 @@ const store = configureStore({
     userData: userDataSlice,
     cars: carSlice,
     bookingData: BookingSlice,
+    bookingResult: BookingResult,
   },
   middleware: [
     ...getDefaultMiddleware({

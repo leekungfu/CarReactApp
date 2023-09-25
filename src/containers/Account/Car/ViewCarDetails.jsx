@@ -25,6 +25,7 @@ import styled from "styled-components";
 import CustomTabPanels from "../../../components/CustomTabPanels/CustomTabPanels";
 import {
   Album,
+  ArrowForward,
   AttachMoney,
   Bluetooth,
   Camera,
@@ -211,14 +212,18 @@ const ViewCarDetails = () => {
             <Button
               sx={{
                 mt: 3,
-                minWidth: "50%",
-                color: "white",
+                minWidth: "30%",
+                color: "#fca311",
                 borderColor: "#fca311",
+                bgcolor: "white",
                 "&:hover": {
+                  color: "white",
+                  bgcolor: "#fca311",
                   borderColor: "#fca311",
                 },
               }}
               variant="outlined"
+              endIcon={<ArrowForward />}
               onClick={() => navigate(`/rentnow/${car.id}`)}
             >
               Rent now

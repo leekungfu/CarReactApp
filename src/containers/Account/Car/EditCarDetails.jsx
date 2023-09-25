@@ -31,7 +31,7 @@ import {
   More,
   NavigateNext,
 } from "@mui/icons-material";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   carSelected,
@@ -65,6 +65,7 @@ const EditCarDetails = () => {
   const car = useSelector((state) => carSelected(state, carId)).payload.cars;
   const [carInfo, setCarInfo] = useState(car.entities[carId]);
   const [status, setStatus] = useState(carInfo.status);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const handleChange = (event, newValue) => {
     setTab(newValue);
@@ -73,19 +74,11 @@ const EditCarDetails = () => {
   useEffect(() => {
     setCarInfo(car.entities[carId]);
   }, [car, carId]);
-  const [openConfirmDeposit, setOpenConfirmDeposit] = useState(false);
-  const [openConfirmPayment, setOpenConfirmPayment] = useState(false);
 
-  const handleClickOpenConfirmDeposit = () => {
-    setOpenConfirmDeposit(true);
+  const handleClickViewBooking = () => {
+    navigate(`/viewbookedcar/${carId}`)
   };
-  const handleClickOpenConfirmPayment = () => {
-    setOpenConfirmPayment(true);
-  };
-  const handleClose = () => {
-    setOpenConfirmDeposit(false);
-    setOpenConfirmPayment(false);
-  };
+
   const handleChangeStatus = async (event) => {
     const newStatus = event.target.value;
     setStatus(newStatus);
@@ -101,8 +94,8 @@ const EditCarDetails = () => {
           Authorization: `Bearer ${token}`,
         },
       }
-      );
-      if (response.isSuccess === true) {
+    );
+    if (response.isSuccess === true) {
       dispatch(carUpdated({ id: carId, changes: response.car }));
       createSnack(response.message, { severity: "success" });
     } else {
@@ -223,12 +216,10 @@ const EditCarDetails = () => {
                 </span>
               )}
             </Typography>
-            {carInfo.bookings && carInfo.bookings.find(
-              (item) => item.bookingStatus === "Pending_payment"
-            ) ? (
+            {carInfo.bookings && carInfo.bookings.length > 0 && (
               <Button
                 sx={{
-                  // minWidth: "50%",
+                  minWidth: "50%",
                   color: "white",
                   borderColor: "#15616d",
                   backgroundColor: "#15616d !important",
@@ -237,41 +228,9 @@ const EditCarDetails = () => {
                   },
                 }}
                 variant="outlined"
-                onClick={handleClickOpenConfirmPayment}
+                onClick={handleClickViewBooking}
               >
-                Confirm payment
-              </Button>
-            ) : carInfo.bookings && carInfo.bookings.find(
-                (item) => item.bookingStatus === "Pending_deposit"
-              ) ? (
-              <Button
-                sx={{
-                  // minWidth: "50%",
-                  color: "white",
-                  borderColor: "#fca311",
-                  "&:hover": {
-                    borderColor: "#fca311",
-                  },
-                }}
-                variant="outlined"
-                onClick={handleClickOpenConfirmDeposit}
-              >
-                Confirm deposit
-              </Button>
-            ) : (
-              <Button
-                sx={{
-                  minWidth: "50%",
-                  color: "white",
-                  borderColor: "#fca311",
-                  "&:hover": {
-                    borderColor: "#fca311",
-                  },
-                  visibility: "hidden",
-                }}
-                variant="outlined"
-              >
-                Confirm deposit
+                View booking
               </Button>
             )}
           </Grid>
@@ -389,8 +348,6 @@ const EditCarDetails = () => {
           <PricingTab carId={carId} />
         </CustomTabPanels>
       </Container>
-      <ConfirmPayment open={openConfirmPayment} onClose={handleClose} />
-      <ConfirmDeposit open={openConfirmDeposit} onClose={handleClose} />
     </div>
   );
 };

@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
-import BreadcrumbsMenu from "../BreadcrumbsMenu";
 import {
   Box,
   Button,
@@ -19,8 +17,6 @@ import {
 } from "@mui/material";
 import {
   Circle,
-  Description,
-  DetailsOutlined,
   DoneAll,
   FormatListBulleted,
   Home,
@@ -32,15 +28,12 @@ import BookingInformation from "./BookingSteps/BookingInformation";
 import BookingSummary from "./BookingSteps/BookingSummary";
 import Payments from "./BookingSteps/Payments";
 import Finish from "./BookingSteps/Finish";
-import { Fragment } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import AutoPreviewViewDetails from "../../containers/Account/Car/AutoPreviewViewDetails";
 import { RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../shared/configs/constants";
 import { DateRangePicker } from "rsuite";
-import { setUserData } from "../ReduxToolkit/UserSlice";
-import { useDispatch } from "react-redux";
 
 const RentNow = () => {
   const { carId } = useParams();
@@ -271,7 +264,7 @@ const RentNow = () => {
                     deposit={car.deposit}
                   />
                 )}
-                {activeStep === 2 && <Finish />}
+                {activeStep === 2 && <Finish carId={car.id} />}
               </Paper>
 
               <Box

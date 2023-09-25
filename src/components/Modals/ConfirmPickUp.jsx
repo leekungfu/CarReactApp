@@ -1,20 +1,18 @@
 import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
 import React from "react";
 import PropTypes from "prop-types";
-import { useSnackbar } from "../Hooks/useSnackBar";
 import axiosInstance from "../../shared/configs/axiosConfig";
+import { useSnackbar } from "../Hooks/useSnackBar";
 import { useDispatch } from "react-redux";
+import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
 import styled from "styled-components";
-import { addBooking } from "../ReduxToolkit/BookingSlice";
-import { useNavigate } from "react-router-dom";
-import { addBookingResult } from "../ReduxToolkit/BookingResult";
 
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 450,
+  width: 400,
   bgcolor: "background.paper",
   border: "1px solid",
   p: 3,
@@ -22,24 +20,28 @@ const style = {
 };
 
 const StyledModal = styled(Modal)`
-  & .muimodal-backdrop: {
-    backgroundcolor: "rgba(0, 0, 0, 0.15)";
+  .MuiBackdrop-root {
+    background-color: rgba(0, 0, 0, 0.3) !important;
   }
 `;
 
-const ConfirmPaymentDeposit = (props) => {
-  const { open, onClose, formData, deposit } = props;
+
+const ConfirmPickUp = (props) => {
+  const { open, onClose, bookingId } = props;
   const { createSnack } = useSnackbar();
+  const dispatch = useDispatch();
   const handleClose = () => {
     onClose();
   };
-  const dispatch = useDispatch();
-  const token = localStorage.getItem("jwtToken");
-  const handleClickYes = async () => {
+  const handleClickAgree = async () => {
+    const token = localStorage.getItem("jwtToken");
     const { data: response } = await axiosInstance.post(
-      "/customer/addBooking",
-      formData,
+      `/customer/updateBookingStatus/${bookingId}`,
+      null,
       {
+        params: {
+          status: "In_Progress",
+        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -47,9 +49,10 @@ const ConfirmPaymentDeposit = (props) => {
     );
     handleClose();
     if (response.isSuccess === true) {
-      console.log("Booking: ", response);
-      dispatch(addBookingResult(response.booking));
+      console.log("Data: ", response);
       createSnack(response.message, { severity: "success" });
+      const newStatus = response.booking.bookingStatus;
+      dispatch(updateBookingStatus({ bookingId, newStatus }));
     } else {
       createSnack(response.message, { severity: "error" });
     }
@@ -59,13 +62,10 @@ const ConfirmPaymentDeposit = (props) => {
     <div>
       <StyledModal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <Typography variant="h6">Confirm payment deposit</Typography>
+          <Typography variant="h6">Confirm pick up</Typography>
           <Divider />
           <Typography sx={{ mt: 2 }} variant="body1">
-            Please confirm that you will pay {Number(deposit).toLocaleString()}{" "}
-            (VND) for this booking. The payment will be process as soon as
-            possible. If you get any issues about payment, contact us via: 1900
-            1009
+            Please confirm that you will pick this car up at the chosen time.
           </Typography>
           <Stack
             sx={{ mt: 2 }}
@@ -80,16 +80,16 @@ const ConfirmPaymentDeposit = (props) => {
               onClick={handleClose}
               variant="outlined"
             >
-              No
+              Cancel
             </Button>
             <Button
               sx={{
                 width: "20%",
               }}
-              onClick={handleClickYes}
+              onClick={handleClickAgree}
               variant="outlined"
             >
-              Yes
+              Agree
             </Button>
           </Stack>
         </Box>
@@ -98,9 +98,9 @@ const ConfirmPaymentDeposit = (props) => {
   );
 };
 
-ConfirmPaymentDeposit.propTypes = {
+ConfirmPickUp.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
-export default ConfirmPaymentDeposit;
+export default ConfirmPickUp;

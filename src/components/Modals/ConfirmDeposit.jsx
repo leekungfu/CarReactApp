@@ -57,7 +57,6 @@ const ConfirmDeposit = (props) => {
   return (
     <div>
       <StyledModal
-        sx={{ backgroundColor: "rgb(0, 0, 0,.15)" }}
         open={open}
         onClose={handleClose}
       >

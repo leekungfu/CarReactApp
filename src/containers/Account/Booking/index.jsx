@@ -30,6 +30,8 @@ import {
 } from "../../../components/ReduxToolkit/BookingSlice";
 import moment from "moment";
 import { DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../../shared/configs/constants";
+import ConfirmPickUp from "../../../components/Modals/ConfirmPickUp";
+import CancelBooking from "../../../components/Modals/CancelBooking";
 
 const MyBookings = (props) => {
   const { loading = false } = props;
@@ -73,26 +75,34 @@ const MyBookings = (props) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const bookingsOnCurrentPage = bookings.slice(startIndex, endIndex);
-  const handleClose = () => {
-    setOpenConfirmDeposit(false);
-    setOpenConfirmPayment(false);
-  };
-  const [openConfirmDeposit, setOpenConfirmDeposit] = useState(false);
-  const [openConfirmPayment, setOpenConfirmPayment] = useState(false);
-
-  const handleClickOpenConfirmPayment = () => {
-    setOpenConfirmPayment(true);
-  };
+  const [openConfirmPickUp, setOpenConfirmPickUp] = useState(false);
+  const [openCancelBooking, setOpenCancelBooking] = useState(false);
   const [openReturnCar, setOpenReturnCar] = useState(false);
+
+  const handleClose = () => {
+    setOpenConfirmPickUp(false);
+    setOpenCancelBooking(false);
+    setOpenReturnCar(false);
+  };
+  const handleClickOpenConfirmPickUp = () => {
+    setOpenConfirmPickUp(true);
+  };
   const handleClickOpenReturnCar = () => {
     setOpenReturnCar(true);
   };
-  const handleCloseReturnCar = () => {
-    setOpenReturnCar(false);
+  const handleClickOpenCancelBooking = () => {
+    setOpenCancelBooking(true);
   };
 
   const handleClickViewDetails = (bookingId) => {
     navigate(`/bookingdetails/${bookingId}`);
+  };
+  const calculateNumberOfDays = (startDate, endDate) => {
+    const start = moment(startDate);
+  const end = moment(endDate).endOf('day'); // Consider the end of the day
+  const duration = moment.duration(end.diff(start));
+  const days = duration.asDays();
+  return Math.ceil(days);
   };
 
   return (
@@ -158,20 +168,35 @@ const MyBookings = (props) => {
                           {item.car.productionYear}
                         </Typography>
                         <Typography variant="subtitle1">
-                          From: {moment(item.startDate).format(DATE_TIME_PICKER_DISPLAY_FORMAT)}
+                          From:{" "}
+                          {moment(item.startDate).format(
+                            DATE_TIME_PICKER_DISPLAY_FORMAT
+                          )}
                         </Typography>
                         <Typography variant="subtitle1">
-                          To: {moment(item.endDate).format(DATE_TIME_PICKER_DISPLAY_FORMAT)}
+                          To:{" "}
+                          {moment(item.endDate).format(
+                            DATE_TIME_PICKER_DISPLAY_FORMAT
+                          )}
                         </Typography>
                         <Typography variant="subtitle1">
-                          Number of days:
+                          Number of days:{" "}
+                          {calculateNumberOfDays(item.startDate, item.endDate)}
                         </Typography>
                         <Typography variant="subtitle1">
                           Base price: {Number(item.car.price).toLocaleString()}{" "}
                           VND
                         </Typography>
                         <Typography variant="subtitle1">
-                          Total: {Number(item.car.price).toLocaleString()} VND
+                          Total:{" "}
+                          {Number(
+                            item.car.price *
+                              calculateNumberOfDays(
+                                item.startDate,
+                                item.endDate
+                              )
+                          ).toLocaleString()}{" "}
+                          VND
                         </Typography>
                         <Typography variant="subtitle1">
                           Deposit: {Number(item.car.deposit).toLocaleString()}{" "}
@@ -185,14 +210,14 @@ const MyBookings = (props) => {
                           <span
                             style={{
                               color:
-                                item.status === "In-Progress"
+                                item.bookingStatus === "In_Progress"
                                   ? "#fca311"
-                                  : item.status === "Pending deposit" ||
-                                    item.status === "Pending payment"
+                                  : item.bookingStatus === "Pending_deposit" ||
+                                    item.bookingStatus === "Pending_payment"
                                   ? "#d00000"
-                                  : item.status === "Completed"
+                                  : item.bookingStatus === "Completed"
                                   ? "#00b4d8"
-                                  : item.status === "Cancelled"
+                                  : item.bookingStatus === "Cancelled"
                                   ? "#6d6875"
                                   : "#38b000",
                               fontWeight: "bold",
@@ -215,14 +240,17 @@ const MyBookings = (props) => {
                                 },
                               }}
                               variant="outlined"
-                              onClick={() => handleClickViewDetails(item.bookingId)}
+                              onClick={() =>
+                                handleClickViewDetails(item.bookingId)
+                              }
                             >
                               View details
                             </Button>
-                            {item.status === "Confirmed" ||
-                            item.status === "Pending deposit" ? (
+                            {item.bookingStatus === "Confirmed" ||
+                            item.bookingStatus === "Pending_deposit" ? (
                               <Stack direction="row" spacing={3}>
                                 <Button
+                                  disabled={item.bookingStatus !== "Confirmed"}
                                   sx={{
                                     minWidth: "30%",
                                     color: "white",
@@ -231,17 +259,21 @@ const MyBookings = (props) => {
                                       borderColor: "#fca311",
                                     },
                                     visibility:
-                                      item.status !== "Confirmed" &&
-                                      item.status !== "Pending deposit"
+                                      item.bookingStatus !== "Confirmed" &&
+                                      item.bookingStatus !== "Pending_deposit"
                                         ? "hidden"
                                         : "visible",
                                   }}
                                   variant="outlined"
-                                  // onClick={handleClickOpenViewDetails}
+                                  onClick={handleClickOpenConfirmPickUp}
                                 >
                                   Confirm Pick-up
                                 </Button>
                                 <Button
+                                  disabled={
+                                    item.bookingStatus === "Completed" ||
+                                    item.bookingStatus === "Pending_payment"
+                                  }
                                   sx={{
                                     minWidth: "30%",
                                     color: "white",
@@ -254,12 +286,12 @@ const MyBookings = (props) => {
                                     },
                                   }}
                                   variant="outlined"
-                                  onClick={handleClickOpenConfirmPayment}
+                                  onClick={handleClickOpenCancelBooking}
                                 >
                                   Cancel booking
                                 </Button>
                               </Stack>
-                            ) : item.status === "In-Progress" ? (
+                            ) : item.bookingStatus === "In_Progress" ? (
                               <Button
                                 sx={{
                                   width: "23%",
@@ -287,6 +319,22 @@ const MyBookings = (props) => {
                           </Stack>
                         </Grid>
                       </Grid>
+                      <ReturnCar
+                        open={openReturnCar}
+                        onClose={handleClose}
+                        booking={item}
+                        car={item.car}
+                      />
+                      <ConfirmPickUp
+                        open={openConfirmPickUp}
+                        onClose={handleClose}
+                        bookingId={item.bookingId}
+                      />
+                      <CancelBooking
+                        open={openCancelBooking}
+                        onClose={handleClose}
+                        bookingId={item.bookingId}
+                      />
                     </Grid>
                   ) : (
                     <Skeleton variant="rectangular" width={210} height={118} />
@@ -306,9 +354,6 @@ const MyBookings = (props) => {
           </CardContent>
         </Card>
       </Container>
-      <ReturnCar open={openReturnCar} onClose={handleCloseReturnCar} />
-      <ConfirmPayment open={openConfirmPayment} onClose={handleClose} />
-      <ConfirmDeposit open={openConfirmDeposit} onClose={handleClose} />
     </div>
   );
 };

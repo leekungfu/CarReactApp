@@ -49,22 +49,15 @@ const MyCars = (props) => {
   };
   const handleClose = () => {
     setOpenAddCar(false);
-    setOpenConfirmDeposit(false);
-    setOpenConfirmPayment(false);
   };
-  const [openConfirmDeposit, setOpenConfirmDeposit] = useState(false);
-  const [openConfirmPayment, setOpenConfirmPayment] = useState(false);
 
   const handleClickViewBooking = (carId) => {
     navigate(`/viewbookedcar/${carId}`)
   };
-  const handleClickOpenConfirmPayment = () => {
-    setOpenConfirmPayment(true);
-  };
 
   return (
     <div>
-      <Container maxWidth="lg" sx={{ pt: 5 }}>
+      <Container maxWidth="lg" sx={{ mt: 5 }}>
         <Container maxWidth="lg" sx={{ mt: 5 }}>
           <Breadcrumbs
             separator={<NavigateNext fontSize="small" />}
@@ -262,60 +255,6 @@ const MyCars = (props) => {
                                 View booking
                               </Button>
                             )}
-                            {/* {car.bookings.find(
-                              (item) => item.bookingStatus === "Pending_payment"
-                            ) ? (
-                              <Button
-                                sx={{
-                                  // minWidth: "50%",
-                                  color: "white",
-                                  borderColor: "#15616d",
-                                  backgroundColor: "#15616d !important",
-                                  "&:hover": {
-                                    borderColor: "#fca311",
-                                  },
-                                }}
-                                variant="outlined"
-                                onClick={handleClickOpenConfirmPayment}
-                              >
-                                Confirm payment
-                              </Button>
-                            ) : car.bookings.find(
-                                (item) =>
-                                  item.bookingStatus === "Pending_deposit"
-                              ) ? (
-                              <Button
-                                sx={{
-                                  // minWidth: "50%",
-                                  color: "white",
-                                  borderColor: "#fca311",
-                                  "&:hover": {
-                                    borderColor: "#fca311",
-                                  },
-                                }}
-                                variant="outlined"
-                                onClick={handleClickOpenConfirmDeposit}
-                              >
-                                Confirm deposit
-                              </Button>
-                            ) : (
-                              <Button
-                                disabled
-                                sx={{
-                                  minWidth: "50%",
-                                  color: "white",
-                                  borderColor: "#fca311",
-                                  "&:hover": {
-                                    borderColor: "#fca311",
-                                  },
-                                  // visibility: "hidden",
-                                }}
-                                variant="outlined"
-                                // onClick={handleClickOpenConfirmDeposit}
-                              >
-                                Confirm deposit
-                              </Button>
-                            )} */}
                           </Stack>
                         </Grid>
                       </Grid>
@@ -325,15 +264,6 @@ const MyCars = (props) => {
                         <Skeleton width="60%" />
                       </Box>
                     )}
-                    <ConfirmPayment
-                      open={openConfirmPayment}
-                      onClose={handleClose}
-                      // bookingId={}
-                    />
-                    <ConfirmDeposit
-                      open={openConfirmDeposit}
-                      onClose={handleClose}
-                    />
                   </Grid>
                 )
               )}
