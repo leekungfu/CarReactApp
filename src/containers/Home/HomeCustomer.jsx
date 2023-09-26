@@ -1,8 +1,10 @@
 import {
+  Backdrop,
   Box,
   Button,
   Card,
   CardContent,
+  CircularProgress,
   Container,
   Divider,
   FormControl,
@@ -28,9 +30,14 @@ import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../../components/Hooks/useSnackBar";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../components/ReduxToolkit/UserSlice";
-import { DATE_TIME_PICKER_DISPLAY_FORMAT, RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT, SERVER_POSTING_DATE_TIME_FORMAT } from "../../shared/configs/constants";
+import {
+  DATE_TIME_PICKER_DISPLAY_FORMAT,
+  RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT,
+  SERVER_POSTING_DATE_TIME_FORMAT,
+} from "../../shared/configs/constants";
 import { setBookingData } from "../../components/ReduxToolkit/BookingSlice";
 import moment from "moment";
+import { useCustomHook } from "../../App";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -54,11 +61,13 @@ function getStyles(name, items, theme) {
 
 const HomeCustomer = (props) => {
   const theme = useTheme();
+  // const { save } = useCustomHook();
   const { loading = false } = props;
   const { createSnack } = useSnackbar();
   const navigate = useNavigate();
   const [rateValue, setRateValue] = useState(4.5);
   const [selectedProvince, setSelectedProvince] = useState(null);
+  const [backdrop, setBackdrop] = useState(false);
   const provinces = subVn.getProvinces();
   const provinceArray = provinces.map((province) => province.name);
   const handleProvinceChange = (event) => {
@@ -69,6 +78,12 @@ const HomeCustomer = (props) => {
   };
   const handleClickRentNow = (carId) => {
     navigate(`/rentnow/${carId}`);
+  };
+  const handleClickOpenBackdrop = () => {
+    setBackdrop(true);
+  };
+  const handleCloseBackdrop = () => {
+    setBackdrop(false);
   };
 
   const fromTime = new Date();
@@ -92,7 +107,10 @@ const HomeCustomer = (props) => {
 
   const token = localStorage.getItem("jwtToken");
   const handleClickSearch = async () => {
-    const startTimeFormatted = moment(startTime).format(SERVER_POSTING_DATE_TIME_FORMAT)
+    handleClickOpenBackdrop();
+    const startTimeFormatted = moment(startTime).format(
+      SERVER_POSTING_DATE_TIME_FORMAT
+    );
     const response = await axiosInstance.get("/customer/searchCar", {
       params: {
         selectedProvince,
@@ -104,35 +122,36 @@ const HomeCustomer = (props) => {
     });
     if (response.data.isSuccess === true) {
       setCars(response.data.cars);
+      handleCloseBackdrop();
       console.log("Cars: ", response.data.cars);
       createSnack(response.data.message, { severity: "success" });
     } else {
       createSnack(response.data.message, { severity: "error" });
     }
   };
-  const dispatch = useDispatch();
-  const [apiCalled, setApiCalled] = useState(false);
-  useEffect(() => {
-    if (!apiCalled) {
-      const token = localStorage.getItem("jwtToken");
-      axiosInstance
-        .get("/currentUser", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          console.log(response.data);
-          dispatch(setUserData(response.data));
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        })
-        .finally(() => {
-          setApiCalled(true);
-        });
-    }
-  }, [apiCalled, dispatch]);
+  // const dispatch = useDispatch();
+  // const [apiCalled, setApiCalled] = useState(false);
+  // useEffect(() => {
+  //   if (!apiCalled) {
+  //     const token = localStorage.getItem("jwtToken");
+  //     axiosInstance
+  //       .get("/currentUser", {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       })
+  //       .then((response) => {
+  //         console.log(response.data);
+  //         dispatch(setUserData(response.data));
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching data:", error);
+  //       })
+  //       .finally(() => {
+  //         setApiCalled(true);
+  //       });
+  //   }
+  // }, [apiCalled, dispatch]);
 
   return (
     <Box>
@@ -216,16 +235,25 @@ const HomeCustomer = (props) => {
               spacing={1}
             >
               <List fontSize="large" />
-              <Typography variant="h6">LIST OF CARS:{" "}
-              {cars && cars.length > 1 ? (
-                <span>
-                  There are <span style={{ fontWeight: "bold", color: "#fca311" }}>{cars.length}</span> cars available now.
-                </span>
-              ) : (
-                <span>
-                  There is <span style={{ fontWeight: "bold", color: "#fca311" }}>{cars.length === 0 ? "0" : cars.length}</span> car available now.
-                </span>
-              ) }
+              <Typography variant="h6">
+                LIST OF CARS:{" "}
+                {cars && cars.length > 1 ? (
+                  <span>
+                    There are{" "}
+                    <span style={{ fontWeight: "bold", color: "#fca311" }}>
+                      {cars.length}
+                    </span>{" "}
+                    cars available now.
+                  </span>
+                ) : (
+                  <span>
+                    There is{" "}
+                    <span style={{ fontWeight: "bold", color: "#fca311" }}>
+                      {cars.length === 0 ? "0" : cars.length}
+                    </span>{" "}
+                    car available now.
+                  </span>
+                )}
               </Typography>
             </Stack>
             <Grid container columnSpacing={4} rowSpacing={5}>
@@ -379,6 +407,13 @@ const HomeCustomer = (props) => {
           </CardContent>
         </Card>
       </Container>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={backdrop}
+        onClick={handleClickOpenBackdrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 };

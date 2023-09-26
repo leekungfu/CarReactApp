@@ -57,7 +57,10 @@ const Review = (props) => {
   const handleClickSkipRating = () => {
     navigate("/homecustomer");
     handleClose();
-  }
+  };
+  const handleNavigate = () => {
+    navigate("/booking");
+  };
 
   const handleClickSendFeedback = async () => {
     const token = localStorage.getItem("jwtToken");
@@ -75,8 +78,8 @@ const Review = (props) => {
       }
     );
     if (response.isSuccess === true) {
-      handleClose();
       createSnack(response.message, { severity: "success" });
+      handleNavigate();
     } else {
       createSnack(response.message, { severity: "error" });
     }

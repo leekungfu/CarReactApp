@@ -7,6 +7,8 @@ import { useDispatch } from "react-redux";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
 import styled from "styled-components";
+import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -26,24 +28,24 @@ const StyledModal = styled(Modal)`
 `;
 
 const ReturnCar = (props) => {
-  const { open, onClose, booking, car } = props;
+  const { open, onClose, booking, car, totalPrice } = props;
   const bookingId = booking.bookingId;
   const handleClose = () => {
     onClose();
   };
-
   const [openReview, setOpenReview] = useState(false);
 
   const handleCloseReview = () => {
     setOpenReview(false);
   };
-  const timeDifference = booking.startDate - booking.endDate + 1; // Khoảng thời gian tính bằng mili giây
-  const totalMillisecondsInDay = 24 * 60 * 60 * 1000; // Tổng số mili giây trong một ngày
-  const totalTime = Math.round(timeDifference / totalMillisecondsInDay); // Tổng số ngày
+  const handleClickOpenReview = () => {
+    setOpenReview(true);
+  };
 
   const { createSnack } = useSnackbar();
   const dispatch = useDispatch();
   const handleClickAgree = async () => {
+    handleClickOpenReview();
     const token = localStorage.getItem("jwtToken");
     const { data: response } = await axiosInstance.post(
       `/customer/updateBookingStatus/${bookingId}`,
@@ -51,6 +53,7 @@ const ReturnCar = (props) => {
       {
         params: {
           status: "Completed",
+          plateNumber: car.plateNumber,
         },
         headers: {
           Authorization: `Bearer ${token}`,
@@ -63,7 +66,6 @@ const ReturnCar = (props) => {
       createSnack(response.message, { severity: "success" });
       const newStatus = response.booking.bookingStatus;
       dispatch(updateBookingStatus({ bookingId, newStatus }));
-      setOpenReview(true);
     } else {
       createSnack(response.message, { severity: "error" });
     }
@@ -75,7 +77,7 @@ const ReturnCar = (props) => {
         <Box sx={style}>
           <Typography variant="h6">Return car</Typography>
           <Divider />
-          {car && car.deposit > totalTime * car.price ? (
+          {car && car.deposit < totalPrice ? (
             <Typography sx={{ mt: 2 }} variant="body1">
               Please confirm to return the car. The remaining amount of{" "}
               {Number(car.deposit).toLocaleString()} (VND) will be deducted from

@@ -27,9 +27,11 @@ import { useSnackbar } from "../Hooks/useSnackBar";
 import validator from "validator";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { carAdded, carsAdded } from "../ReduxToolkit/CarAdapter";
+import { useCustomHook } from "../../App";
 
 function LoginForm(props) {
   const { open, onClose } = props;
+  const { userData, save } = useCustomHook(null);
   const { createSnack } = useSnackbar();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -60,17 +62,7 @@ function LoginForm(props) {
 
       if (response.data.isSuccess === true) {
         localStorage.setItem("jwtToken", response.data.token);
-        const basicInfo = {
-          fullName: response.data.member.fullName,
-          email: response.data.member.email,
-          phone: response.data.member.phone,
-          role: response.data.member.role,
-          nationalID: response.data.member.nationalID,
-          street: response.data.member.street,
-          birthDay: response.data.member.birthDay,
-          wallet: response.data.member.wallet,
-        };
-        localStorage.setItem("userData", JSON.stringify(basicInfo));
+        save(response.data.member);
         createSnack(response.data.message, { severity: "success" });
         if (response.data.member.role === "CUSTOMER") {
           window.location.href = "/homecustomer";

@@ -40,6 +40,7 @@ import DrivingLicense from "../../../components/UploadFile/DrivingLicense";
 import Provinces from "../../../components/Select/Provinces";
 import { Link } from "react-router-dom";
 import {
+  DATAGRID_DATE_FORMAT,
   DATE_PICKER_DISPLAY_FORMAT,
   DATE_PICKER_URI_FORMAT,
 } from "../../../shared/configs/constants";
@@ -52,6 +53,8 @@ import {
   setData,
   setUserData,
 } from "../../../components/ReduxToolkit/UserSlice";
+import { useCustomHook } from "../../../App";
+import moment from "moment";
 
 function a11yProps(index) {
   return {
@@ -62,16 +65,13 @@ function a11yProps(index) {
 
 const ProfileTabs = () => {
   const { createSnack } = useSnackbar();
-  const dispatch = useDispatch();
   const token = localStorage.getItem("jwtToken");
-  const user = useSelector((state) => state.userData);
-  console.log("user ", user);
-
+  const { userData: user, save } = useCustomHook();
   const [tab, setTab] = useState(0);
   const [fullName, setFullName] = useState(user.fullName);
   const [phone, setPhone] = useState(user.phone);
   const [nationalID, setNationalId] = useState(user.nationalID);
-  const [birthDay, setBirthDay] = useState(dayjs);
+  const [birthDay, setBirthDay] = useState(moment(user.birthDay));
   const [street, setStreet] = useState(user.street);
   const [drivingLicense, setDrivingLicense] = useState("");
   const [password, setPassword] = useState("");
@@ -118,7 +118,7 @@ const ProfileTabs = () => {
     event.preventDefault();
     try {
       const formData = new FormData();
-      const dobFormated = dayjs(birthDay).format(DATE_PICKER_URI_FORMAT);
+      const dobFormated = moment(birthDay).format(DATE_PICKER_URI_FORMAT);
 
       if (
         fullName &&
@@ -151,7 +151,7 @@ const ProfileTabs = () => {
         });
 
         if (response.data.isSuccess === true) {
-          dispatch(setUserData(response.data.member));
+          save(response.data.member);
           createSnack(response.data.message, { severity: "success" });
         } else {
           createSnack(response.data.message, { severity: "error" });
@@ -366,7 +366,11 @@ const ProfileTabs = () => {
                       <Box>
                         <InputLabel required>Date of birth</InputLabel>
                         <DatePicker
-                          format={DATE_PICKER_DISPLAY_FORMAT}
+                          // defaultValue={moment.tz(
+                          //   new Date(),
+                          //   "Asia/Ho_Chi_Minh"
+                          // )}
+                          format={DATAGRID_DATE_FORMAT}
                           sx={{ width: "100%" }}
                           value={birthDay}
                           onChange={(newDate) => setBirthDay(newDate)}

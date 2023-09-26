@@ -34,6 +34,7 @@ import { useSnackbar } from "../Hooks/useSnackBar";
 import AutoPreviewViewDetails from "../../containers/Account/Car/AutoPreviewViewDetails";
 import { RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../shared/configs/constants";
 import { DateRangePicker } from "rsuite";
+import moment from "moment";
 
 const RentNow = () => {
   const { carId } = useParams();
@@ -46,15 +47,19 @@ const RentNow = () => {
   fromTime.setHours(0, 0, 0, 0);
   const toTime = new Date();
   toTime.setHours(23, 59, 59, 999);
-
   const steps = ["Booking Information", "Payment", "Finish"];
   const [activeStep, setActiveStep] = useState(0);
   const [pickUpTime, setPickUpTime] = useState(fromTime);
   const [returnTime, setReturnTime] = useState(toTime);
 
-  const timeDifference = returnTime - pickUpTime; // Khoảng thời gian tính bằng mili giây
-  const totalMillisecondsInDay = 24 * 60 * 60 * 1000; // Tổng số mili giây trong một ngày
-  const totalTime = Math.round(timeDifference / totalMillisecondsInDay); // Tổng số ngày
+  const calculateNumberOfDays = (startDate, endDate) => {
+    const start = moment(startDate);
+    const end = moment(endDate).endOf("day");
+    const duration = moment.duration(end.diff(start));
+    const days = duration.asDays();
+    return Math.ceil(days);
+  };
+  const totalTime = calculateNumberOfDays(pickUpTime, returnTime);
 
   const navigate = useNavigate();
   const handleNext = () => {
@@ -65,6 +70,9 @@ const RentNow = () => {
   };
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    if (activeStep === steps.length - 1) {
+      navigate("/homecustomer");
+    }
   };
 
   const [car, setCar] = useState({});

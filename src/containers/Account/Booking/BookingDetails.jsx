@@ -82,6 +82,13 @@ const BookingDetails = () => {
     setBooking(bookingData);
   }, [bookingData]);
 
+  const calculateNumberOfDays = (startDate, endDate) => {
+    const start = moment(startDate);
+    const end = moment(endDate).endOf("day");
+    const duration = moment.duration(end.diff(start));
+    const days = duration.asDays();
+    return Math.ceil(days);
+  };
   const [openConfirmPickUp, setOpenConfirmPickUp] = useState(false);
   const [openCancelBooking, setOpenCancelBooking] = useState(false);
   const [openReturnCar, setOpenReturnCar] = useState(false);
@@ -97,6 +104,7 @@ const BookingDetails = () => {
   const handleClose = () => {
     setOpenConfirmPickUp(false);
     setOpenCancelBooking(false);
+    setOpenReturnCar(false);
   };
   const navigate = useNavigate();
 
@@ -197,7 +205,7 @@ const BookingDetails = () => {
               Base price: {Number(car.price).toLocaleString()} (VND/day)
             </Typography>
             <Typography variant="subtitle1">
-              Total: {Number(car.price).toLocaleString()} (VND)
+              Total: {Number(car.price * calculateNumberOfDays(booking.startDate, booking.endDate)).toLocaleString()} (VND)
             </Typography>
             <Typography variant="subtitle1">
               Deposit: {Number(car.deposit).toLocaleString()} (VND)
@@ -227,7 +235,7 @@ const BookingDetails = () => {
                 {booking.bookingStatus ? booking.bookingStatus : "Loading..."}
               </span>
             </Typography>
-            <Stack direction="row" spacing={2}>
+            <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
               {booking.bookingStatus === "Confirmed" ||
               booking.bookingStatus === "Pending_deposit" ? (
                 <Stack direction="row" spacing={3}>
@@ -254,7 +262,8 @@ const BookingDetails = () => {
                   <Button
                     disabled={
                       booking.bookingStatus === "Completed" ||
-                      booking.bookingStatus === "Pending_payment"
+                      booking.bookingStatus === "Pending_payment" ||
+                      booking.bookingStatus === "In_Progress"
                     }
                     sx={{
                       minWidth: "30%",
@@ -276,7 +285,7 @@ const BookingDetails = () => {
               ) : booking.bookingStatus === "In_Progress" ? (
                 <Button
                   sx={{
-                    width: "23%",
+                    width: "30%",
                     color: "white",
                     borderColor: "#fca311",
                     "&:hover": {
@@ -299,22 +308,6 @@ const BookingDetails = () => {
                 </Button>
               )}
             </Stack>
-            <ReturnCar
-              open={openReturnCar}
-              onClose={handleClose}
-              booking={booking}
-              car={booking.car}
-            />
-            <ConfirmPickUp
-              open={openConfirmPickUp}
-              onClose={handleClose}
-              bookingId={booking.bookingId}
-            />
-            <CancelBooking
-              open={openCancelBooking}
-              onClose={handleClose}
-              bookingId={booking.bookingId}
-            />
           </Grid>
         </Grid>
         <Box sx={{ pt: 3, borderBottom: 1, borderColor: "divider" }}>
@@ -590,15 +583,24 @@ const BookingDetails = () => {
           </Link>
         </CustomTabPanels>
       </Container>
+      <ReturnCar
+        open={openReturnCar}
+        onClose={handleClose}
+        booking={booking}
+        car={booking.car}
+        totalPrice={car.price * calculateNumberOfDays(booking.startDate, booking.endDate)}
+      />
       <ConfirmPickUp
         open={openConfirmPickUp}
         onClose={handleClose}
-        bookingId={bookingId}
+        booking={booking}
+        car={booking.car}
       />
       <CancelBooking
         open={openCancelBooking}
         onClose={handleClose}
-        bookingId={bookingId}
+        booking={booking}
+        car={booking.car}
       />
     </div>
   );

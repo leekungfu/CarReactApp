@@ -13,6 +13,8 @@ import {
   Rating,
   Breadcrumbs,
   Divider,
+  CircularProgress,
+  Backdrop,
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { useState } from "react";
@@ -42,9 +44,18 @@ const MyBookings = (props) => {
   const dispatch = useDispatch();
   const [bookings, setBookingss] = useState([]);
   const [apiCalled, setApiCalled] = useState(false);
+  const [backdrop, setBackdrop] = useState(false);
+
+  const handleClickOpenBackdrop = () => {
+    setBackdrop(true);
+  };
+  const handleCloseBackdrop = () => {
+    setBackdrop(false);
+  }
 
   useEffect(() => {
     if (!apiCalled) {
+      handleClickOpenBackdrop();
       const token = localStorage.getItem("jwtToken");
       axiosInstance
         .get("/customer/bookings", {
@@ -55,6 +66,7 @@ const MyBookings = (props) => {
           const data = response.data.bookings;
           setBookingss(data);
           dispatch(setBookings(data));
+          handleCloseBackdrop();
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -75,34 +87,15 @@ const MyBookings = (props) => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const bookingsOnCurrentPage = bookings.slice(startIndex, endIndex);
-  const [openConfirmPickUp, setOpenConfirmPickUp] = useState(false);
-  const [openCancelBooking, setOpenCancelBooking] = useState(false);
-  const [openReturnCar, setOpenReturnCar] = useState(false);
-
-  const handleClose = () => {
-    setOpenConfirmPickUp(false);
-    setOpenCancelBooking(false);
-    setOpenReturnCar(false);
-  };
-  const handleClickOpenConfirmPickUp = () => {
-    setOpenConfirmPickUp(true);
-  };
-  const handleClickOpenReturnCar = () => {
-    setOpenReturnCar(true);
-  };
-  const handleClickOpenCancelBooking = () => {
-    setOpenCancelBooking(true);
-  };
-
   const handleClickViewDetails = (bookingId) => {
     navigate(`/bookingdetails/${bookingId}`);
   };
   const calculateNumberOfDays = (startDate, endDate) => {
     const start = moment(startDate);
-  const end = moment(endDate).endOf('day'); // Consider the end of the day
-  const duration = moment.duration(end.diff(start));
-  const days = duration.asDays();
-  return Math.ceil(days);
+    const end = moment(endDate).endOf("day"); // Consider the end of the day
+    const duration = moment.duration(end.diff(start));
+    const days = duration.asDays();
+    return Math.ceil(days);
   };
 
   return (
@@ -246,95 +239,9 @@ const MyBookings = (props) => {
                             >
                               View details
                             </Button>
-                            {item.bookingStatus === "Confirmed" ||
-                            item.bookingStatus === "Pending_deposit" ? (
-                              <Stack direction="row" spacing={3}>
-                                <Button
-                                  disabled={item.bookingStatus !== "Confirmed"}
-                                  sx={{
-                                    minWidth: "30%",
-                                    color: "white",
-                                    borderColor: "#fca311",
-                                    "&:hover": {
-                                      borderColor: "#fca311",
-                                    },
-                                    visibility:
-                                      item.bookingStatus !== "Confirmed" &&
-                                      item.bookingStatus !== "Pending_deposit"
-                                        ? "hidden"
-                                        : "visible",
-                                  }}
-                                  variant="outlined"
-                                  onClick={handleClickOpenConfirmPickUp}
-                                >
-                                  Confirm Pick-up
-                                </Button>
-                                <Button
-                                  disabled={
-                                    item.bookingStatus === "Completed" ||
-                                    item.bookingStatus === "Pending_payment"
-                                  }
-                                  sx={{
-                                    minWidth: "30%",
-                                    color: "white",
-                                    borderColor: "#d00000",
-                                    backgroundColor: "#d00000 !important",
-                                    "&:hover": {
-                                      color: "#fca311 !important",
-                                      bgcolor: "white !important",
-                                      borderColor: "#fca311",
-                                    },
-                                  }}
-                                  variant="outlined"
-                                  onClick={handleClickOpenCancelBooking}
-                                >
-                                  Cancel booking
-                                </Button>
-                              </Stack>
-                            ) : item.bookingStatus === "In_Progress" ? (
-                              <Button
-                                sx={{
-                                  width: "23%",
-                                  color: "white",
-                                  borderColor: "#fca311",
-                                  "&:hover": {
-                                    borderColor: "#fca311",
-                                  },
-                                }}
-                                variant="outlined"
-                                onClick={handleClickOpenReturnCar}
-                              >
-                                Return car
-                              </Button>
-                            ) : (
-                              <Button
-                                sx={{
-                                  visibility: "hidden",
-                                }}
-                                variant="outlined"
-                              >
-                                Return car
-                              </Button>
-                            )}
                           </Stack>
                         </Grid>
                       </Grid>
-                      <ReturnCar
-                        open={openReturnCar}
-                        onClose={handleClose}
-                        booking={item}
-                        car={item.car}
-                      />
-                      <ConfirmPickUp
-                        open={openConfirmPickUp}
-                        onClose={handleClose}
-                        bookingId={item.bookingId}
-                      />
-                      <CancelBooking
-                        open={openCancelBooking}
-                        onClose={handleClose}
-                        bookingId={item.bookingId}
-                      />
                     </Grid>
                   ) : (
                     <Skeleton variant="rectangular" width={210} height={118} />
@@ -354,6 +261,13 @@ const MyBookings = (props) => {
           </CardContent>
         </Card>
       </Container>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={backdrop}
+        onClick={handleClickOpenBackdrop}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 };

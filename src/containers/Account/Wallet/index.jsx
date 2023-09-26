@@ -19,27 +19,99 @@ import { useState } from "react";
 import TopUp from "../../../components/Modals/Top-up";
 import Withdraw from "../../../components/Modals/Withdraw";
 import { DataGrid } from "@mui/x-data-grid";
+import { DATE_TIME_PICKER_DISPLAY_FORMAT, RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../../shared/configs/constants";
+import moment from "moment";
+import { useCustomHook } from "../../../App";
 
 const StyledTypography = styled(Typography)`
   font-weight: bold !important;
 `;
 
 const rows = [
-  { id: 1, amount: "13.000.000 VND", type: "Top-up", transactionTime: "12/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 2, amount: "13.000.000 VND", type: "Top-up", transactionTime: "22/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 3, amount: "13.000.000 VND", type: "Withdraw", transactionTime: "15/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 4, amount: "13.000.000 VND", type: "Pay deposit", transactionTime: "17/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 5, amount: "13.000.000 VND", type: "Top-up", transactionTime: "04/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 6, amount: "13.000.000 VND", type: "Offset final payment", transactionTime: "19/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 7, amount: "13.000.000 VND", type: "Top-up", transactionTime: "04/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 8, amount: "13.000.000 VND", type: "Offset fnal payment", transactionTime: "25/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 9, amount: "13.000.000 VND", type: "Withdraw", transactionTime: "29/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 10, amount: "13.000.000 VND", type: "Top-up", transactionTime: "12/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  
+  {
+    id: 1,
+    amount: "13.000.000 VND",
+    type: "Top-up",
+    transactionTime: "12/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 2,
+    amount: "13.000.000 VND",
+    type: "Top-up",
+    transactionTime: "22/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 3,
+    amount: "13.000.000 VND",
+    type: "Withdraw",
+    transactionTime: "15/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 4,
+    amount: "13.000.000 VND",
+    type: "Pay deposit",
+    transactionTime: "17/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 5,
+    amount: "13.000.000 VND",
+    type: "Top-up",
+    transactionTime: "04/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 6,
+    amount: "13.000.000 VND",
+    type: "Offset final payment",
+    transactionTime: "19/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 7,
+    amount: "13.000.000 VND",
+    type: "Top-up",
+    transactionTime: "04/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 8,
+    amount: "13.000.000 VND",
+    type: "Offset fnal payment",
+    transactionTime: "25/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 9,
+    amount: "13.000.000 VND",
+    type: "Withdraw",
+    transactionTime: "29/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 10,
+    amount: "13.000.000 VND",
+    type: "Top-up",
+    transactionTime: "12/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
 ];
 
 const columns = [
-  { field: "id", headerName: "ID", width: 90, align: "center", },
+  { field: "id", headerName: "ID", width: 90, align: "center" },
   {
     field: "amount",
     headerName: "Amount",
@@ -72,7 +144,7 @@ const columns = [
     width: 300,
     align: "center",
     sortable: false,
-  }, 
+  },
 ];
 
 const MyWallet = (props) => {
@@ -80,7 +152,14 @@ const MyWallet = (props) => {
   const { loading = false } = props;
   const [openTopup, setOpenTopup] = useState(false);
   const [openWithdraw, setOpenWithdraw] = useState(false);
+  const { userData: user } = useCustomHook();
 
+  const time1 = new Date();
+  time1.setHours(0,0,0,0);
+  const time2 = new Date();
+  time2.setHours(23,59,59,999);
+  const [fromTime, setFromTime] = useState(time1);
+  const [toTime, setToTime] = useState(time2);
   const handleClickOpenTopup = () => {
     setOpenTopup(true);
   };
@@ -106,7 +185,11 @@ const MyWallet = (props) => {
               <Home sx={{ mr: 0.5 }} fontSize="inherit" />
               <Typography
                 component={Link}
-                to="/homeowner"
+                to={
+                  user && user.role === "CUSTOMER"
+                    ? "/homecustomer"
+                    : "/homeowner"
+                }
                 variant="subtitle1"
                 fontWeight="bold"
                 sx={{
@@ -137,7 +220,7 @@ const MyWallet = (props) => {
             <StyledTypography variant="subtitle1">
               Your current balance:{" "}
               <span style={{ color: "#38b000", fontWeight: "bold" }}>
-                100.000.000 VND
+                {user.wallet} (VND)
               </span>
             </StyledTypography>
             <Box>
@@ -169,12 +252,13 @@ const MyWallet = (props) => {
               Transactions
             </StyledTypography>
             <Box>
-              <DateRangePicker
-                format={"yyyy-MM-dd HH:mm:ss"}
-                defaultCalendarValue={[
-                  new Date("2022-02-01 00:00:00"),
-                  new Date("2022-05-01 23:59:59"),
-                ]}
+            <DateRangePicker
+                format={RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT}
+                value={[new Date(fromTime), new Date(toTime)]}
+                onChange={(values) => {
+                  setFromTime(values[0]);
+                  setToTime(values[1]);
+                }}
               />
               <Button
                 sx={{
@@ -199,8 +283,8 @@ const MyWallet = (props) => {
               <DataGrid
                 rows={rows}
                 columns={columns.map((column) => ({
-                    ...column,
-                    headerAlign: "center",
+                  ...column,
+                  headerAlign: "center",
                 }))}
                 disableRowSelectionOnClick
                 disableColumnFilter

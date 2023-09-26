@@ -10,12 +10,13 @@ import { Fragment } from "react";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import UserMenu from "../UserMenu";
 import { Link, useNavigate } from "react-router-dom";
+import { useCustomHook } from "../../App";
 
 const pages = ["HOME", "ABOUT US", <UserMenu />];
 
 const NavBarCustomer = () => {
   const navigate = useNavigate();
-  const user = localStorage.getItem("userData");
+  const { userData : user } = useCustomHook();
   const handleClickPage = (page) => {
     if (page === "HOME") {
       if (user.role === "CUSTOMER") {

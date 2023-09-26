@@ -27,8 +27,9 @@ const StyledModal = styled(Modal)`
 
 
 const CancelBooking = (props) => {
-  const { open, onClose, bookingId } = props;
+  const { open, onClose, booking, car } = props;
   const { createSnack } = useSnackbar();
+  const bookingId = booking.bookingId;
   const dispatch = useDispatch();
   const handleClose = () => {
     onClose();
@@ -41,6 +42,7 @@ const CancelBooking = (props) => {
       {
         params: {
           status: "Cancelled",
+          plateNumber: car.plateNumber,
         },
         headers: {
           Authorization: `Bearer ${token}`,

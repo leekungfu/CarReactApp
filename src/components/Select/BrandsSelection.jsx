@@ -15,27 +15,49 @@ const MenuProps = {
 };
 
 const carBrands = [
-    "Toyota",
-    "Ford",
-    "Volkswagen",
-    "BMW",
-    "Mercedes-Benz",
-    "Honda",
-    "Nissan",
-    "Chevrolet",
-    "Audi",
-    "Hyundai",
-    "Kia",
-    "Subaru",
-    "Porsche",
-    "Jaguar",
-    "Land Rover",
-    "Ferrari",
-    "Lamborghini",
-    "McLaren",
-    "Tesla",
-    "Volvo"
-  ];
+  "Acura",
+  "Audi",
+  "Buick",
+  "Cadilac",
+  "Chevrolet",
+  "Chrysler  ",
+  "Dodge  ",
+  "FIAT  ",
+  "Freightliner  ",
+  "Genesis  ",
+  "GMC  ",
+  "Hyundai  ",
+  "INFINITI  ",
+  "Jeep  ",
+  "Kia  ",
+  "Lexus  ",
+  "Lincoln  ",
+  "MINI  ",
+  "Mitsubishi  ",
+  "Subaru  ",
+  "Ram  ",
+  "Alfa Romeo",
+  "Toyota",
+  "Ford",
+  "Volkswagen",
+  "BMW",
+  "Mercedes-Benz",
+  "Honda",
+  "Nissan",
+  "Chevrolet",
+  "Audi",
+  "Hyundai",
+  "Kia",
+  "Subaru",
+  "Porsche",
+  "Jaguar",
+  "Land Rover",
+  "Ferrari",
+  "Lamborghini",
+  "McLaren",
+  "Tesla",
+  "Volvo",
+];
 
 function getStyles(name, carBrands, theme) {
   return {
@@ -75,7 +97,7 @@ const BrandsSelection = (props) => {
           MenuProps={MenuProps}
           inputProps={{ "aria-label": "Without label" }}
         >
-          <MenuItem disabled value="" >
+          <MenuItem disabled value="">
             <em>--Brand--</em>
           </MenuItem>
           {carBrands.map((name) => (

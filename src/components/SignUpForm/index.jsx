@@ -37,9 +37,11 @@ import { useSnackbar } from "../Hooks/useSnackBar";
 import { NumericFormat } from "react-number-format";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { setUserData } from "../ReduxToolkit/UserSlice";
+import { useCustomHook } from "../../App";
 
 const SignUpForm = (props) => {
   const { open, onClose } = props;
+  const { userData, save } = useCustomHook();
   const { createSnack } = useSnackbar();
   const handleClose = () => onClose();
   const [showPassword, setShowPassword] = useState(false);
@@ -107,19 +109,7 @@ const SignUpForm = (props) => {
         if (response.data.isSuccess === true) {
           createSnack(response.data.message, { severity: "success" });
           localStorage.setItem("jwtToken", response.data.token);
-          // dispatch(setUserData(data));
-          const basicInfo = {
-            fullName: data.fullName,
-            email: data.email,
-            phone: data.phone,
-            role: data.role,
-            nationalID: data.nationalID,
-            street: data.street,
-            birthDay: data.birthDay,
-            wallet: data.wallet,
-          };
-          localStorage.setItem("userData", JSON.stringify(basicInfo));
-
+          save(data);
           if (role === "CUSTOMER") {
             window.location.href = "/homecustomer";
           } else {

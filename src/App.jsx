@@ -9,8 +9,8 @@ import { createPack } from "react-component-pack";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 import DefaultTheme from "./shared/DefaultTheme";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DateTimePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import HomeOwner from "./containers/Home/HomeOwner";
 import AddCar from "./components/Dialogs/AddCar";
 import ProfileTabs from "./containers/Account/Profile";
@@ -27,16 +27,42 @@ import ConfirmReset from "./containers/Account/Reset/ConfirmReset";
 import Layout from "./components/Layout";
 import { SnackProvider } from "./components/Hooks/useSnackBar";
 import ViewBookedCar from "./containers/Account/Car/ViewBookedCar";
+import { createContext, useContext, useEffect, useState } from "react";
+import moment from 'moment-timezone';
 
+const UserContext = createContext();
+const useHookEffect = () => {
+  const [userData, setUserData] = useState(() => {
+    const savedUserData = localStorage.getItem("userData");
+    return savedUserData ? JSON.parse(savedUserData) : null;
+  });
+  const save = (userData) => {
+    localStorage.setItem("userData", JSON.stringify(userData));
+    setUserData(JSON.stringify(userData));
+  };
+  useEffect(() => {
+    const currentUser = localStorage.getItem("userData");
+    setUserData(JSON.parse(currentUser));
+  }, []);
+  return { userData, save };
+};
+
+export function UserContextProvider({ children, userData }) {
+  const myEffect = useHookEffect(userData);
+  return (
+    <UserContext.Provider value={myEffect}>{children}</UserContext.Provider>
+  );
+}
+export const useCustomHook = () => useContext(UserContext);
 
 const ProviderPack = createPack(
   (props) => <ThemeProvider theme={DefaultTheme} {...props} />,
   (props) => <StyledThemeProvider theme={DefaultTheme} {...props} />,
   (props) => <SnackProvider {...props} />,
+  (props) => <UserContextProvider {...props} />,
   (props) => (
     <LocalizationProvider
-      dateAdapter={AdapterDayjs}
-      adapterLocale="vn"
+      dateAdapter={AdapterMoment}
       {...props}
     />
   )
@@ -62,7 +88,10 @@ function App() {
             <Route path="/editcardetails/:carId" element={<EditCarDetails />} />
             <Route path="/viewcardetails/:carId" element={<ViewCarDetails />} />
             <Route path="/viewbookedcar/:carId" element={<ViewBookedCar />} />
-            <Route path="/bookingdetails/:bookingId" element={<BookingDetails />} />
+            <Route
+              path="/bookingdetails/:bookingId"
+              element={<BookingDetails />}
+            />
             <Route path="/reset" element={<ResetPass />} />
             <Route path="/confirmreset" element={<ConfirmReset />} />
           </Routes>
