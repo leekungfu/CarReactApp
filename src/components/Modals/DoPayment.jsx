@@ -1,14 +1,10 @@
 import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import Review from "./Review";
+import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import { useDispatch } from "react-redux";
-import axiosInstance from "../../shared/configs/axiosConfig";
 import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
-import styled from "styled-components";
-import moment from "moment";
-import { useNavigate } from "react-router-dom";
 import { useCustomHook } from "../../App";
 import GoToWallet from "./GoToWallet";
 
@@ -17,64 +13,49 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 420,
   bgcolor: "background.paper",
   border: "1px solid",
   p: 3,
   textAlign: "center",
 };
-const StyledModal = styled(Modal)`
-  .MuiBackdrop-root {
-    background-color: rgba(0, 0, 0, 0.3) !important;
-  }
-`;
 
-const ReturnCar = (props) => {
+const DoPayment = (props) => {
   const { userData: user, save } = useCustomHook();
-  const { open, onClose, booking, car, totalPrice } = props;
+  const { open, onClose, booking, car, cost } = props;
   const bookingId = booking.bookingId;
-  const cost = car.deposit - totalPrice;
+  const plateNumber = car.plateNumber;
+  const { createSnack } = useSnackbar();
   const handleClose = () => {
     onClose();
   };
-  const [openReview, setOpenReview] = useState(false);
   const [openWallet, setOpenWallet] = useState(false);
-  const handleCloseReview = () => {
-    setOpenReview(false);
-  };
-  const handleClickOpenReview = () => {
-    setOpenReview(true);
-  };
   const handleClickOpenWallet = () => {
     setOpenWallet(true);
   };
   const handleCloseWallet = () => {
     setOpenWallet(false);
   };
-
-  const { createSnack } = useSnackbar();
   const dispatch = useDispatch();
-  const handleClickAgree = async () => {
+  const handleClickYes = async () => {
     const token = localStorage.getItem("jwtToken");
-    const { data: response } = await axiosInstance.post(
-      `/customer/updateBookingStatus/${bookingId}`,
-      null,
-      {
-        params: {
-          status:
-            user.wallet >= Math.abs(cost) ? "Completed" : "Pending_payment",
-          plateNumber: car.plateNumber,
-          cost,
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    handleClose();
     if (user.wallet >= Math.abs(cost)) {
+      const { data: response } = await axiosInstance.post(
+        `/customer/updateBookingStatus/${bookingId}`,
+        null,
+        {
+          params: {
+            status: "Completed",
+            plateNumber,
+            cost,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      handleClose();
       if (response.isSuccess === true) {
-        handleClickOpenReview();
         createSnack(response.message, { severity: "success" });
         const newStatus = response.booking.bookingStatus;
         dispatch(updateBookingStatus({ bookingId, newStatus }));
@@ -90,23 +71,15 @@ const ReturnCar = (props) => {
 
   return (
     <div>
-      <StyledModal open={open} onClose={handleClose}>
+      <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <Typography variant="h6">Return car</Typography>
+          <Typography variant="h6">Notification</Typography>
           <Divider />
-          {cost && cost < 0 ? (
-            <Typography sx={{ mt: 2 }} variant="body1">
-              Please confirm to return the car. The remaining is{" "}
-              {Number(Math.abs(cost)).toLocaleString()} (VND) will be deducted from
-              your wallet.
-            </Typography>
-          ) : (
-            <Typography sx={{ mt: 2 }} variant="body1">
-              Please confirm to return the car. The exceeding is{" "}
-              {Number(Math.abs(cost)).toLocaleString()} (VND) will be returned to
-              your wallet.
-            </Typography>
-          )}
+          <Typography sx={{ mt: 2 }} variant="body1">
+            Please confirm that you will pay{" "}
+            {Number(Math.abs(cost)).toLocaleString()} (VND) for the car owner.
+            The cost will be deducted from your wallet.
+          </Typography>
           <Stack
             sx={{ mt: 2 }}
             direction="row"
@@ -126,27 +99,22 @@ const ReturnCar = (props) => {
               sx={{
                 width: "20%",
               }}
-              onClick={handleClickAgree}
+              onClick={handleClickYes}
               variant="outlined"
             >
               Yes
             </Button>
           </Stack>
         </Box>
-      </StyledModal>
-      <Review
-        open={openReview}
-        onClose={handleCloseReview}
-        bookingId={bookingId}
-      />
+      </Modal>
       <GoToWallet open={openWallet} onClose={handleCloseWallet} />
     </div>
   );
 };
 
-ReturnCar.propTypes = {
+DoPayment.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 
-export default ReturnCar;
+export default DoPayment;

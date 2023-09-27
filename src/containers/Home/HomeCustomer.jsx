@@ -129,29 +129,6 @@ const HomeCustomer = (props) => {
       createSnack(response.data.message, { severity: "error" });
     }
   };
-  // const dispatch = useDispatch();
-  // const [apiCalled, setApiCalled] = useState(false);
-  // useEffect(() => {
-  //   if (!apiCalled) {
-  //     const token = localStorage.getItem("jwtToken");
-  //     axiosInstance
-  //       .get("/currentUser", {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       })
-  //       .then((response) => {
-  //         console.log(response.data);
-  //         dispatch(setUserData(response.data));
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching data:", error);
-  //       })
-  //       .finally(() => {
-  //         setApiCalled(true);
-  //       });
-  //   }
-  // }, [apiCalled, dispatch]);
 
   return (
     <Box>

@@ -14,6 +14,8 @@ import {
   Stack,
   Grid,
   Rating,
+  CircularProgress,
+  Backdrop,
 } from "@mui/material";
 import {
   Circle,
@@ -51,7 +53,13 @@ const RentNow = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [pickUpTime, setPickUpTime] = useState(fromTime);
   const [returnTime, setReturnTime] = useState(toTime);
-
+  const [openBackdrop, setOpenBackdrop] = useState(false);
+  const handleClickOpenBackdrop = () => {
+    setOpenBackdrop(true);
+  };
+  const handleCloseBackdrop = () => {
+    setOpenBackdrop(false);
+  };
   const calculateNumberOfDays = (startDate, endDate) => {
     const start = moment(startDate);
     const end = moment(endDate).endOf("day");
@@ -82,6 +90,7 @@ const RentNow = () => {
     const fetchData = async () => {
       try {
         if (carId) {
+          handleClickOpenBackdrop();
           const response = await axiosInstance.get(
             `/customer/getCar/${carId}`,
             {
@@ -93,7 +102,7 @@ const RentNow = () => {
 
           if (response.data.isSuccess === true) {
             setCar(response.data.car);
-            createSnack(response.data.message, { severity: "success" });
+            handleCloseBackdrop();
           } else {
             createSnack(response.data.message, { severity: "error" });
           }
@@ -311,6 +320,13 @@ const RentNow = () => {
             </CardContent>
           </Card>
         </Container>
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={openBackdrop}
+          onClick={handleClickOpenBackdrop}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Container>
     </div>
   );

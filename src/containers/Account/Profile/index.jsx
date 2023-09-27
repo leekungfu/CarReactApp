@@ -48,11 +48,6 @@ import { useSnackbar } from "../../../components/Hooks/useSnackBar";
 import validator from "validator";
 import { NumericFormat } from "react-number-format";
 import axiosInstance from "../../../shared/configs/axiosConfig";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  setData,
-  setUserData,
-} from "../../../components/ReduxToolkit/UserSlice";
 import { useCustomHook } from "../../../App";
 import moment from "moment";
 
@@ -71,12 +66,11 @@ const ProfileTabs = () => {
   const [fullName, setFullName] = useState(user.fullName);
   const [phone, setPhone] = useState(user.phone);
   const [nationalID, setNationalId] = useState(user.nationalID);
-  const [birthDay, setBirthDay] = useState(moment(user.birthDay));
+  const [birthDay, setBirthDay] = useState(dayjs(user.birthDay));
   const [street, setStreet] = useState(user.street);
   const [drivingLicense, setDrivingLicense] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
@@ -118,7 +112,7 @@ const ProfileTabs = () => {
     event.preventDefault();
     try {
       const formData = new FormData();
-      const dobFormated = moment(birthDay).format(DATE_PICKER_URI_FORMAT);
+      const dobFormated = dayjs(birthDay).format(DATE_PICKER_URI_FORMAT);
 
       if (
         fullName &&
@@ -366,10 +360,6 @@ const ProfileTabs = () => {
                       <Box>
                         <InputLabel required>Date of birth</InputLabel>
                         <DatePicker
-                          // defaultValue={moment.tz(
-                          //   new Date(),
-                          //   "Asia/Ho_Chi_Minh"
-                          // )}
                           format={DATAGRID_DATE_FORMAT}
                           sx={{ width: "100%" }}
                           value={birthDay}

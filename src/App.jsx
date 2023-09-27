@@ -28,7 +28,7 @@ import Layout from "./components/Layout";
 import { SnackProvider } from "./components/Hooks/useSnackBar";
 import ViewBookedCar from "./containers/Account/Car/ViewBookedCar";
 import { createContext, useContext, useEffect, useState } from "react";
-import moment from 'moment-timezone';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const UserContext = createContext();
 const useHookEffect = () => {
@@ -62,7 +62,7 @@ const ProviderPack = createPack(
   (props) => <UserContextProvider {...props} />,
   (props) => (
     <LocalizationProvider
-      dateAdapter={AdapterMoment}
+      dateAdapter={AdapterDayjs}
       {...props}
     />
   )

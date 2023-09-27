@@ -52,6 +52,7 @@ import moment from "moment";
 import ConfirmPickUp from "../../../components/Modals/ConfirmPickUp";
 import CancelBooking from "../../../components/Modals/CancelBooking";
 import ReturnCar from "../../../components/Modals/ReturnCar";
+import DoPayment from "../../../components/Modals/DoPayment";
 
 const StyledTypography = styled(Typography)`
   font-weight: bold !important;
@@ -92,6 +93,7 @@ const BookingDetails = () => {
   const [openConfirmPickUp, setOpenConfirmPickUp] = useState(false);
   const [openCancelBooking, setOpenCancelBooking] = useState(false);
   const [openReturnCar, setOpenReturnCar] = useState(false);
+  const [openDoPayment, setOpenDoPayment] = useState(false);
   const handleClickOpenConfirmPickUp = () => {
     setOpenConfirmPickUp(true);
   };
@@ -101,10 +103,14 @@ const BookingDetails = () => {
   const handleClickOpenCancelBooking = () => {
     setOpenCancelBooking(true);
   };
+  const handleClickOpenDoPayment = () => {
+    setOpenDoPayment(true);
+  };
   const handleClose = () => {
     setOpenConfirmPickUp(false);
     setOpenCancelBooking(false);
     setOpenReturnCar(false);
+    setOpenDoPayment(false);
   };
   const navigate = useNavigate();
 
@@ -205,7 +211,12 @@ const BookingDetails = () => {
               Base price: {Number(car.price).toLocaleString()} (VND/day)
             </Typography>
             <Typography variant="subtitle1">
-              Total: {Number(car.price * calculateNumberOfDays(booking.startDate, booking.endDate)).toLocaleString()} (VND)
+              Total:{" "}
+              {Number(
+                car.price *
+                  calculateNumberOfDays(booking.startDate, booking.endDate)
+              ).toLocaleString()}{" "}
+              (VND)
             </Typography>
             <Typography variant="subtitle1">
               Deposit: {Number(car.deposit).toLocaleString()} (VND)
@@ -296,6 +307,21 @@ const BookingDetails = () => {
                   onClick={handleClickOpenReturnCar}
                 >
                   Return car
+                </Button>
+              ) : booking.bookingStatus === "Pending_payment" ? (
+                <Button
+                  sx={{
+                    width: "30%",
+                    color: "white",
+                    borderColor: "#fca311",
+                    "&:hover": {
+                      borderColor: "#fca311",
+                    },
+                  }}
+                  variant="outlined"
+                  onClick={handleClickOpenDoPayment}
+                >
+                  Do payment
                 </Button>
               ) : (
                 <Button
@@ -588,7 +614,9 @@ const BookingDetails = () => {
         onClose={handleClose}
         booking={booking}
         car={booking.car}
-        totalPrice={car.price * calculateNumberOfDays(booking.startDate, booking.endDate)}
+        totalPrice={
+          car.price * calculateNumberOfDays(booking.startDate, booking.endDate)
+        }
       />
       <ConfirmPickUp
         open={openConfirmPickUp}
@@ -601,6 +629,16 @@ const BookingDetails = () => {
         onClose={handleClose}
         booking={booking}
         car={booking.car}
+      />
+      <DoPayment
+        open={openDoPayment}
+        onClose={handleClose}
+        booking={booking}
+        car={booking.car}
+        cost={
+          car.deposit -
+          car.price * calculateNumberOfDays(booking.startDate, booking.endDate)
+        }
       />
     </div>
   );

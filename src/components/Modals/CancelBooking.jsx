@@ -36,6 +36,7 @@ const CancelBooking = (props) => {
   };
   const handleClickYes = async () => {
     const token = localStorage.getItem("jwtToken");
+    const cost = 0.0;
     const { data: response } = await axiosInstance.post(
       `/customer/updateBookingStatus/${bookingId}`,
       null,
@@ -43,6 +44,7 @@ const CancelBooking = (props) => {
         params: {
           status: "Cancelled",
           plateNumber: car.plateNumber,
+          cost
         },
         headers: {
           Authorization: `Bearer ${token}`,

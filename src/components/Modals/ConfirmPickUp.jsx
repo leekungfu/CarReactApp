@@ -6,6 +6,7 @@ import { useSnackbar } from "../Hooks/useSnackBar";
 import { useDispatch } from "react-redux";
 import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -31,9 +32,11 @@ const ConfirmPickUp = (props) => {
   const { createSnack } = useSnackbar();
   const bookingId = booking.bookingId;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleClose = () => {
     onClose();
   };
+  const cost = 0.0;
   const handleClickAgree = async () => {
     const token = localStorage.getItem("jwtToken");
     const { data: response } = await axiosInstance.post(
@@ -43,6 +46,7 @@ const ConfirmPickUp = (props) => {
         params: {
           status: "In_Progress",
           plateNumber: car.plateNumber,
+          cost
         },
         headers: {
           Authorization: `Bearer ${token}`,
@@ -55,6 +59,7 @@ const ConfirmPickUp = (props) => {
       createSnack(response.message, { severity: "success" });
       const newStatus = response.booking.bookingStatus;
       dispatch(updateBookingStatus({ bookingId, newStatus }));
+      navigate("/booking");
     } else {
       createSnack(response.message, { severity: "error" });
     }
