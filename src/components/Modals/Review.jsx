@@ -79,10 +79,10 @@ const Review = (props) => {
     );
     if (response.isSuccess === true) {
       createSnack(response.message, { severity: "success" });
-      handleNavigate();
     } else {
       createSnack(response.message, { severity: "error" });
     }
+    handleNavigate();
   };
 
   return (

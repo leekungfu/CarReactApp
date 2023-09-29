@@ -31,19 +31,18 @@ const StyledTypography = styled(Typography)`
 
 const HomeOwner = () => {
   const [open, setOpen] = useState(false);
-
+  const [carArray, setCarArray] = useState([]);
+  const key = carArray.length;
+  const [apiCalled, setApiCalled] = useState(false);
+  
   const handleClickOpen = () => {
     setOpen(true);
   };
-
   const handleClose = () => {
     setOpen(false);
   };
   const dispatch = useDispatch();
-
-  const [carArray, setCarArray] = useState([]);
-  const key = carArray.length;
-  const [apiCalled, setApiCalled] = useState(false);
+  
   useEffect(() => {
     if (!apiCalled) {
       const token = localStorage.getItem("jwtToken");
@@ -55,7 +54,7 @@ const HomeOwner = () => {
         })
         .then((response) => {
           if (response.data.isSuccess === true) {
-            console.log("Car: ",response.data);
+            console.log("Car: ", response.data);
             setCarArray(response.data.member.cars);
             dispatch(carsAdded(response.data.member.cars));
           }

@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
 import { useCustomHook } from "../../App";
 import GoToWallet from "./GoToWallet";
+import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -26,6 +27,7 @@ const DoPayment = (props) => {
   const bookingId = booking.bookingId;
   const plateNumber = car.plateNumber;
   const { createSnack } = useSnackbar();
+  const navigate = useNavigate();
   const handleClose = () => {
     onClose();
   };
@@ -60,6 +62,7 @@ const DoPayment = (props) => {
         const newStatus = response.booking.bookingStatus;
         dispatch(updateBookingStatus({ bookingId, newStatus }));
         save(response.booking.member);
+        navigate("/booking");
       } else {
         createSnack(response.message, { severity: "error" });
       }

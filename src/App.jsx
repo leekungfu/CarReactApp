@@ -28,7 +28,7 @@ import Layout from "./components/Layout";
 import { SnackProvider } from "./components/Hooks/useSnackBar";
 import ViewBookedCar from "./containers/Account/Car/ViewBookedCar";
 import { createContext, useContext, useEffect, useState } from "react";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const UserContext = createContext();
 const useHookEffect = () => {
@@ -38,7 +38,7 @@ const useHookEffect = () => {
   });
   const save = (userData) => {
     localStorage.setItem("userData", JSON.stringify(userData));
-    setUserData(JSON.stringify(userData));
+    setUserData(userData);
   };
   useEffect(() => {
     const currentUser = localStorage.getItem("userData");
@@ -47,8 +47,8 @@ const useHookEffect = () => {
   return { userData, save };
 };
 
-export function UserContextProvider({ children, userData }) {
-  const myEffect = useHookEffect(userData);
+export function UserContextProvider({ children }) {
+  const myEffect = useHookEffect();
   return (
     <UserContext.Provider value={myEffect}>{children}</UserContext.Provider>
   );
@@ -60,12 +60,7 @@ const ProviderPack = createPack(
   (props) => <StyledThemeProvider theme={DefaultTheme} {...props} />,
   (props) => <SnackProvider {...props} />,
   (props) => <UserContextProvider {...props} />,
-  (props) => (
-    <LocalizationProvider
-      dateAdapter={AdapterDayjs}
-      {...props}
-    />
-  )
+  (props) => <LocalizationProvider dateAdapter={AdapterDayjs} {...props} />
 );
 
 function App() {

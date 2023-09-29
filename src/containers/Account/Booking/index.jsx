@@ -51,7 +51,7 @@ const MyBookings = (props) => {
   };
   const handleCloseBackdrop = () => {
     setBackdrop(false);
-  }
+  };
 
   useEffect(() => {
     if (!apiCalled) {
@@ -78,10 +78,10 @@ const MyBookings = (props) => {
   }, [apiCalled, dispatch]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
   const totalBookings = bookings.length;
   const totalPages = Math.ceil(totalBookings / itemsPerPage);
-  const handlePageChange = (newPage) => {
+  const handlePageChange = (event, newPage) => {
     setCurrentPage(newPage);
   };
   const startIndex = (currentPage - 1) * itemsPerPage;

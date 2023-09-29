@@ -19,7 +19,10 @@ import { useState } from "react";
 import TopUp from "../../../components/Modals/Top-up";
 import Withdraw from "../../../components/Modals/Withdraw";
 import { DataGrid } from "@mui/x-data-grid";
-import { DATE_TIME_PICKER_DISPLAY_FORMAT, RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../../shared/configs/constants";
+import {
+  DATE_TIME_PICKER_DISPLAY_FORMAT,
+  RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT,
+} from "../../../shared/configs/constants";
 import moment from "moment";
 import { useCustomHook } from "../../../App";
 
@@ -155,9 +158,9 @@ const MyWallet = (props) => {
   const { userData: user } = useCustomHook();
 
   const time1 = new Date();
-  time1.setHours(0,0,0,0);
+  time1.setHours(0, 0, 0, 0);
   const time2 = new Date();
-  time2.setHours(23,59,59,999);
+  time2.setHours(23, 59, 59, 999);
   const [fromTime, setFromTime] = useState(time1);
   const [toTime, setToTime] = useState(time2);
   const handleClickOpenTopup = () => {
@@ -220,7 +223,7 @@ const MyWallet = (props) => {
             <StyledTypography variant="subtitle1">
               Your current balance:{" "}
               <span style={{ color: "#38b000", fontWeight: "bold" }}>
-                {user.wallet} (VND)
+                {user.wallet ? user.wallet : 0} (VND)
               </span>
             </StyledTypography>
             <Box>
@@ -252,7 +255,7 @@ const MyWallet = (props) => {
               Transactions
             </StyledTypography>
             <Box>
-            <DateRangePicker
+              <DateRangePicker
                 format={RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT}
                 value={[new Date(fromTime), new Date(toTime)]}
                 onChange={(values) => {
