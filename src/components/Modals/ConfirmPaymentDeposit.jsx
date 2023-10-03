@@ -8,6 +8,7 @@ import styled from "styled-components";
 import { addBooking } from "../ReduxToolkit/BookingSlice";
 import { useNavigate } from "react-router-dom";
 import { addBookingResult } from "../ReduxToolkit/BookingResult";
+import { useCustomHook } from "../../App";
 
 const style = {
   position: "absolute",
@@ -30,6 +31,7 @@ const StyledModal = styled(Modal)`
 const ConfirmPaymentDeposit = (props) => {
   const { open, onClose, formData, deposit } = props;
   const { createSnack } = useSnackbar();
+  const { save } = useCustomHook();
   const handleClose = () => {
     onClose();
   };
@@ -49,6 +51,7 @@ const ConfirmPaymentDeposit = (props) => {
     if (response.isSuccess === true) {
       console.log("Booking: ", response);
       dispatch(addBookingResult(response.booking));
+      save(response.booking.member);
       createSnack(response.message, { severity: "success" });
     } else {
       createSnack(response.message, { severity: "error" });

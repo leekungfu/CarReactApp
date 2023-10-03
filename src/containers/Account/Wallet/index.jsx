@@ -22,141 +22,25 @@ import { DataGrid } from "@mui/x-data-grid";
 import {
   DATE_TIME_PICKER_DISPLAY_FORMAT,
   RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT,
+  SERVER_POSTING_DATE_TIME_FORMAT,
 } from "../../../shared/configs/constants";
 import moment from "moment";
 import { useCustomHook } from "../../../App";
+import axiosInstance from "../../../shared/configs/axiosConfig";
+import { useSnackbar } from "../../../components/Hooks/useSnackBar";
 
 const StyledTypography = styled(Typography)`
   font-weight: bold !important;
 `;
-
-const rows = [
-  {
-    id: 1,
-    amount: "13.000.000 VND",
-    type: "Top-up",
-    transactionTime: "12/02/2022 18:00",
-    bookingNumber: 1234523,
-    carName: "Mercedes-Benz AMG GT 2021",
-  },
-  {
-    id: 2,
-    amount: "13.000.000 VND",
-    type: "Top-up",
-    transactionTime: "22/02/2022 18:00",
-    bookingNumber: 1234523,
-    carName: "Mercedes-Benz AMG GT 2021",
-  },
-  {
-    id: 3,
-    amount: "13.000.000 VND",
-    type: "Withdraw",
-    transactionTime: "15/02/2022 18:00",
-    bookingNumber: 1234523,
-    carName: "Mercedes-Benz AMG GT 2021",
-  },
-  {
-    id: 4,
-    amount: "13.000.000 VND",
-    type: "Pay deposit",
-    transactionTime: "17/02/2022 18:00",
-    bookingNumber: 1234523,
-    carName: "Mercedes-Benz AMG GT 2021",
-  },
-  {
-    id: 5,
-    amount: "13.000.000 VND",
-    type: "Top-up",
-    transactionTime: "04/02/2022 18:00",
-    bookingNumber: 1234523,
-    carName: "Mercedes-Benz AMG GT 2021",
-  },
-  {
-    id: 6,
-    amount: "13.000.000 VND",
-    type: "Offset final payment",
-    transactionTime: "19/02/2022 18:00",
-    bookingNumber: 1234523,
-    carName: "Mercedes-Benz AMG GT 2021",
-  },
-  {
-    id: 7,
-    amount: "13.000.000 VND",
-    type: "Top-up",
-    transactionTime: "04/02/2022 18:00",
-    bookingNumber: 1234523,
-    carName: "Mercedes-Benz AMG GT 2021",
-  },
-  {
-    id: 8,
-    amount: "13.000.000 VND",
-    type: "Offset fnal payment",
-    transactionTime: "25/02/2022 18:00",
-    bookingNumber: 1234523,
-    carName: "Mercedes-Benz AMG GT 2021",
-  },
-  {
-    id: 9,
-    amount: "13.000.000 VND",
-    type: "Withdraw",
-    transactionTime: "29/02/2022 18:00",
-    bookingNumber: 1234523,
-    carName: "Mercedes-Benz AMG GT 2021",
-  },
-  {
-    id: 10,
-    amount: "13.000.000 VND",
-    type: "Top-up",
-    transactionTime: "12/02/2022 18:00",
-    bookingNumber: 1234523,
-    carName: "Mercedes-Benz AMG GT 2021",
-  },
-];
-
-const columns = [
-  { field: "id", headerName: "ID", width: 90, align: "center" },
-  {
-    field: "amount",
-    headerName: "Amount",
-    width: 150,
-    align: "center",
-  },
-  {
-    field: "type",
-    headerName: "Type",
-    width: 200,
-    align: "center",
-    sortable: false,
-  },
-  {
-    field: "transactionTime",
-    headerName: "Transaction Time",
-    width: 150,
-    align: "center",
-  },
-  {
-    field: "bookingNumber",
-    headerName: "Booking Number",
-    width: 150,
-    align: "center",
-    sortable: false,
-  },
-  {
-    field: "carName",
-    headerName: "Car Name",
-    width: 300,
-    align: "center",
-    sortable: false,
-  },
-];
 
 const MyWallet = (props) => {
   const grid = useRef(null);
   const { loading = false } = props;
   const [openTopup, setOpenTopup] = useState(false);
   const [openWithdraw, setOpenWithdraw] = useState(false);
+  const [list, setList] = useState([]);
   const { userData: user } = useCustomHook();
-
+  const { createSnack } = useSnackbar();
   const time1 = new Date();
   time1.setHours(0, 0, 0, 0);
   const time2 = new Date();
@@ -175,6 +59,91 @@ const MyWallet = (props) => {
     setOpenTopup(false);
     setOpenWithdraw(false);
   };
+  const handleClickSearch = async () => {
+    const token = localStorage.getItem("jwtToken");
+    const fromTimeFormatted = moment(fromTime).format(
+      SERVER_POSTING_DATE_TIME_FORMAT
+    );
+    const toTimeFormatted = moment(toTime).format(
+      SERVER_POSTING_DATE_TIME_FORMAT
+    );
+    const { data: response } = await axiosInstance.get(
+      "/customer/transactionList",
+      {
+        params: {
+          fromTime: fromTimeFormatted,
+          toTime: toTimeFormatted,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response.isSuccess === true) {
+      setList(response.transactions);
+      createSnack(response.message, { severity: "success" });
+    } else {
+      createSnack(response.message, { severity: "error" });
+    }
+  };
+  const rows = (list || []).map((item, index) => ({
+    id: index + 1,
+    amount: Number(item.amount).toLocaleString() + " VND",
+    type: item.type,
+    transactionTime: moment(item.dateTime).format(
+      DATE_TIME_PICKER_DISPLAY_FORMAT
+    ),
+    bookingNumber:
+      item.booking && item.booking.bookingId ? item.booking.bookingId : "",
+    carName:
+      item.booking &&
+      `
+      ${item.booking.car.brand}
+      ${item.booking.car.model}
+      ${item.booking.car.productionYear}`
+        ? `
+      ${item.booking.car.brand}
+      ${item.booking.car.model}
+      ${item.booking.car.productionYear}`
+        : "",
+  }));
+
+  const columns = [
+    { field: "id", headerName: "ID", width: 90, align: "center" },
+    {
+      field: "amount",
+      headerName: "Amount",
+      width: 150,
+      align: "center",
+    },
+    {
+      field: "type",
+      headerName: "Type",
+      width: 200,
+      align: "center",
+      sortable: false,
+    },
+    {
+      field: "transactionTime",
+      headerName: "Transaction Time",
+      width: 200,
+      align: "center",
+    },
+    {
+      field: "bookingNumber",
+      headerName: "Booking Number",
+      width: 150,
+      align: "center",
+      sortable: false,
+    },
+    {
+      field: "carName",
+      headerName: "Car Name",
+      width: 300,
+      align: "center",
+      sortable: false,
+    },
+  ];
 
   return (
     <div>
@@ -223,7 +192,7 @@ const MyWallet = (props) => {
             <StyledTypography variant="subtitle1">
               Your current balance:{" "}
               <span style={{ color: "#38b000", fontWeight: "bold" }}>
-                {user.wallet ? user.wallet : 0} (VND)
+                {user.wallet ? Number(user.wallet).toLocaleString() : 0} (VND)
               </span>
             </StyledTypography>
             <Box>
@@ -276,7 +245,7 @@ const MyWallet = (props) => {
                   ml: 2,
                 }}
                 variant="outlined"
-                onClick={() => grid.current.reload()}
+                onClick={handleClickSearch}
                 endIcon={<Search />}
               >
                 Search

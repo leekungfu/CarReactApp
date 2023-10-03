@@ -1,8 +1,4 @@
 import {
-  KeyboardDoubleArrowLeft,
-  KeyboardDoubleArrowRight,
-} from "@mui/icons-material";
-import {
   Box,
   Button,
   FormControl,
@@ -13,20 +9,29 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
-import axiosInstance from "../../../shared/configs/axiosConfig";
-import { useSnackbar } from "../../Hooks/useSnackBar";
 import moment from "moment";
 import { SERVER_RESPOND_DATE_TIME_FORMAT } from "../../../shared/configs/constants";
 import ConfirmPaymentDeposit from "../../Modals/ConfirmPaymentDeposit";
+import { useCustomHook } from "../../../App";
 
 const Payments = (props) => {
   const { carId, pickUpTime, returnTime, deposit } = props;
-  const userData = localStorage.getItem("userData");
-  const user = JSON.parse(userData);
+  const { userData: user } = useCustomHook();
   const [paymentMethod, setPaymentMethod] = useState();
-  const [openConfirmPaymentDeposit, setOpenConfirmPaymentDeposit] = useState(false);
-  const pickUpTimeFormated = moment(pickUpTime).format(SERVER_RESPOND_DATE_TIME_FORMAT);
-  const returnTimeFormated = moment(returnTime).format(SERVER_RESPOND_DATE_TIME_FORMAT);
+  const [openConfirmPaymentDeposit, setOpenConfirmPaymentDeposit] =
+    useState(false);
+  const pickUpTimeFormated = moment(pickUpTime).format(
+    SERVER_RESPOND_DATE_TIME_FORMAT
+  );
+  const returnTimeFormated = moment(returnTime).format(
+    SERVER_RESPOND_DATE_TIME_FORMAT
+  );
+  const datePart = pickUpTimeFormated.split("T")[0];
+  const dateParts = datePart.split("-");
+  const year = parseInt(dateParts[0]);
+  const month = parseInt(dateParts[1]);
+  const day = parseInt(dateParts[2]);
+  const dateAsInt = year * 10000 + month * 100 + day;
 
   const formData = new FormData();
   formData.append("carId", carId);
@@ -34,6 +39,7 @@ const Payments = (props) => {
   formData.append("endDate", returnTimeFormated);
   formData.append("deposit", deposit);
   formData.append("paymentMethod", paymentMethod);
+  formData.append("bookingId", dateAsInt);
 
   const handleClickConfirm = async () => {
     setOpenConfirmPaymentDeposit(true);
@@ -41,7 +47,7 @@ const Payments = (props) => {
 
   const handleCloseConfirmPaymentDeposit = () => {
     setOpenConfirmPaymentDeposit(false);
-  }
+  };
 
   return (
     <div>
@@ -67,7 +73,7 @@ const Payments = (props) => {
             <Typography variant="subtitle1" sx={{ ml: 7 }}>
               Current balance:{" "}
               <span style={{ color: "#38b000", fontWeight: "bold" }}>
-                {user.wallet} (VND)
+                {Number(user.wallet).toLocaleString()} (VND)
               </span>
             </Typography>
             <FormControlLabel
@@ -96,7 +102,12 @@ const Payments = (props) => {
           Confirm payment
         </Button>
       </Stack>
-      <ConfirmPaymentDeposit open={openConfirmPaymentDeposit} onClose={handleCloseConfirmPaymentDeposit} formData={formData} deposit={deposit} />
+      <ConfirmPaymentDeposit
+        open={openConfirmPaymentDeposit}
+        onClose={handleCloseConfirmPaymentDeposit}
+        formData={formData}
+        deposit={deposit}
+      />
     </div>
   );
 };

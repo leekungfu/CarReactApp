@@ -7,8 +7,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { useCustomHook } from "../../App";
+import { NumericFormat } from "react-number-format";
 
 const style = {
   position: "absolute",
@@ -24,10 +28,34 @@ const style = {
 
 const Withdraw = (props) => {
   const { open, onClose } = props;
-
+  const [value, setValue] = useState("");
+  const { createSnack } = useSnackbar();
+  const { save } = useCustomHook();
   const handleClose = () => {
     onClose();
   };
+  const handleClickOK = async () => {
+    setValue("");
+    const token = localStorage.getItem("jwtToken");
+    const { data: response } = await axiosInstance.post(
+      "/newTransaction",
+      null,
+      {
+        params: {
+          type: "Withdraw",
+          amount: parseFloat(value.replace(/[^0-9.]/g, "")),
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response.isSuccess === true) {
+      save(response.transaction.member);
+      createSnack(response.message, { severity: "success" });
+    }
+  };
+  const MAX_AMOUNT = 999999999;
 
   return (
     <div>
@@ -37,17 +65,26 @@ const Withdraw = (props) => {
           <Divider />
           <Stack spacing={1} sx={{ mt: 2 }} alignItems="center">
             <Typography sx={{ mt: 2 }} variant="body1">
-              Please confirm that you have receive the deposit this booking.
-              This allow the customer to pick-up the car at the agreed date and
-              time.
+              Please confirm that you will draw {value ? Number(parseFloat(value.replace(/[^0-9.]/g, ""))).toLocaleString() : 0} (VND) from your wallet.
             </Typography>
-            <OutlinedInput
-              type="number"
-              sx={{ mt: 2, width: "45%" }}
-              size="small"
-              placeholder="Amount"
-            />
-            <Typography variant="subtitle2">Unit: VND</Typography>
+            <NumericFormat
+            customInput={OutlinedInput}
+            thousandSeparator={true}
+            size="small"
+            sx={{
+              mt: 2,
+              width: "45%",
+            }}
+            isAllowed={(value) => {
+              const { floatValue, formattedValue } = value;
+              return floatValue <= MAX_AMOUNT || formattedValue === "";
+            }}
+            fullWidth
+            placeholder="Amount"
+            suffix=" (VND)"
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+          />
           </Stack>
           <Stack
             sx={{ mt: 2 }}
@@ -65,10 +102,11 @@ const Withdraw = (props) => {
               Cancel
             </Button>
             <Button
+            disabled={!value}
               sx={{
                 width: "20%",
               }}
-              onClick={handleClose}
+              onClick={handleClickOK}
               variant="outlined"
             >
               OK

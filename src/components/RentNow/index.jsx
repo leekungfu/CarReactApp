@@ -313,7 +313,7 @@ const RentNow = () => {
                   {activeStep === steps.length - 1
                     ? "View booking"
                     : activeStep === steps.length - 2
-                    ? "Finsh"
+                    ? "Finish"
                     : "Next"}
                 </Button>
               </Box>

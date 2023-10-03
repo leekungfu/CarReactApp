@@ -49,7 +49,7 @@ const Finish = (props) => {
         .
       </Typography>
       <Typography variant="h6">
-        Your booking number is: {bookingData.id}
+        Your booking number is: {bookingData.bookingId}
       </Typography>
       <Typography variant="h6">
         Our operator will contact you with further guidance about pickup.
