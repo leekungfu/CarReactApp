@@ -63,6 +63,33 @@ const HomeGuest = () => {
           <Container
             maxWidth="100%"
             sx={{
+              backgroundImage: 'url("../car-3.jpg")',
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              width: "100%",
+              height: "1000px",
+            }}
+          >
+            <Container maxWidth="md">
+              <Box
+                sx={{
+                  pt: 50,
+                }}
+              >
+                <StyledTypography variant="h2" fontWeight={800}>
+                  Fast & Easy Way To Rent A Car
+                </StyledTypography>
+                <StyledTypography variant="h6">
+                  Car is an essential vehicle in our life. It's created to
+                  reserve lots of our purpose. Well, you need to rent a car, or
+                  you have cars for rent - You're in the right place
+                </StyledTypography>
+              </Box>
+            </Container>
+          </Container>
+          {/* <Container
+            maxWidth="100%"
+            sx={{
               width: "100%",
               height: "50vw",
               position: "relative",
@@ -93,7 +120,7 @@ const HomeGuest = () => {
                 zIndex: -1,
               }}
             >
-              <source src="../SirAlex.mp4" type="video/mp4" />
+              <source src="car-3.jpg" type="image" />
               Glory glory Manchester United!
             </video>
             <Container maxWidth="md" sx={{ zIndex: 2, position: "relative" }}>
@@ -114,7 +141,7 @@ const HomeGuest = () => {
                 </StyledTypography>
               </Box>
             </Container>
-          </Container>
+          </Container> */}
           <Container maxWidth="lg">
             <Stack spacing={2}>
               <Card elevation={5}>
