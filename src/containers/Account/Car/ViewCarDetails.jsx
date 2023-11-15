@@ -298,14 +298,14 @@ const ViewCarDetails = () => {
                   </TableHead>
                   <TableBody>
                     {car.files &&
-                      car.files.map((item) => (
+                      car.files.map((item, index) => (
                         <TableRow
-                          key={item.id}
+                          key={index}
                           sx={{
                             "&:last-child td, &:last-child th": { border: 0 },
                           }}
                         >
-                          <TableCell>{item.id}</TableCell>
+                          <TableCell>{index + 1}</TableCell>
                           <TableCell>{item.name}</TableCell>
                           <TableCell>{item.type}</TableCell>
                           <TableCell>{item.url}</TableCell>

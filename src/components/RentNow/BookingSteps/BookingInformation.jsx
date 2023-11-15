@@ -1,9 +1,5 @@
 import {
   Box,
-  Card,
-  CardContent,
-  Container,
-  Divider,
   Typography,
   Grid,
   Stack,
@@ -12,12 +8,8 @@ import {
   Button,
 } from "@mui/material";
 import React from "react";
-import Preview from "../../Stepper/Steps/Preview";
 import {
-  ArrowForward,
   ArrowForwardIos,
-  Circle,
-  ExpandMore,
 } from "@mui/icons-material";
 import { useState } from "react";
 import dayjs from "dayjs";
@@ -28,11 +20,9 @@ import MuiAccordion from "@mui/material/Accordion";
 import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import styled from "styled-components";
-import { DATE_PICKER_URI_FORMAT } from "../../../shared/configs/constants";
-import axiosInstance from "../../../shared/configs/axiosConfig";
-import { setUserData } from "../../ReduxToolkit/UserSlice";
 import { useSnackbar } from "../../Hooks/useSnackBar";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { updateDriverData } from "../../ReduxToolkit/DriverInformationSlice";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -87,12 +77,17 @@ const BookingInformation = () => {
     ward: user.ward,
     drivingLicense: "",
   });
+
+  const dispatch = useDispatch();
+  const data = useSelector((state) => state.driver.data);
   const handleUserStateChange = (event) => {
     const { name, value } = event.target;
     setUserState((prevState) => ({
       ...prevState,
       [name]: value,
     }));
+    const updateDriverInfo = { ...data, [name]: value };
+    dispatch(updateDriverData(updateDriverInfo));
   };
 
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -104,6 +99,13 @@ const BookingInformation = () => {
 
   const handleSelectedOptionsChange = (options) => {
     setSelectedOptions(options);
+    const updateDriverInfo = {
+      ...data,
+      province: options[0].province,
+      district: options[0].district,
+      ward: options[0].ward,
+    };
+    dispatch(updateDriverData(updateDriverInfo));
   };
 
   const handleDrivingLicenseChange = (newValue) => {
@@ -111,41 +113,12 @@ const BookingInformation = () => {
       ...prevState,
       drivingLicense: newValue,
     }));
+    const updateDriverInfo = { ...data, drivingLicense: newValue };
+    dispatch(updateDriverData(updateDriverInfo));
   };
 
-  const dispatch = useDispatch();
-  const handleClickSave = async () => {
-    const token = localStorage.getItem("jwtToken");
-    const formData = new FormData();
-    const dobFormated = dayjs(birthDay).format(DATE_PICKER_URI_FORMAT);
-    console.log(user.birthDay);
-    formData.append("email", user.email);
-    formData.append("fullName", userState.fullName);
-    formData.append("birthDay", dobFormated);
-    formData.append("phone", userState.phone);
-    formData.append("nationalID", userState.nationalID);
-    formData.append("province", userState.province);
-    formData.append("district", userState.district);
-    formData.append("ward", userState.ward);
-    formData.append("street", userState.street);
-    formData.append("drivingLicense", userState.drivingLicense);
-
-    const { data: response } = await axiosInstance.post(
-      "/personalInfo",
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (response.isSuccess === true) {
-      dispatch(setUserData(response.member));
-      createSnack(response.message, { severity: "success" });
-    } else {
-      createSnack(response.message, { severity: "error" });
-    }
+  const handleClickSave = () => {
+    createSnack("Đã lưu!", { severity: "success" });
   };
 
   return (

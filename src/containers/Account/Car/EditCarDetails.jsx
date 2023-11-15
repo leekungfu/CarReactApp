@@ -311,7 +311,7 @@ const EditCarDetails = () => {
               <Typography sx={{ pt: 2 }} variant="subtitle1">
                 Documents:
               </Typography>
-              <TableContainer component={Paper}>
+              <TableContainer component={Paper} elevation={0} sx={{ border: "1px solid #d6ccc2" }}>
                 <Table sx={{ minWidth: 650 }}>
                   <TableHead>
                     <TableRow>
@@ -322,14 +322,14 @@ const EditCarDetails = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {carInfo.files.map((item) => (
+                    {carInfo.files.map((item, index) => (
                       <TableRow
-                        key={item.id}
+                        key={index}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        <TableCell>{item.id}</TableCell>
+                        <TableCell>{index + 1}</TableCell>
                         <TableCell>{item.name}</TableCell>
                         <TableCell>{item.type}</TableCell>
                         <TableCell>{item.url}</TableCell>

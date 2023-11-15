@@ -68,7 +68,7 @@ const MyWallet = (props) => {
       SERVER_POSTING_DATE_TIME_FORMAT
     );
     const { data: response } = await axiosInstance.get(
-      "/customer/transactionList",
+      "/transactionList",
       {
         params: {
           fromTime: fromTimeFormatted,

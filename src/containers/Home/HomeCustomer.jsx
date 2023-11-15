@@ -107,26 +107,32 @@ const HomeCustomer = (props) => {
 
   const token = localStorage.getItem("jwtToken");
   const handleClickSearch = async () => {
-    handleClickOpenBackdrop();
     const startTimeFormatted = moment(startTime).format(
       SERVER_POSTING_DATE_TIME_FORMAT
     );
-    const response = await axiosInstance.get("/customer/searchCar", {
-      params: {
-        selectedProvince,
-        startTimeFormatted,
-      },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (response.data.isSuccess === true) {
-      setCars(response.data.cars);
-      handleCloseBackdrop();
-      console.log("Cars: ", response.data.cars);
-      createSnack(response.data.message, { severity: "success" });
+    if (selectedProvince && startTimeFormatted) {
+      handleClickOpenBackdrop();
+      const response = await axiosInstance.get("/customer/searchCar", {
+        params: {
+          selectedProvince,
+          startTimeFormatted,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.isSuccess === true) {
+        setCars(response.data.cars);
+        handleCloseBackdrop();
+        console.log("Cars: ", response.data.cars);
+        createSnack(response.data.message, { severity: "success" });
+      } else {
+        createSnack(response.data.message, { severity: "error" });
+      }
     } else {
-      createSnack(response.data.message, { severity: "error" });
+      createSnack("Vui lòng chọn tỉnh thành bạn muốn thuê xe!", {
+        severity: "warning",
+      });
     }
   };
 

@@ -13,6 +13,7 @@ import moment from "moment";
 import { SERVER_RESPOND_DATE_TIME_FORMAT } from "../../../shared/configs/constants";
 import ConfirmPaymentDeposit from "../../Modals/ConfirmPaymentDeposit";
 import { useCustomHook } from "../../../App";
+import { useSelector } from "react-redux";
 
 const Payments = (props) => {
   const { carId, pickUpTime, returnTime, deposit } = props;
@@ -33,6 +34,7 @@ const Payments = (props) => {
   const day = parseInt(dateParts[2]);
   const dateAsInt = year * 10000 + month * 100 + day;
 
+  const driverData = useSelector((state) => state.driver.data);
   const formData = new FormData();
   formData.append("carId", carId);
   formData.append("startDate", pickUpTimeFormated);
@@ -40,6 +42,16 @@ const Payments = (props) => {
   formData.append("deposit", deposit);
   formData.append("paymentMethod", paymentMethod);
   formData.append("bookingId", dateAsInt);
+  formData.append("email", driverData.email);
+  formData.append("fullName", driverData.fullName);
+  formData.append("birthDay", driverData.birthDay);
+  formData.append("phone", driverData.phone);
+  formData.append("nationalID", driverData.nationalID);
+  formData.append("province", driverData.province);
+  formData.append("district", driverData.district);
+  formData.append("ward", driverData.ward);
+  formData.append("street", driverData.street);
+  formData.append("drivingLicense", driverData.drivingLicense);
 
   const handleClickConfirm = async () => {
     setOpenConfirmPaymentDeposit(true);

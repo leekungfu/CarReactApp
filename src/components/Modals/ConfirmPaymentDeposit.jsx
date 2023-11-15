@@ -3,7 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { useSnackbar } from "../Hooks/useSnackBar";
 import axiosInstance from "../../shared/configs/axiosConfig";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { addBooking } from "../ReduxToolkit/BookingSlice";
 import { useNavigate } from "react-router-dom";
@@ -36,6 +36,7 @@ const ConfirmPaymentDeposit = (props) => {
     onClose();
   };
   const dispatch = useDispatch();
+  const data = useSelector((state) => state.driver.data);
   const token = localStorage.getItem("jwtToken");
   const handleClickYes = async () => {
     const { data: response } = await axiosInstance.post(
