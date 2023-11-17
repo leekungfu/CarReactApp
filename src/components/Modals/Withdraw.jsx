@@ -53,6 +53,7 @@ const Withdraw = (props) => {
     if (response.isSuccess === true) {
       save(response.transaction.member);
       createSnack(response.message, { severity: "success" });
+      onClose();
     }
   };
   const MAX_AMOUNT = 999999999;
@@ -65,26 +66,32 @@ const Withdraw = (props) => {
           <Divider />
           <Stack spacing={1} sx={{ mt: 2 }} alignItems="center">
             <Typography sx={{ mt: 2 }} variant="body1">
-              Please confirm that you will draw {value ? Number(parseFloat(value.replace(/[^0-9.]/g, ""))).toLocaleString() : 0} (VND) from your wallet.
+              Please confirm that you will draw{" "}
+              {value
+                ? Number(
+                    parseFloat(value.replace(/[^0-9.]/g, ""))
+                  ).toLocaleString()
+                : 0}{" "}
+              (VND) from your wallet.
             </Typography>
             <NumericFormat
-            customInput={OutlinedInput}
-            thousandSeparator={true}
-            size="small"
-            sx={{
-              mt: 2,
-              width: "45%",
-            }}
-            isAllowed={(value) => {
-              const { floatValue, formattedValue } = value;
-              return floatValue <= MAX_AMOUNT || formattedValue === "";
-            }}
-            fullWidth
-            placeholder="Amount"
-            suffix=" (VND)"
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-          />
+              customInput={OutlinedInput}
+              thousandSeparator={true}
+              size="small"
+              sx={{
+                mt: 2,
+                width: "45%",
+              }}
+              isAllowed={(value) => {
+                const { floatValue, formattedValue } = value;
+                return floatValue <= MAX_AMOUNT || formattedValue === "";
+              }}
+              fullWidth
+              placeholder="Amount"
+              suffix=" (VND)"
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+            />
           </Stack>
           <Stack
             sx={{ mt: 2 }}
@@ -102,7 +109,7 @@ const Withdraw = (props) => {
               Cancel
             </Button>
             <Button
-            disabled={!value}
+              disabled={!value}
               sx={{
                 width: "20%",
               }}

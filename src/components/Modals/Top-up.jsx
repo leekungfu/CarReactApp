@@ -53,6 +53,7 @@ const TopUp = (props) => {
     if (response.isSuccess === true) {
       save(response.transaction.member);
       createSnack(response.message, { severity: "success" });
+      onClose();
     } else {
       createSnack(response.message, { severity: "error" });
     }

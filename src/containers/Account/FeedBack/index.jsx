@@ -24,6 +24,13 @@ const StyledTypography = styled(Typography)`
 
 const MyFeedBack = () => {
   const [value, setValue] = useState(4.25);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 9;
+  const totalFeedbacks = 10;
+  const totalPages = Math.ceil(totalFeedbacks / itemsPerPage);
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage);
+  }
 
   return (
     <div>
@@ -293,12 +300,14 @@ const MyFeedBack = () => {
             </Card>
           </Stack>
           <Pagination
-            sx={{ display: "flex", justifyContent: "end", mt: 10 }}
-            count={10}
-            variant="outlined"
-            showFirstButton
-            showLastButton
-          />
+                sx={{ display: "flex", justifyContent: "end", mt: 10 }}
+                count={totalPages}
+                page={currentPage}
+                onChange={handlePageChange}
+                variant="outlined"
+                showFirstButton
+                showLastButton
+              />
         </Container>
       </Container>
     </div>
