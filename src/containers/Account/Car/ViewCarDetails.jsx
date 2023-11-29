@@ -224,7 +224,10 @@ const ViewCarDetails = () => {
               }}
               variant="outlined"
               endIcon={<ArrowForward />}
-              onClick={() => navigate(`/rentnow/${car.id}`)}
+              onClick={() => {
+                navigate(`/rentnow/${car.id}`);
+                window.scrollTo({ top: 0, behavior: "auto" });
+              }}
             >
               Rent now
             </Button>

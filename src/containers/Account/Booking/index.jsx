@@ -89,6 +89,7 @@ const MyBookings = (props) => {
   const bookingsOnCurrentPage = bookings.slice(startIndex, endIndex);
   const handleClickViewDetails = (bookingId) => {
     navigate(`/bookingdetails/${bookingId}`);
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
   const calculateNumberOfDays = (startDate, endDate) => {
     const start = moment(startDate);

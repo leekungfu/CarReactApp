@@ -77,6 +77,7 @@ const EditCarDetails = () => {
 
   const handleClickViewBooking = () => {
     navigate(`/viewbookedcar/${carId}`)
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   const handleChangeStatus = async (event) => {

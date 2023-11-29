@@ -60,6 +60,7 @@ const ConfirmPickUp = (props) => {
       const newStatus = response.booking.bookingStatus;
       dispatch(updateBookingStatus({ bookingId, newStatus }));
       navigate("/booking");
+      window.scrollTo({ top: 0, behavior: "auto" });
     } else {
       createSnack(response.message, { severity: "error" });
     }

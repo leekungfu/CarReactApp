@@ -88,6 +88,7 @@ const AddCarStepper = (props) => {
   const handleClickViewCars = () => {
     onClose();
     navigate("/cars");
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   return (

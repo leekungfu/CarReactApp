@@ -75,9 +75,11 @@ const HomeCustomer = (props) => {
   };
   const handleClickViewDetails = (carId) => {
     navigate(`/viewcardetails/${carId}`);
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
   const handleClickRentNow = (carId) => {
     navigate(`/rentnow/${carId}`);
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
   const handleClickOpenBackdrop = () => {
     setBackdrop(true);

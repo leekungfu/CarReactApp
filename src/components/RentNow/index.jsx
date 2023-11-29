@@ -74,6 +74,7 @@ const RentNow = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     if (activeStep === steps.length - 1) {
       navigate("/booking");
+      window.scrollTo({ top: 0, behavior: "auto" });
     }
   };
   const handleBack = () => {

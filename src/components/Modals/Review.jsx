@@ -56,10 +56,12 @@ const Review = (props) => {
   };
   const handleClickSkipRating = () => {
     navigate("/homecustomer");
+    window.scrollTo({ top: 0, behavior: "auto" });
     handleClose();
   };
   const handleNavigate = () => {
     navigate("/booking");
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   const handleClickSendFeedback = async () => {

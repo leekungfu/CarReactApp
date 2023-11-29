@@ -24,6 +24,7 @@ const ResetSuccess = (props) => {
   };
   const handleClick = () => {
     navigate("/");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
   return (
     <div>

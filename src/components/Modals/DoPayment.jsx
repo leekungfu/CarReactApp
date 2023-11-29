@@ -63,6 +63,7 @@ const DoPayment = (props) => {
         dispatch(updateBookingStatus({ bookingId, newStatus }));
         save(response.booking.member);
         navigate("/booking");
+        window.scrollTo({ top: 0, behavior: "auto" });
       } else {
         createSnack(response.message, { severity: "error" });
       }

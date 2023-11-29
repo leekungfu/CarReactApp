@@ -28,9 +28,11 @@ const GoToWallet = (props) => {
   };
   const handleClickGo = () => {
     navigate("/wallet");
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
   const handleClickReturn = () => {
     navigate("/booking");
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   return (

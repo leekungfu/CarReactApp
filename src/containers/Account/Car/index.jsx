@@ -46,6 +46,7 @@ const MyCars = (props) => {
   const navigate = useNavigate();
   const handleCarClick = (carId) => {
     navigate(`/editcardetails/${carId}`);
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
   const handleClose = () => {
     setOpenAddCar(false);
@@ -53,6 +54,7 @@ const MyCars = (props) => {
 
   const handleClickViewBooking = (carId) => {
     navigate(`/viewbookedcar/${carId}`)
+    window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   return (
