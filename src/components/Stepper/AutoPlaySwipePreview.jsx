@@ -17,22 +17,37 @@ SwiperCore.use([Navigation, Autoplay]);
 function AutoPlaySwipePreview() {
   let swiperInstance;
   const imageData = useSelector((state) => state.details.data);
+  if (
+    !imageData ||
+    !imageData.images ||
+    Object.values(imageData.images).some((img) => !img)
+  ) {
+    return <div>No images available</div>;
+  }
   const images = [
     {
       label: "Front Image",
-      imgPath: URL.createObjectURL(imageData.images.frontImage),
+      imgPath: imageData.images.frontImage
+        ? URL.createObjectURL(imageData.images.frontImage)
+        : null,
     },
     {
       label: "Right Image",
-      imgPath: URL.createObjectURL(imageData.images.rightImage),
+      imgPath: imageData.images.rightImage
+        ? URL.createObjectURL(imageData.images.rightImage)
+        : null,
     },
     {
       label: "Left Image",
-      imgPath: URL.createObjectURL(imageData.images.leftImage),
+      imgPath: imageData.images.leftImage
+        ? URL.createObjectURL(imageData.images.leftImage)
+        : null,
     },
     {
       label: "Back Image",
-      imgPath: URL.createObjectURL(imageData.images.backImage),
+      imgPath: imageData.images.backImage
+        ? URL.createObjectURL(imageData.images.backImage)
+        : null,
     },
   ];
 
@@ -47,18 +62,28 @@ function AutoPlaySwipePreview() {
       {images.map((step, index) => (
         <div key={index}>
           <SwiperSlide>
-            <Box
-              component="img"
-              sx={{
-                height: "fit-content",
-                display: "block",
-                maxWidth: "92%",
-                overflow: "hidden",
-                width: "100%",
-              }}
-              src={step.imgPath}
-              alt={step.label}
-            />
+            {step.imgPath ? (
+              <Box
+                component="img"
+                sx={{
+                  height: "fit-content",
+                  display: "block",
+                  maxWidth: "92%",
+                  overflow: "hidden",
+                  width: "100%",
+                }}
+                src={step.imgPath}
+                alt={step.label}
+              />
+            ) : (
+              <Box
+                sx={{
+                  height: "fit-content",
+                  maxWidth: "92%",
+                  backgroundColor: "white",
+                }}
+              />
+            )}
           </SwiperSlide>
         </div>
       ))}

@@ -23,6 +23,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { carAdded } from "../ReduxToolkit/CarAdapter";
 import { v4 as uuidv4 } from "uuid";
 import { addCarAndSendToServer } from "../ReduxToolkit/SaveCarToServer";
+import { clearBasicData } from "../ReduxToolkit/basicSlice";
+import { clearDetailsData } from "../ReduxToolkit/detailsSlice";
+import { clearPricingData } from "../ReduxToolkit/pricingSlice";
 
 const AddCarStepper = (props) => {
   const { open, onClose } = props;
@@ -69,8 +72,11 @@ const AddCarStepper = (props) => {
         terms: pricingData.terms,
         status: "Available",
       };
-      
+
       dispatch(addCarAndSendToServer(carData, basicData, detailsData));
+      dispatch(clearBasicData());
+      dispatch(clearDetailsData());
+      dispatch(clearPricingData());
     }
   };
 

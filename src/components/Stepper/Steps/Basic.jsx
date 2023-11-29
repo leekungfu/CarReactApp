@@ -24,7 +24,7 @@ import RegistrationPaper from "../../UploadFile/RegistrationPaper";
 import Certificate from "../../UploadFile/Certificate";
 import Insurance from "../../UploadFile/Insurance";
 import { useDispatch, useSelector } from "react-redux";
-import { updateBasicData, updateData } from "../../ReduxToolkit/basicSlice";
+import { updateBasicData } from "../../ReduxToolkit/basicSlice";
 
 const Basic = () => {
   const dispatch = useDispatch();

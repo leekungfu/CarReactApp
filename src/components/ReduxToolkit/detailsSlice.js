@@ -17,10 +17,23 @@ const detailsSlice = createSlice({
   },
   reducers: {
     updateDetailsData: (state, action) => {
-        state.data = action.payload;
-    }
-  }
+      state.data = action.payload;
+    },
+    clearDetailsData: (state) => {
+      state.data = {
+        mileage: "",
+        fuelConsumption: "",
+        province: "",
+        district: "",
+        ward: "",
+        street: "",
+        description: "",
+        additionalFunctions: [],
+        images: [],
+      };
+    },
+  },
 });
 
-export const { updateDetailsData } = detailsSlice.actions;
+export const { updateDetailsData, clearDetailsData } = detailsSlice.actions;
 export default detailsSlice.reducer;

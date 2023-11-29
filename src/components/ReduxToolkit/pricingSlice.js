@@ -13,8 +13,15 @@ const pricingSlice = createSlice({
     updatePricingData: (state, action) => {
       state.data = action.payload;
     },
+    clearPricingData: (state) => {
+      state.data = {
+        price: "",
+        deposit: "",
+        terms: [],
+      };
+    },
   },
 });
 
-export const { updatePricingData } = pricingSlice.actions;
+export const { updatePricingData, clearPricingData } = pricingSlice.actions;
 export default pricingSlice.reducer;

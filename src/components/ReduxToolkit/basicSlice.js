@@ -19,9 +19,22 @@ const basicSlice = createSlice({
     updateBasicData: (state, action) => {
       state.data = action.payload;
     },
+    clearBasicData: (state) => {
+      state.data = {
+        plateNumber: '',
+        color: '',
+        brand: '',
+        model: '',
+        productionYear: '',
+        numberOfSeat: '',
+        transmissionType: '',
+        fuelType: '',
+        documents: [],
+      };
+    },
   },
 });
 
-export const { updateBasicData } = basicSlice.actions;
+export const { updateBasicData, clearBasicData } = basicSlice.actions;
 
 export default basicSlice.reducer;
