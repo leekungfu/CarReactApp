@@ -1,7 +1,6 @@
-import { Card, Dialog, DialogTitle, List } from "@mui/material";
+import { Dialog, DialogTitle } from "@mui/material";
 import PropTypes from "prop-types";
 import AddCarStepper from "../Stepper/AddCarStepper";
-import { Fragment } from "react";
 
 function AddCar(props) {
   const { onClose, open } = props;
@@ -11,21 +10,19 @@ function AddCar(props) {
   };
 
   return (
-    <Fragment>
-      <Dialog onClose={handleClose} open={open} maxWidth="md" fullWidth>
-        <DialogTitle
-          sx={{
-            fontSize: 25,
-            fontWeight: "bold",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          ADD CAR STEPS
-        </DialogTitle>
-        <AddCarStepper open={open} onClose={handleClose} />
-      </Dialog>
-    </Fragment>
+    <Dialog onClose={handleClose} open={open} maxWidth="md" fullWidth>
+      <DialogTitle
+        sx={{
+          fontSize: 25,
+          fontWeight: "bold",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        ADD CAR STEPS
+      </DialogTitle>
+      <AddCarStepper open={open} onClose={handleClose} />
+    </Dialog>
   );
 }
 

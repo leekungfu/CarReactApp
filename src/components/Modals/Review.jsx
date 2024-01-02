@@ -1,3 +1,4 @@
+import { Star } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -8,12 +9,11 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Star } from "@mui/icons-material";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../Hooks/useSnackBar";
-import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",

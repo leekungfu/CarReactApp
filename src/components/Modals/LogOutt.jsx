@@ -1,9 +1,8 @@
 import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
-import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router";
-import { useSnackbar } from "../Hooks/useSnackBar";
+import React from "react";
 import axiosInstance from "../../shared/configs/axiosConfig";
+import { useSnackbar } from "../Hooks/useSnackBar";
 
 const style = {
   position: "absolute",

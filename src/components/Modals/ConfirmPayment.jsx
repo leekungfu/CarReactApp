@@ -1,6 +1,6 @@
 import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
-import React from "react";
 import PropTypes from "prop-types";
+import React from "react";
 
 const style = {
   position: "absolute",

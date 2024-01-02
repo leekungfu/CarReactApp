@@ -1,6 +1,7 @@
-import React from "react";
-import { Box, Typography } from "@mui/material";
 import { Circle } from "@mui/icons-material";
+import { Box, Typography } from "@mui/material";
+import PropTypes from "prop-types";
+import React from "react";
 
 const BookingSummary = (props) => {
   const { car, totalTime } = props;
@@ -63,6 +64,11 @@ const BookingSummary = (props) => {
       </Box>
     </div>
   );
+};
+
+BookingSummary.propTypes = {
+  car: PropTypes.object.isRequired,
+  totalTime: PropTypes.string.isRequired,
 };
 
 export default BookingSummary;

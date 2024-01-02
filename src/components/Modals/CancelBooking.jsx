@@ -1,11 +1,11 @@
 import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
-import React from "react";
 import PropTypes from "prop-types";
+import React from "react";
+import { useDispatch } from "react-redux";
+import styled from "styled-components";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../Hooks/useSnackBar";
-import { useDispatch } from "react-redux";
 import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
-import styled from "styled-components";
 
 const style = {
   position: "absolute",
@@ -25,7 +25,6 @@ const StyledModal = styled(Modal)`
   }
 `;
 
-
 const CancelBooking = (props) => {
   const { open, onClose, booking, car } = props;
   const { createSnack } = useSnackbar();
@@ -44,7 +43,7 @@ const CancelBooking = (props) => {
         params: {
           status: "Cancelled",
           plateNumber: car.plateNumber,
-          cost
+          cost,
         },
         headers: {
           Authorization: `Bearer ${token}`,
@@ -64,10 +63,7 @@ const CancelBooking = (props) => {
 
   return (
     <div>
-      <StyledModal
-        open={open}
-        onClose={handleClose}
-      >
+      <StyledModal open={open} onClose={handleClose}>
         <Box sx={style}>
           <Typography variant="h6">Confirm cancel booking</Typography>
           <Divider />

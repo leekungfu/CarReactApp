@@ -1,11 +1,11 @@
 import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
-import React from "react";
 import PropTypes from "prop-types";
+import React from "react";
+import { useDispatch } from "react-redux";
+import styled from "styled-components";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../Hooks/useSnackBar";
-import { useDispatch } from "react-redux";
 import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
-import styled from "styled-components";
 
 const style = {
   position: "absolute",
@@ -56,10 +56,7 @@ const ConfirmDeposit = (props) => {
 
   return (
     <div>
-      <StyledModal
-        open={open}
-        onClose={handleClose}
-      >
+      <StyledModal open={open} onClose={handleClose}>
         <Box sx={style}>
           <Typography variant="h6">Confirm deposit</Typography>
           <Divider />

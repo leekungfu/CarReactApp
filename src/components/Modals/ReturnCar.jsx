@@ -1,16 +1,14 @@
 import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
-import React, { useState } from "react";
 import PropTypes from "prop-types";
-import Review from "./Review";
-import { useSnackbar } from "../Hooks/useSnackBar";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import axiosInstance from "../../shared/configs/axiosConfig";
-import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
 import styled from "styled-components";
-import moment from "moment";
-import { useNavigate } from "react-router-dom";
 import { useCustomHook } from "../../App";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
 import GoToWallet from "./GoToWallet";
+import Review from "./Review";
 
 const style = {
   position: "absolute",
@@ -97,14 +95,14 @@ const ReturnCar = (props) => {
           {cost && cost < 0 ? (
             <Typography sx={{ mt: 2 }} variant="body1">
               Please confirm to return the car. The remaining is{" "}
-              {Number(Math.abs(cost)).toLocaleString()} (VND) will be deducted from
-              your wallet.
+              {Number(Math.abs(cost)).toLocaleString()} (VND) will be deducted
+              from your wallet.
             </Typography>
           ) : (
             <Typography sx={{ mt: 2 }} variant="body1">
               Please confirm to return the car. The exceeding is{" "}
-              {Number(Math.abs(cost)).toLocaleString()} (VND) will be returned to
-              your wallet.
+              {Number(Math.abs(cost)).toLocaleString()} (VND) will be returned
+              to your wallet.
             </Typography>
           )}
           <Stack

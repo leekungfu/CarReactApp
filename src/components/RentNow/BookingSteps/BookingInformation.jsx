@@ -1,28 +1,25 @@
+import { ArrowForwardIos } from "@mui/icons-material";
 import {
   Box,
-  Typography,
+  Button,
   Grid,
-  Stack,
   InputLabel,
   OutlinedInput,
-  Button,
+  Stack,
+  Typography,
 } from "@mui/material";
-import React from "react";
-import {
-  ArrowForwardIos,
-} from "@mui/icons-material";
-import { useState } from "react";
-import dayjs from "dayjs";
-import Provinces from "../../Select/Provinces";
-import { DatePicker } from "@mui/x-date-pickers";
-import DrivingLicense from "../../UploadFile/DrivingLicense";
 import MuiAccordion from "@mui/material/Accordion";
-import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
+import MuiAccordionSummary from "@mui/material/AccordionSummary";
+import { DatePicker } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { useSnackbar } from "../../Hooks/useSnackBar";
-import { useDispatch, useSelector } from "react-redux";
 import { updateDriverData } from "../../ReduxToolkit/DriverInformationSlice";
+import Provinces from "../../Select/Provinces";
+import DrivingLicense from "../../UploadFile/DrivingLicense";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />

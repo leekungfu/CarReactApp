@@ -1,7 +1,6 @@
-import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
-import React from "react";
+import { Box, Button, Modal, Typography } from "@mui/material";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
+import React from "react";
 
 const style = {
   position: "absolute",

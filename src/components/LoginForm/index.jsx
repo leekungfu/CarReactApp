@@ -1,33 +1,27 @@
 import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
+  Box,
   Button,
+  Checkbox,
+  Container,
   Dialog,
   DialogContent,
-  DialogTitle,
-  Typography,
-  Box,
   FormControl,
-  TextField,
-  Container,
   FormControlLabel,
-  Checkbox,
-  Grid,
-  InputLabel,
-  OutlinedInput,
   IconButton,
   InputAdornment,
+  OutlinedInput,
   Stack,
+  Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Link, useNavigate } from "react-router-dom";
-import SignUpForm from "../SignUpForm";
-import { useDispatch } from "react-redux";
-import { useSnackbar } from "../Hooks/useSnackBar";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import validator from "validator";
-import axiosInstance from "../../shared/configs/axiosConfig";
-import { carAdded, carsAdded } from "../ReduxToolkit/CarAdapter";
 import { useCustomHook } from "../../App";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import SignUpForm from "../SignUpForm";
 
 function LoginForm(props) {
   const { open, onClose } = props;

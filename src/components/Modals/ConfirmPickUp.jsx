@@ -1,12 +1,12 @@
 import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
-import React from "react";
 import PropTypes from "prop-types";
+import React from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../Hooks/useSnackBar";
-import { useDispatch } from "react-redux";
 import { updateBookingStatus } from "../ReduxToolkit/BookingSlice";
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -25,7 +25,6 @@ const StyledModal = styled(Modal)`
     background-color: rgba(0, 0, 0, 0.3) !important;
   }
 `;
-
 
 const ConfirmPickUp = (props) => {
   const { open, onClose, booking, car } = props;
@@ -46,7 +45,7 @@ const ConfirmPickUp = (props) => {
         params: {
           status: "In_Progress",
           plateNumber: car.plateNumber,
-          cost
+          cost,
         },
         headers: {
           Authorization: `Bearer ${token}`,

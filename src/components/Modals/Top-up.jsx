@@ -7,12 +7,12 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
 import PropTypes from "prop-types";
+import React, { useState } from "react";
+import { NumericFormat } from "react-number-format";
+import { useCustomHook } from "../../App";
 import axiosInstance from "../../shared/configs/axiosConfig";
 import { useSnackbar } from "../Hooks/useSnackBar";
-import { useCustomHook } from "../../App";
-import { NumericFormat } from "react-number-format";
 
 const style = {
   position: "absolute",
@@ -68,26 +68,32 @@ const TopUp = (props) => {
           <Divider />
           <Stack sx={{ mt: 2 }} spacing={1} alignItems="center">
             <Typography sx={{ mt: 2 }} variant="body1">
-            Please confirm that you will charge {value ? Number(parseFloat(value.replace(/[^0-9.]/g, ""))).toLocaleString() : 0} (VND) into your wallet.
+              Please confirm that you will charge{" "}
+              {value
+                ? Number(
+                    parseFloat(value.replace(/[^0-9.]/g, ""))
+                  ).toLocaleString()
+                : 0}{" "}
+              (VND) into your wallet.
             </Typography>
             <NumericFormat
-            customInput={OutlinedInput}
-            thousandSeparator={true}
-            size="small"
-            sx={{
-              mt: 2,
-              width: "45%",
-            }}
-            isAllowed={(value) => {
-              const { floatValue, formattedValue } = value;
-              return floatValue <= MAX_AMOUNT || formattedValue === "";
-            }}
-            fullWidth
-            placeholder="Amount"
-            suffix=" (VND)"
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-          />
+              customInput={OutlinedInput}
+              thousandSeparator={true}
+              size="small"
+              sx={{
+                mt: 2,
+                width: "45%",
+              }}
+              isAllowed={(value) => {
+                const { floatValue, formattedValue } = value;
+                return floatValue <= MAX_AMOUNT || formattedValue === "";
+              }}
+              fullWidth
+              placeholder="Amount"
+              suffix=" (VND)"
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+            />
           </Stack>
           <Stack
             sx={{ mt: 2 }}
@@ -103,7 +109,7 @@ const TopUp = (props) => {
               Cancel
             </Button>
             <Button
-            disabled={!value}
+              disabled={!value}
               sx={{ width: "20%" }}
               onClick={handleClickOK}
               variant="outlined"

@@ -1,6 +1,6 @@
-import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
-import React from "react";
+import { Box, Button, Modal, Stack, Typography } from "@mui/material";
 import PropTypes from "prop-types";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 

@@ -9,23 +9,14 @@ import {
 } from "@mui/icons-material";
 import {
   Avatar,
-  Box,
-  Button,
-  Card,
-  CardContent,
   Container,
-  CssBaseline,
   Grid,
-  Link,
   IconButton,
-  ListItemButton,
-  Paper,
+  Link,
   Stack,
-  Toolbar,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import { Fragment } from "react";
 import SignUpForm from "../SignUpForm";
 
 const Footer = () => {
@@ -94,7 +85,11 @@ const Footer = () => {
                   variant="subtitle1"
                   sx={{ pb: 2 }}
                 >
-                  <Link underline="hover" sx={{ cursor: "pointer" }} color="inherit">
+                  <Link
+                    underline="hover"
+                    sx={{ cursor: "pointer" }}
+                    color="inherit"
+                  >
                     New User Sign Up
                   </Link>
                 </Typography>

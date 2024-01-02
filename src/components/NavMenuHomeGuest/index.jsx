@@ -1,19 +1,17 @@
+import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import {
   AppBar,
   Box,
   Button,
-  ButtonBase,
   Container,
   CssBaseline,
-  IconButton,
   Toolbar,
   Typography,
 } from "@mui/material";
-import { useState, Fragment } from "react";
-import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import { Fragment, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import LoginForm from "../LoginForm";
 import SignUpForm from "../SignUpForm";
-import { Link, useNavigate } from "react-router-dom";
 
 const pages = ["HOME", "ABOUT US", "SIGN UP", "LOG IN"];
 
@@ -75,9 +73,9 @@ const NavBarGuest = () => {
                 justifyContent: "end",
               }}
             >
-              {pages.map((page, index) => (
+              {pages.map((page) => (
                 <Button
-                  key={index}
+                  key={page}
                   sx={{
                     display: "block",
                     fontWeight: 600,

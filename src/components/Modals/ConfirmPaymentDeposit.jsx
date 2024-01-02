@@ -1,14 +1,12 @@
 import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
-import React from "react";
 import PropTypes from "prop-types";
-import { useSnackbar } from "../Hooks/useSnackBar";
-import axiosInstance from "../../shared/configs/axiosConfig";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
-import { addBooking } from "../ReduxToolkit/BookingSlice";
-import { useNavigate } from "react-router-dom";
-import { addBookingResult } from "../ReduxToolkit/BookingResult";
 import { useCustomHook } from "../../App";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import { addBookingResult } from "../ReduxToolkit/BookingResult";
 
 const style = {
   position: "absolute",

@@ -1,6 +1,6 @@
-import { Box, Button, Divider, Modal, Stack, Typography } from "@mui/material";
-import React from "react";
+import { Box, Button, Modal, Typography } from "@mui/material";
 import PropTypes from "prop-types";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const style = {
@@ -30,7 +30,10 @@ const ResetSuccess = (props) => {
     <div>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
-          <Typography sx={{ mt: 1, mb: 2, fontWeight: "bold", color: "#38b000" }} variant="h6">
+          <Typography
+            sx={{ mt: 1, mb: 2, fontWeight: "bold", color: "#38b000" }}
+            variant="h6"
+          >
             Reset password successfully!
           </Typography>
           <Button

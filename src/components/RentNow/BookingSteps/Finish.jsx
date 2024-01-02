@@ -1,8 +1,8 @@
 import { Typography } from "@mui/material";
+import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import axiosInstance from "../../../shared/configs/axiosConfig";
-import moment from "moment";
 import { DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../../shared/configs/constants";
 
 const Finish = (props) => {
@@ -35,16 +35,14 @@ const Finish = (props) => {
     };
 
     fetchData();
-  }, [carId, token]);
+  }, [carId, token, car]);
 
   return (
     <div>
       <Typography variant="h6">
         You've successfully booked {car.brand} {car.model} {car.productionYear}{" "}
         from{" "}
-        {moment(bookingData.startDate).format(
-          DATE_TIME_PICKER_DISPLAY_FORMAT
-        )}{" "}
+        {moment(bookingData.startDate).format(DATE_TIME_PICKER_DISPLAY_FORMAT)}{" "}
         to {moment(bookingData.endDate).format(DATE_TIME_PICKER_DISPLAY_FORMAT)}
         .
       </Typography>
