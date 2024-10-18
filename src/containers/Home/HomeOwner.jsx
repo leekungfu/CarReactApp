@@ -1,4 +1,13 @@
 import {
+  CarRental,
+  CurrencyExchange,
+  HowToReg,
+  List,
+  MoneyOff,
+  Payment,
+  SwipeRight,
+} from "@mui/icons-material";
+import {
   Box,
   Button,
   Card,
@@ -8,22 +17,13 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import {
-  CarRental,
-  CurrencyExchange,
-  HowToReg,
-  List,
-  MoneyOff,
-  Payment,
-  SwipeRight,
-} from "@mui/icons-material";
-import styled from "styled-components";
 import { useEffect, useState } from "react";
-import AddCar from "../../components/Dialogs/AddCar";
-import axiosInstance from "../../shared/configs/axiosConfig";
 import { useDispatch } from "react-redux";
+import styled from "styled-components";
+import AddCar from "../../components/Dialogs/AddCar";
 import { carsAdded } from "../../components/ReduxToolkit/CarAdapter";
 import { setUserData } from "../../components/ReduxToolkit/UserSlice";
+import axiosInstance from "../../shared/configs/axiosConfig";
 
 const StyledTypography = styled(Typography)`
   font-weight: 600;
@@ -31,6 +31,56 @@ const StyledTypography = styled(Typography)`
 
 const HomeOwner = () => {
   const [open, setOpen] = useState(false);
+  const [carArray, setCarArray] = useState([]);
+  const [apiCalled, setApiCalled] = useState(false);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!apiCalled) {
+      const fetchData = async () => {
+        try {
+          const token = localStorage.getItem("jwtToken");
+          const response = await axiosInstance.get("/owner/cars", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.data.isSuccess) {
+            setCarArray(response.data.cars);
+            dispatch(carsAdded(response.data.cars));
+          } else {
+            console.error("Error fetching cars:", response.data.error);
+          }
+        } catch (error) {
+          console.error("Error fetching cars:", error);
+        } finally {
+          setApiCalled(true);
+        }
+      };
+      fetchData();
+    }
+  }, [apiCalled, dispatch]);
+
+  useEffect(() => {
+    if (!apiCalled) {
+      const fetchUserData = async () => {
+        try {
+          const token = localStorage.getItem("jwtToken");
+          const response = await axiosInstance.get("/currentUser", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          dispatch(setUserData(response.data));
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        } finally {
+          setApiCalled(true);
+        }
+      };
+      fetchUserData();
+    }
+  }, [apiCalled, dispatch]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -39,57 +89,6 @@ const HomeOwner = () => {
   const handleClose = () => {
     setOpen(false);
   };
-  const dispatch = useDispatch();
-
-  const [carArray, setCarArray] = useState([]);
-  const key = carArray.length;
-  const [apiCalled, setApiCalled] = useState(false);
-  useEffect(() => {
-    if (!apiCalled) {
-      const token = localStorage.getItem("jwtToken");
-      axiosInstance
-        .get("/owner/cars", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          if (response.data.isSuccess === true) {
-            console.log(response.data.cars);
-            setCarArray(response.data.cars);
-            dispatch(carsAdded(response.data.cars));
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        })
-        .finally(() => {
-          setApiCalled(true);
-        });
-    }
-  }, [apiCalled, dispatch, key]);
-
-  useEffect(() => {
-    if (!apiCalled) {
-      const token = localStorage.getItem("jwtToken");
-      axiosInstance
-        .get("/currentUser", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((response) => {
-          console.log(response.data);
-          dispatch(setUserData(response.data));
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        })
-        .finally(() => {
-          setApiCalled(true);
-        });
-    }
-  }, [apiCalled, dispatch]);
 
   return (
     <div>

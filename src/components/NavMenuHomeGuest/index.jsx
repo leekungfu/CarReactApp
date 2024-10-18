@@ -1,16 +1,14 @@
+import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import {
   AppBar,
   Box,
   Button,
-  ButtonBase,
   Container,
   CssBaseline,
-  IconButton,
   Toolbar,
   Typography,
 } from "@mui/material";
-import { useState, Fragment } from "react";
-import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import { Fragment, useState } from "react";
 import LoginForm from "../LoginForm";
 import SignUpForm from "../SignUpForm";
 
@@ -66,13 +64,17 @@ const NavBarGuest = () => {
                 fontWeight: 800,
                 letterSpacing: ".1rem",
                 textDecoration: "none",
+                cursor: "pointer",
               }}
             >
               RENTAL A CAR <span style={{ color: "#fca311" }}>TODAY</span>
             </Typography>
             <DirectionsCarIcon
               fontSize="medium"
-              sx={{ display: { xs: "none", md: "flex" }, ml: 1 }}
+              sx={{
+                display: { xs: "none", md: "flex", cursor: "pointer" },
+                ml: 1,
+              }}
             />
             <Box
               sx={{
@@ -83,7 +85,7 @@ const NavBarGuest = () => {
             >
               {pages.map((page, index) => (
                 <Button
-                  key={index}
+                  key={page}
                   sx={{
                     display: "block",
                     fontWeight: 600,

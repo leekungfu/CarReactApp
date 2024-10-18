@@ -10,22 +10,24 @@ import {
 } from "@mui/icons-material";
 import {
   Box,
+  Breadcrumbs,
+  Button,
   Card,
   CardContent,
+  Container,
+  FormControl,
+  Grid,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+  Stack,
   Tab,
   Tabs,
-  Container,
-  Grid,
-  Stack,
-  OutlinedInput,
-  InputLabel,
   Typography,
-  Button,
-  FormControl,
-  InputAdornment,
-  IconButton,
-  Breadcrumbs,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
 import React, {
   Fragment,
   useCallback,
@@ -33,22 +35,20 @@ import React, {
   useRef,
   useState,
 } from "react";
-import CustomTabPanels from "../../../components/CustomTabPanels/CustomTabPanels";
-import dayjs from "dayjs";
-import { DatePicker } from "@mui/x-date-pickers";
-import DrivingLicense from "../../../components/UploadFile/DrivingLicense";
-import Provinces from "../../../components/Select/Provinces";
+import { NumericFormat } from "react-number-format";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import validator from "validator";
+import CustomTabPanels from "../../../components/CustomTabPanels/CustomTabPanels";
+import { useSnackbar } from "../../../components/Hooks/useSnackBar";
+import { setUserData } from "../../../components/ReduxToolkit/UserSlice";
+import Provinces from "../../../components/Select/Provinces";
+import DrivingLicense from "../../../components/UploadFile/DrivingLicense";
+import axiosInstance from "../../../shared/configs/axiosConfig";
 import {
   DATE_PICKER_DISPLAY_FORMAT,
   DATE_PICKER_URI_FORMAT,
 } from "../../../shared/configs/constants";
-import { useSnackbar } from "../../../components/Hooks/useSnackBar";
-import validator from "validator";
-import { NumericFormat } from "react-number-format";
-import axiosInstance from "../../../shared/configs/axiosConfig";
-import { useDispatch, useSelector } from "react-redux";
-import { setData, setUserData } from "../../../components/ReduxToolkit/UserSlice";
 
 function a11yProps(index) {
   return {
@@ -62,18 +62,16 @@ const ProfileTabs = () => {
   const dispatch = useDispatch();
   const token = localStorage.getItem("jwtToken");
   const user = useSelector((state) => state.userData);
-  console.log("user ", user);
-  
   const [tab, setTab] = useState(0);
   const [fullName, setFullName] = useState(user.fullName);
   const [phone, setPhone] = useState(user.phone);
   const [nationalID, setNationalId] = useState(user.nationalID);
-  const [birthDay, setBirthDay] = useState(dayjs);
+  const [birthDay, setBirthDay] = useState(dayjs(user.birthDay));
   const [street, setStreet] = useState(user.street);
   const [drivingLicense, setDrivingLicense] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   const handleChange = (event, newValue) => {
     setTab(newValue);
   };
@@ -213,7 +211,7 @@ const ProfileTabs = () => {
 
   const [checkMessage, setCheckMessage] = useState("");
 
-  const checkPassword = () => {
+  const checkPassword = useCallback(() => {
     const msg = {
       message: {},
       color: "",
@@ -240,7 +238,7 @@ const ProfileTabs = () => {
     }
     setCheckMessage(msg);
     return Object.keys(msg.message).length === 0;
-  };
+  }, [password, passwordValueOptions]);
 
   const isPasswordValidRef = useRef(false);
   const MAX_FULLNAME_LENGTH = 30;
@@ -250,7 +248,7 @@ const ProfileTabs = () => {
 
   useEffect(() => {
     isPasswordValidRef.current = checkPassword(password);
-  }, [password]);
+  }, [checkPassword, password]);
 
   return (
     <Fragment>
@@ -263,7 +261,11 @@ const ProfileTabs = () => {
             <Home sx={{ mr: 0.5 }} fontSize="inherit" />
             <Typography
               component={Link}
-              to={user && user.role === "CUSTOMER" ? "/homecustomer" : "/homeowner"}
+              to={
+                user && user.role === "CUSTOMER"
+                  ? "/homecustomer"
+                  : "/homeowner"
+              }
               variant="subtitle1"
               fontWeight="bold"
               sx={{

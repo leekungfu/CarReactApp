@@ -1,30 +1,25 @@
+import { Home, NavigateNext, SaveAs } from "@mui/icons-material";
 import {
-  Container,
+  Breadcrumbs,
+  Button,
   Card,
   CardContent,
-  Stack,
+  Container,
   Grid,
   List,
-  Typography,
-  Box,
-  Skeleton,
   Pagination,
-  Button,
-  Rating,
-  Breadcrumbs,
-  Divider,
+  Skeleton,
+  Stack,
+  Typography,
 } from "@mui/material";
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import ConfirmDeposit from "../../../components/Modals/ConfirmDeposit";
 import ConfirmPayment from "../../../components/Modals/ConfirmPayment";
-import { Link, useNavigate, useNavigation, useParams } from "react-router-dom";
-import AutoPlaySwipePreview from "../../../components/Stepper/AutoPlaySwipePreview";
 import ReturnCar from "../../../components/Modals/ReturnCar";
-import { Home, NavigateNext, SaveAs } from "@mui/icons-material";
-import AutoPreviewBooking from "./AutoPreviewBooking";
-import { useSelector } from "react-redux";
 import { carSelectedAll } from "../../../components/ReduxToolkit/CarAdapter";
+import AutoPreviewBooking from "./AutoPreviewBooking";
 
 const data = [
   {
@@ -106,6 +101,7 @@ const MyBookings = (props) => {
   const [rateValue, setRateValue] = useState(4.5);
   const navigate = useNavigate();
   const cars = useSelector(carSelectedAll).payload.cars;
+  const user = useSelector((state) => state.userData);
   const carArray = Object.values(cars.entities);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -134,10 +130,10 @@ const MyBookings = (props) => {
   const handleCloseReturnCar = () => {
     setOpenReturnCar(false);
   };
-  
+
   const handleClickViewDetails = (carId) => {
     navigate(`/bookingdetails/${carId}`);
-  }
+  };
 
   return (
     <div>
@@ -151,7 +147,7 @@ const MyBookings = (props) => {
               <Home sx={{ mr: 0.5 }} fontSize="inherit" />
               <Typography
                 component={Link}
-                to="/homeowner"
+                to={user?.role === "OWNER" ? "/homeowner" : "/homecustomer"}
                 variant="subtitle1"
                 fontWeight="bold"
                 sx={{

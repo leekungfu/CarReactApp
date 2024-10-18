@@ -1,6 +1,5 @@
 import { Lock, LockOpen, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
-  Box,
   Button,
   Container,
   FormControl,
@@ -10,9 +9,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React from "react";
-import { useState } from "react";
-import NotifyReset from "../../../components/Modals/NotifyReset";
+import React, { useState } from "react";
 import ResetSuccess from "../../../components/Modals/ResetSuccess";
 
 const ConfirmReset = () => {

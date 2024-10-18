@@ -1,45 +1,110 @@
-import React from "react";
-import NavMenuUser from "../../../components/NavMenuUser";
+import { Commute, Home, NavigateNext, Search } from "@mui/icons-material";
 import {
   Box,
   Breadcrumbs,
   Button,
   Container,
-  Grid,
-  Pagination,
   Stack,
   Typography,
 } from "@mui/material";
-import { Commute, Home, NavigateNext, Search } from "@mui/icons-material";
+import { DataGrid } from "@mui/x-data-grid";
+import React, { useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
-import { useRef } from "react";
 import { DateRangePicker } from "rsuite";
-import { useState } from "react";
+import styled from "styled-components";
 import TopUp from "../../../components/Modals/Top-up";
 import Withdraw from "../../../components/Modals/Withdraw";
-import { DataGrid } from "@mui/x-data-grid";
 
 const StyledTypography = styled(Typography)`
   font-weight: bold !important;
 `;
 
 const rows = [
-  { id: 1, amount: "13.000.000 VND", type: "Top-up", transactionTime: "12/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 2, amount: "13.000.000 VND", type: "Top-up", transactionTime: "22/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 3, amount: "13.000.000 VND", type: "Withdraw", transactionTime: "15/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 4, amount: "13.000.000 VND", type: "Pay deposit", transactionTime: "17/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 5, amount: "13.000.000 VND", type: "Top-up", transactionTime: "04/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 6, amount: "13.000.000 VND", type: "Offset final payment", transactionTime: "19/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 7, amount: "13.000.000 VND", type: "Top-up", transactionTime: "04/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 8, amount: "13.000.000 VND", type: "Offset fnal payment", transactionTime: "25/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 9, amount: "13.000.000 VND", type: "Withdraw", transactionTime: "29/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  { id: 10, amount: "13.000.000 VND", type: "Top-up", transactionTime: "12/02/2022 18:00", bookingNumber: 1234523, carName: "Mercedes-Benz AMG GT 2021" },
-  
+  {
+    id: 1,
+    amount: "13.000.000 VND",
+    type: "Top-up",
+    transactionTime: "12/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 2,
+    amount: "13.000.000 VND",
+    type: "Top-up",
+    transactionTime: "22/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 3,
+    amount: "13.000.000 VND",
+    type: "Withdraw",
+    transactionTime: "15/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 4,
+    amount: "13.000.000 VND",
+    type: "Pay deposit",
+    transactionTime: "17/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 5,
+    amount: "13.000.000 VND",
+    type: "Top-up",
+    transactionTime: "04/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 6,
+    amount: "13.000.000 VND",
+    type: "Offset final payment",
+    transactionTime: "19/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 7,
+    amount: "13.000.000 VND",
+    type: "Top-up",
+    transactionTime: "04/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 8,
+    amount: "13.000.000 VND",
+    type: "Offset fnal payment",
+    transactionTime: "25/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 9,
+    amount: "13.000.000 VND",
+    type: "Withdraw",
+    transactionTime: "29/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
+  {
+    id: 10,
+    amount: "13.000.000 VND",
+    type: "Top-up",
+    transactionTime: "12/02/2022 18:00",
+    bookingNumber: 1234523,
+    carName: "Mercedes-Benz AMG GT 2021",
+  },
 ];
 
 const columns = [
-  { field: "id", headerName: "ID", width: 90, align: "center", },
+  { field: "id", headerName: "ID", width: 90, align: "center" },
   {
     field: "amount",
     headerName: "Amount",
@@ -72,10 +137,11 @@ const columns = [
     width: 300,
     align: "center",
     sortable: false,
-  }, 
+  },
 ];
 
 const MyWallet = (props) => {
+  const user = useSelector((state) => state.userData);
   const grid = useRef(null);
   const { loading = false } = props;
   const [openTopup, setOpenTopup] = useState(false);
@@ -106,7 +172,7 @@ const MyWallet = (props) => {
               <Home sx={{ mr: 0.5 }} fontSize="inherit" />
               <Typography
                 component={Link}
-                to="/homeowner"
+                to={user?.role === "CUSTOMER" ? "/homecustomer" : "/homeowner"}
                 variant="subtitle1"
                 fontWeight="bold"
                 sx={{
@@ -199,8 +265,8 @@ const MyWallet = (props) => {
               <DataGrid
                 rows={rows}
                 columns={columns.map((column) => ({
-                    ...column,
-                    headerAlign: "center",
+                  ...column,
+                  headerAlign: "center",
                 }))}
                 disableRowSelectionOnClick
                 disableColumnFilter

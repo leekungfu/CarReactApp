@@ -1,14 +1,12 @@
+import { ArrowForward, List, Search } from "@mui/icons-material";
 import {
   Box,
   Button,
   Card,
   CardContent,
   Container,
-  Divider,
   FormControl,
   Grid,
-  Input,
-  InputLabel,
   MenuItem,
   OutlinedInput,
   Pagination,
@@ -18,17 +16,20 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { ArrowForward, List, Search } from "@mui/icons-material";
-import { useEffect, useState } from "react";
-import { DateRangePicker } from "rsuite";
 import { useTheme } from "@mui/material/styles";
-import subVn from "sub-vn";
-import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../shared/configs/axiosConfig";
-import { useSnackbar } from "../../components/Hooks/useSnackBar";
+import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { DatePicker } from "rsuite";
+import subVn from "sub-vn";
+import { useSnackbar } from "../../components/Hooks/useSnackBar";
 import { setUserData } from "../../components/ReduxToolkit/UserSlice";
-import { RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT } from "../../shared/configs/constants";
+import axiosInstance from "../../shared/configs/axiosConfig";
+import {
+  RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT,
+  SERVER_POSTING_DATE_TIME_FORMAT,
+} from "../../shared/configs/constants";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -88,12 +89,14 @@ const HomeCustomer = (props) => {
   const endIndex = startIndex + itemsPerPage;
   const carsOnCurrentPage = cars.slice(startIndex, endIndex);
 
-  const token = localStorage.getItem("jwtToken");
   const handleClickSearch = async () => {
+    const token = localStorage.getItem("jwtToken");
     const response = await axiosInstance.get("/customer/searchCar", {
       params: {
         selectedProvince,
-        startTime,
+        startTimeFormatted: dayjs(startTime).format(
+          SERVER_POSTING_DATE_TIME_FORMAT
+        ),
       },
       headers: {
         Authorization: `Bearer ${token}`,
@@ -173,13 +176,10 @@ const HomeCustomer = (props) => {
                 </FormControl>
               </Grid>
               <Grid item xs={4}>
-                <DateRangePicker
+                <DatePicker
                   format={RSUITE_DATE_TIME_PICKER_DISPLAY_FORMAT}
-                  value={[new Date(startTime), new Date(endTime)]}
-                  onChange={(values) => {
-                    setStartTime(values[0]);
-                    setEndTime(values[1]);
-                  }}
+                  value={new Date(startTime)}
+                  onChange={(value) => setStartTime(value)}
                 />
               </Grid>
               <Grid item xs={4}>

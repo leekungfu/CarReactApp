@@ -1,32 +1,29 @@
 import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
+  Box,
   Button,
+  Checkbox,
+  Container,
   Dialog,
   DialogContent,
-  DialogTitle,
-  Typography,
-  Box,
   FormControl,
-  TextField,
-  Container,
   FormControlLabel,
-  Checkbox,
-  Grid,
-  InputLabel,
-  OutlinedInput,
   IconButton,
   InputAdornment,
+  OutlinedInput,
   Stack,
+  Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Link, useNavigate } from "react-router-dom";
-import SignUpForm from "../SignUpForm";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useSnackbar } from "../Hooks/useSnackBar";
+import { useNavigate } from "react-router-dom";
 import validator from "validator";
+import { auth, provider, signInWithPopup } from "../../firebase";
 import axiosInstance from "../../shared/configs/axiosConfig";
-import { carAdded, carsAdded } from "../ReduxToolkit/CarAdapter";
+import GoogleLogin from "../GoogleLogin";
+import { useSnackbar } from "../Hooks/useSnackBar";
+import SignUpForm from "../SignUpForm";
 
 function LoginForm(props) {
   const { open, onClose } = props;
@@ -110,6 +107,29 @@ function LoginForm(props) {
   };
   const handleCloseSignupForm = () => {
     setOpenSignupForm(false);
+  };
+
+  // const handleSignOut = () => {
+  //   signOut(auth)
+  //     .then(() => {
+  //       console.log("Đã đăng xuất thành công");
+  //     })
+  //     .catch((error) => {
+  //       console.error("Lỗi đăng xuất:", error);
+  //     });
+  // };
+
+  const handleClickWithGoogle = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // Xử lý đăng nhập thành công
+        const user = result.user;
+        console.log("Đăng nhập thành công:", user);
+      })
+      .catch((error) => {
+        // Xử lý lỗi
+        console.error("Lỗi đăng nhập:", error);
+      });
   };
 
   return (
@@ -203,7 +223,7 @@ function LoginForm(props) {
                   sx={{
                     mt: 2,
                     mb: 2,
-                    color: "white",
+                    color: "whitesmoke",
                     borderColor: "#fca311",
                     "&:hover": {
                       borderColor: "#fca311",
@@ -214,6 +234,7 @@ function LoginForm(props) {
                 >
                   Log in
                 </Button>
+                <GoogleLogin />
                 <Stack>
                   <Button
                     fullWidth

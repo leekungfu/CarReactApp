@@ -1,40 +1,26 @@
 import {
   ElectricBolt,
   Gavel,
-  InputOutlined,
   Savings,
   SupportAgent,
-  Visibility,
-  VisibilityOff,
 } from "@mui/icons-material";
 import {
-  FormControl,
-  InputLabel,
-  Input,
-  FormHelperText,
-  TextField,
+  Avatar,
   Box,
-  OutlinedInput,
-  InputAdornment,
-  IconButton,
-  Container,
-  Grid,
-  Typography,
-  Stack,
-  Paper,
+  Button,
   Card,
   CardContent,
-  Button,
-  CardHeader,
-  Avatar,
+  Container,
   Divider,
+  Grid,
+  Paper,
+  Stack,
+  Typography,
 } from "@mui/material";
-import styled from "styled-components";
-import { useRef } from "react";
-import ScrollTopArrow from "../../components/ScrollTop";
-import { Link } from "react-router-dom";
-import LoginForm from "../../components/LoginForm";
 import { useState } from "react";
+import styled from "styled-components";
+import LoginForm from "../../components/LoginForm";
+import ScrollTopArrow from "../../components/ScrollTop";
 
 const StyledTypography = styled(Typography)`
   color: white;
@@ -64,12 +50,37 @@ const HomeGuest = () => {
               backgroundPosition: "center",
               width: "100%",
               height: "1000px",
+              position: "relative",
+              zIndex: 0,
             }}
           >
-            <Container maxWidth="md">
+            <Box
+              sx={{
+                position: "absolute",
+                backgroundColor: "#000000",
+                opacity: 0.3,
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                zIndex: 1,
+              }}
+            ></Box>
+            <Container
+              maxWidth="md"
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignSelf: "center",
+                textWrap: "wrap",
+              }}
+            >
               <Box
                 sx={{
-                  pt: 50,
+                  position: "absolute",
+                  zIndex: 2,
+                  top: "200px",
+                  width: "60%",
                 }}
               >
                 <StyledTypography variant="h2" fontWeight={800}>
@@ -83,9 +94,14 @@ const HomeGuest = () => {
               </Box>
             </Container>
           </Container>
-          <Container maxWidth="lg">
+          <Container
+            maxWidth="lg"
+            sx={{
+              mt: "-100px",
+            }}
+          >
             <Stack spacing={2}>
-              <Card elevation={5}>
+              <Card elevation={5} sx={{ zIndex: 10 }}>
                 <CardContent>
                   <Stack
                     direction="row"
@@ -547,9 +563,31 @@ const HomeGuest = () => {
                             backgroundSize: "cover",
                             width: "100%",
                             height: "300px",
+                            position: "relative",
+                            zIndex: 0,
                           }}
                         >
-                          <Box>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              backgroundColor: "#000000",
+                              opacity: 0.3,
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              zIndex: 1,
+                            }}
+                          ></Box>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              bottom: "10px",
+                              left: "10px",
+                              color: "#FEFAF6",
+                              zIndex: 2,
+                            }}
+                          >
                             <Typography
                               sx={{ fontSize: "20px" }}
                               variant="subtitle2"
@@ -557,7 +595,7 @@ const HomeGuest = () => {
                               Ha Noi
                             </Typography>
                             <Typography
-                              sx={{ color: "#fca311" }}
+                              sx={{ color: "#FEFAF6" }}
                               variant="subtitle2"
                             >
                               80+ cars
@@ -575,9 +613,31 @@ const HomeGuest = () => {
                             backgroundSize: "cover",
                             width: "100%",
                             height: "300px",
+                            position: "relative",
+                            zIndex: 0,
                           }}
                         >
-                          <Box>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              backgroundColor: "#000000",
+                              opacity: 0.3,
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              zIndex: 1,
+                            }}
+                          ></Box>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              bottom: "10px",
+                              left: "10px",
+                              color: "#FEFAF6",
+                              zIndex: 2,
+                            }}
+                          >
                             <Typography
                               sx={{ fontSize: "20px" }}
                               variant="subtitle2"
@@ -585,7 +645,7 @@ const HomeGuest = () => {
                               Ho Chi Minh City
                             </Typography>
                             <Typography
-                              sx={{ color: "#fca311" }}
+                              sx={{ color: "#FEFAF6" }}
                               variant="subtitle2"
                             >
                               100+ cars
@@ -603,9 +663,31 @@ const HomeGuest = () => {
                             backgroundSize: "cover",
                             width: "100%",
                             height: "300px",
+                            position: "relative",
+                            zIndex: 0,
                           }}
                         >
-                          <Box>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              backgroundColor: "#000000",
+                              opacity: 0.3,
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              zIndex: 1,
+                            }}
+                          ></Box>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              bottom: "10px",
+                              left: "10px",
+                              color: "#FEFAF6",
+                              zIndex: 2,
+                            }}
+                          >
                             <Typography
                               sx={{ fontSize: "20px" }}
                               variant="subtitle2"
@@ -613,7 +695,7 @@ const HomeGuest = () => {
                               Da Nang - Hoi An
                             </Typography>
                             <Typography
-                              sx={{ color: "#fca311" }}
+                              sx={{ color: "#FEFEF6" }}
                               variant="subtitle2"
                             >
                               90+ cars
@@ -641,9 +723,31 @@ const HomeGuest = () => {
                             backgroundSize: "cover",
                             width: "100%",
                             height: "300px",
+                            position: "relative",
+                            zIndex: 0,
                           }}
                         >
-                          <Box>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              backgroundColor: "#000000",
+                              opacity: 0.3,
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              zIndex: 1,
+                            }}
+                          ></Box>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              bottom: "10px",
+                              left: "10px",
+                              color: "#FEFAF6",
+                              zIndex: 2,
+                            }}
+                          >
                             <Typography
                               sx={{ fontSize: "20px" }}
                               variant="subtitle2"
@@ -651,7 +755,7 @@ const HomeGuest = () => {
                               Nha Trang
                             </Typography>
                             <Typography
-                              sx={{ color: "#fca311" }}
+                              sx={{ color: "#FEFAF6" }}
                               variant="subtitle2"
                             >
                               50+ cars
@@ -669,9 +773,31 @@ const HomeGuest = () => {
                             backgroundSize: "cover",
                             width: "100%",
                             height: "300px",
+                            position: "relative",
+                            zIndex: 0,
                           }}
                         >
-                          <Box>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              backgroundColor: "#000000",
+                              opacity: 0.3,
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              zIndex: 1,
+                            }}
+                          ></Box>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              bottom: "10px",
+                              left: "10px",
+                              color: "#FEFAF6",
+                              zIndex: 2,
+                            }}
+                          >
                             <Typography
                               sx={{ fontSize: "20px" }}
                               variant="subtitle2"
@@ -679,7 +805,7 @@ const HomeGuest = () => {
                               Quang Ninh
                             </Typography>
                             <Typography
-                              sx={{ color: "#fca311" }}
+                              sx={{ color: "#FEFAF6" }}
                               variant="subtitle2"
                             >
                               70+ cars
@@ -697,9 +823,31 @@ const HomeGuest = () => {
                             backgroundSize: "cover",
                             width: "100%",
                             height: "300px",
+                            position: "relative",
+                            zIndex: 0,
                           }}
                         >
-                          <Box>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              backgroundColor: "#000000",
+                              opacity: 0.3,
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              zIndex: 1,
+                            }}
+                          ></Box>
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              bottom: "10px",
+                              left: "10px",
+                              color: "#FEFAF6",
+                              zIndex: 2,
+                            }}
+                          >
                             <Typography
                               sx={{ fontSize: "20px" }}
                               variant="subtitle2"
@@ -707,7 +855,7 @@ const HomeGuest = () => {
                               Da Lat
                             </Typography>
                             <Typography
-                              sx={{ color: "#fca311" }}
+                              sx={{ color: "#FEFAF6" }}
                               variant="subtitle2"
                             >
                               80+ cars
